@@ -20,9 +20,9 @@ _Living document. Updated at every milestone._
 ## Phase 0 milestones
 | # | Milestone | Status |
 |---|---|---|
-| 0.1 | Repo foundation + tracking docs + shared config | 🟡 in progress |
-| 0.2 | Python 3.12 engine (FastAPI, DI, AIProvider abstraction, tests) | ⬜ next |
-| 0.3 | Electron + React + TS shell (supervisor, IPC, health) | ⬜ |
+| 0.1 | Repo foundation + tracking docs + shared config | ✅ `ab4b7fb` |
+| 0.2 | Python 3.12 engine (FastAPI, DI, AIProvider abstraction, tests) | ✅ 20 tests, ruff+mypy clean |
+| 0.3 | Electron + React + TS shell (supervisor, IPC, health) | 🟡 in progress |
 | 0.4 | 3D viewport (Three.js: orbit, lights, grid, selection, STL) | ⬜ |
 | 0.5 | AI chat panel (→ AIProvider, offline queue) | ⬜ |
 | 0.6 | Project manager (CloudService: Local source-of-truth + Supabase) | ⬜ |

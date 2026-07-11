@@ -11,14 +11,14 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] `.editorconfig`
 - [x] Commit
 
-### M0.2 — Python 3.12 engine bootstrap
-- [ ] `pyproject.toml` (uv), FastAPI + uvicorn, ruff + mypy + pytest
-- [ ] Clean-architecture skeleton: `domain / application / ports / adapters / api / di`
-- [ ] Config module (env-driven, typed) — no hardcoded secrets
-- [ ] `AIProvider` port + `StubProvider` + `ClaudeProvider` (+ registry/selection by config)
-- [ ] `GET /health`, `GET /api/v1/capabilities`, `POST /api/v1/ai/chat`
-- [ ] Unit tests (providers, config, DI, routes) green
-- [ ] `uv sync` + `pytest` verified; commit
+### M0.2 — Python 3.12 engine bootstrap ✅
+- [x] `pyproject.toml` (uv), FastAPI + uvicorn, ruff + mypy + pytest
+- [x] Clean-architecture skeleton: `domain / application / ports / adapters / api / di`
+- [x] Config module (env-driven, typed) — no hardcoded secrets
+- [x] `AIProvider` port + `StubProvider` + `ClaudeProvider` (+ registry/selection by config)
+- [x] `GET /health`, `GET /api/v1/capabilities`, `POST /api/v1/ai/chat` (bearer-token auth when configured)
+- [x] Unit tests (providers, config, DI, routes) green — 20 passed; ruff + mypy strict clean
+- [x] Live smoke test (boot uvicorn, hit all endpoints offline); commit
 
 ### M0.3 — Electron + React + TS shell
 - [ ] Desktop main (hardened) + preload + typed IPC (`packages/ipc-contracts`)
