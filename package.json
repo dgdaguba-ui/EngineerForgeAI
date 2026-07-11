@@ -1,0 +1,30 @@
+{
+  "name": "engineerforge-ai",
+  "version": "0.0.0",
+  "private": true,
+  "description": "AI-native desktop workspace for parametric CAD, mesh engineering, and multi-material 3D print preparation.",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "codegen": "turbo run codegen",
+    "db:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d postgres",
+    "db:seed": "pnpm --filter @efc/prisma seed",
+    "prisma": "prisma",
+    "engine:setup": "pnpm --filter engine setup",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.0",
+    "prisma": "^5.20.0",
+    "typescript": "^5.6.0",
+    "@playwright/test": "^1.47.0"
+  }
+}

@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+apps/engine/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Builds / outputs
+dist/
+build/
+out/
+.next/
+.turbo/
+*.tsbuildinfo
+apps/desktop/release/
+
+# Env & secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Data / caches
+*.sqlite
+*.sqlite3
+coverage/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated
+apps/renderer/src/engine-client/generated/
+packages/core-domain/src/generated/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Project artifacts (user data must never be committed)
+*.efproj
+!examples/**/*.efproj

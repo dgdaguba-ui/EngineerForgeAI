@@ -1,0 +1,437 @@
+// EngineerForge AI — Data Plane schema (PostgreSQL / Supabase)
+// Canonical database definition. See docs/03-database-schema.md for rationale.
+// Conventions:
+//   - cuid ids; createdAt/updatedAt on mutable rows.
+//   - Immutable *Version rows are append-only (no updatedAt); aggregates point at headVersionId.
+//   - ownerId (+ optional orgId) on user data → Supabase RLS boundary.
+//   - Heavy binaries live in Supabase Storage; only metadata is stored here (Asset).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────── Identity & tenancy ───────────────────────────────
+
+model User {
+  id          String   @id @default(cuid())
+  authId      String   @unique // Supabase auth.users.id
+  email       String   @unique
+  displayName String?
+  preferences Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships Membership[]
+  projects    Project[]
+  materials   Material[]
+  assets      Asset[]
+  auditLogs   AuditLog[]
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  members  Membership[]
+  projects Project[]
+  materials Material[]
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Membership {
+  id     String  @id @default(cuid())
+  role   OrgRole @default(MEMBER)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  org    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  orgId  String
+
+  @@unique([userId, orgId])
+  @@index([orgId])
+}
+
+// ─────────────────────────────── Projects & versions ───────────────────────────────
+
+model Project {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  owner         User     @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  org           Organization? @relation(fields: [orgId], references: [id])
+  orgId         String?
+  headVersionId String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  versions   ProjectVersion[] @relation("ProjectVersions")
+  headVersion ProjectVersion? @relation("ProjectHead", fields: [headVersionId], references: [id])
+  parts      Part[]
+  assemblies Assembly[]
+  drawings   Drawing[]
+  printJobs  PrintJob[]
+  boms       Bom[]
+  assets     Asset[]
+
+  @@index([ownerId, updatedAt])
+  @@index([orgId])
+}
+
+model ProjectVersion {
+  id          String   @id @default(cuid())
+  project     Project  @relation("ProjectVersions", fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  label       String   // e.g. "v3", "release-candidate"
+  message     String?
+  parentId    String?
+  createdById String
+  createdAt   DateTime @default(now())
+
+  headOf Project? @relation("ProjectHead")
+
+  @@index([projectId, createdAt])
+}
+
+// ─────────────────────────────── Parts & IR versions ───────────────────────────────
+
+model Part {
+  id            String   @id @default(cuid())
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId     String
+  name          String
+  headVersionId String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  versions    PartVersion[] @relation("PartVersions")
+  headVersion PartVersion?  @relation("PartHead", fields: [headVersionId], references: [id])
+
+  @@index([projectId])
+}
+
+model PartVersion {
+  id             String   @id @default(cuid())
+  part           Part     @relation("PartVersions", fields: [partId], references: [id], onDelete: Cascade)
+  partId         String
+  label          String
+  parentId       String?
+  // The Feature Program IR (efir/1). Small, diffable, query-friendly.
+  featureProgram Json
+  paramTableCache Json?   // resolved parameter values snapshot
+  massG          Float?
+  volumeMm3      Float?
+  bboxJson       Json?    // {x,y,z} extents in mm
+  createdById    String
+  createdAt      DateTime @default(now())
+
+  headOf              Part?                @relation("PartHead")
+  materialAssignments MaterialAssignment[]
+  analyses            Analysis[]
+  assets              Asset[]
+
+  @@index([partId, createdAt])
+}
+
+// ─────────────────────────────── Materials ───────────────────────────────
+
+model Material {
+  id            String  @id @default(cuid())
+  name          String  // "PETG", "Carbon Fiber Nylon", custom name
+  category      String  // "thermoplastic", "support", "composite", ...
+  isSystem      Boolean @default(false) // curated library entry
+  owner         User?   @relation(fields: [ownerId], references: [id])
+  ownerId       String?
+  org           Organization? @relation(fields: [orgId], references: [id])
+  orgId         String?
+
+  densityGCm3      Float
+  youngsModulusMPa Float?
+  yieldStrengthMPa Float?
+  tensileStrengthMPa Float?
+  elongationPct    Float?
+  shrinkagePct     Float?
+  printTempC       Int?
+  bedTempC         Int?
+  costPerKg        Float?
+  colorHex         String?  @default("#B0B0B0")
+  solubleSupport   Boolean  @default(false)
+  meta             Json     @default("{}")
+  createdAt        DateTime @default(now())
+
+  assignments MaterialAssignment[]
+
+  @@index([ownerId])
+  @@index([isSystem])
+}
+
+model MaterialAssignment {
+  id            String @id @default(cuid())
+  partVersion   PartVersion @relation(fields: [partVersionId], references: [id], onDelete: Cascade)
+  partVersionId String
+  bodyRef       String  // body/feature id within the IR ("body:0", feature id…)
+  material      Material @relation(fields: [materialId], references: [id])
+  materialId    String
+  colorHex      String?
+  role          String? // "primary" | "secondary" | "support" | "color-N"
+
+  @@unique([partVersionId, bodyRef])
+  @@index([materialId])
+}
+
+// ─────────────────────────────── Assemblies ───────────────────────────────
+
+model Assembly {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nodes AssemblyNode[]
+
+  @@index([projectId])
+}
+
+model AssemblyNode {
+  id         String  @id @default(cuid())
+  assembly   Assembly @relation(fields: [assemblyId], references: [id], onDelete: Cascade)
+  assemblyId String
+  parent     AssemblyNode? @relation("NodeTree", fields: [parentId], references: [id])
+  parentId   String?
+  partId     String?  // instance of a Part (null for sub-assembly grouping node)
+  name       String
+  transform  Json     @default("{}") // 4x4 placement matrix
+  children   AssemblyNode[] @relation("NodeTree")
+  matesA     Mate[]   @relation("MateA")
+  matesB     Mate[]   @relation("MateB")
+
+  @@index([assemblyId])
+  @@index([parentId])
+}
+
+enum MateType {
+  FIXED
+  REVOLUTE
+  SLIDER
+  CYLINDRICAL
+  PLANAR
+  BALL
+  PARALLEL
+  COINCIDENT
+}
+
+model Mate {
+  id       String   @id @default(cuid())
+  type     MateType
+  nodeA    AssemblyNode @relation("MateA", fields: [nodeAId], references: [id], onDelete: Cascade)
+  nodeAId  String
+  nodeB    AssemblyNode @relation("MateB", fields: [nodeBId], references: [id], onDelete: Cascade)
+  nodeBId  String
+  params   Json     @default("{}")
+
+  @@index([nodeAId])
+  @@index([nodeBId])
+}
+
+// ─────────────────────────────── Analysis ───────────────────────────────
+
+enum AnalysisKind {
+  FEA_LINEAR_STATIC
+  CALC_BOLT
+  CALC_BEAM
+  CALC_GEAR
+  CALC_SPRING
+  CALC_SHAFT
+  CALC_BEARING
+  CALC_TOLERANCE
+  MASS_PROPERTIES
+  WALL_THICKNESS
+  PRINTABILITY
+}
+
+model Analysis {
+  id            String   @id @default(cuid())
+  partVersion   PartVersion @relation(fields: [partVersionId], references: [id], onDelete: Cascade)
+  partVersionId String
+  kind          AnalysisKind
+  inputsHash    String   // hash of inputs → cache key
+  inputs        Json
+  result        Json
+  advisory      Boolean  @default(true) // engineering estimate, not certified
+  createdAt     DateTime @default(now())
+
+  @@unique([partVersionId, kind, inputsHash])
+  @@index([partVersionId])
+}
+
+// ─────────────────────────────── Printing ───────────────────────────────
+
+enum Slicer {
+  FLASHPRINT
+  ORCASLICER
+  PRUSASLICER
+  CURA
+  BAMBU_STUDIO
+}
+
+model PrintProfile {
+  id        String  @id @default(cuid())
+  name      String
+  slicer    Slicer
+  settings  Json    // layer height, walls, infill, temps, supports…
+  ownerId   String?
+  createdAt DateTime @default(now())
+
+  printJobs PrintJob[]
+}
+
+enum PrintStatus {
+  DRAFT
+  QUEUED
+  PRINTING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model PrintJob {
+  id            String   @id @default(cuid())
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId     String
+  profile       PrintProfile? @relation(fields: [profileId], references: [id])
+  profileId     String?
+  status        PrintStatus @default(DRAFT)
+  estMaterialG  Float?
+  actMaterialG  Float?
+  estMinutes    Int?
+  actMinutes    Int?
+  estCost       Float?
+  actCost       Float?
+  materialsJson Json?    // per-material usage for multi-material
+  purgeG        Float?   // estimated purge-tower waste
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([projectId, createdAt])
+}
+
+// ─────────────────────────────── BOM & drawings ───────────────────────────────
+
+model Bom {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  name      String
+  createdAt DateTime @default(now())
+
+  items BomItem[]
+
+  @@index([projectId])
+}
+
+model BomItem {
+  id        String  @id @default(cuid())
+  bom       Bom     @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  bomId     String
+  reference String  // item number
+  name      String
+  quantity  Float   @default(1)
+  unit      String  @default("ea")
+  unitCost  Float?
+  partId    String?
+  fastenerId String?
+  materialId String?
+
+  @@index([bomId])
+}
+
+model Drawing {
+  id         String   @id @default(cuid())
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String
+  name       String
+  sheetSize  String   @default("A3")
+  revision   String   @default("A")
+  pdfAssetId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model Fastener {
+  id       String  @id @default(cuid())
+  standard String  // "ISO 4762", "DIN 933"
+  size     String  // "M5x20"
+  grade    String? // "8.8", "A2-70"
+  meta     Json    @default("{}")
+
+  @@unique([standard, size, grade])
+}
+
+// ─────────────────────────────── Assets & audit ───────────────────────────────
+
+enum AssetKind {
+  STL
+  OBJ
+  THREE_MF
+  STEP
+  IGES
+  GLB
+  PLY
+  FBX
+  DXF
+  SVG
+  RENDER
+  THUMBNAIL
+  PDF
+  BLEND
+}
+
+model Asset {
+  id            String   @id @default(cuid())
+  owner         User     @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId     String?
+  partVersion   PartVersion? @relation(fields: [partVersionId], references: [id], onDelete: Cascade)
+  partVersionId String?
+  kind          AssetKind
+  storageBucket String   @default("efproj")
+  storageKey    String   @unique
+  contentType   String
+  sizeBytes     Int
+  checksum      String?
+  createdAt     DateTime @default(now())
+
+  @@index([ownerId, kind])
+  @@index([projectId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     User?    @relation(fields: [actorId], references: [id])
+  actorId   String?
+  action    String   // "part.export", "material.delete", "project.share"
+  target    String?
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+}

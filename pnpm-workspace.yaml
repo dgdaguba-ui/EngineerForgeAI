@@ -1,0 +1,6 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "services/*"
+# Note: apps/engine is a Python package (uv), not a pnpm workspace member;
+# it is built/tested via its own toolchain and orchestrated by Turborepo tasks.
