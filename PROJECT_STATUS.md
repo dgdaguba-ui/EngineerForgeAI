@@ -22,8 +22,8 @@ _Living document. Updated at every milestone._
 |---|---|---|
 | 0.1 | Repo foundation + tracking docs + shared config | ✅ `ab4b7fb` |
 | 0.2 | Python 3.12 engine (FastAPI, DI, AIProvider abstraction, tests) | ✅ 20 tests, ruff+mypy clean |
-| 0.3 | Electron + React + TS shell (supervisor, IPC, health) | 🟡 in progress |
-| 0.4 | 3D viewport (Three.js: orbit, lights, grid, selection, STL) | ⬜ |
+| 0.3 | Electron + React + TS shell (supervisor, IPC, health) | ✅ 31 TS tests + smoke e2e |
+| 0.4 | 3D viewport (Three.js: orbit, lights, grid, selection, STL) | 🟡 in progress |
 | 0.5 | AI chat panel (→ AIProvider, offline queue) | ⬜ |
 | 0.6 | Project manager (CloudService: Local source-of-truth + Supabase) | ⬜ |
 | 0.7 | Blender integration (detect/launch/exec, STL/STEP/OBJ/3MF/GLB IO) | ⬜ |

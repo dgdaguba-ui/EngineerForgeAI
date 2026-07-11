@@ -1,0 +1,31 @@
+{
+  "name": "@efc/ipc-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed, Zod-validated IPC contracts between the Electron renderer, preload, and main process.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@efc/config": "workspace:*",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

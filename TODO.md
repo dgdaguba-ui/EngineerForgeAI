@@ -20,11 +20,12 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Unit tests (providers, config, DI, routes) green — 20 passed; ruff + mypy strict clean
 - [x] Live smoke test (boot uvicorn, hit all endpoints offline); commit
 
-### M0.3 — Electron + React + TS shell
-- [ ] Desktop main (hardened) + preload + typed IPC (`packages/ipc-contracts`)
-- [ ] Engine supervisor (spawn/monitor/restart pinned 3.12 interpreter)
-- [ ] React + TS renderer (Vite) boots, shows engine health
-- [ ] Compile + launch verified; commit
+### M0.3 — Electron + React + TS shell ✅
+- [x] Desktop main (hardened: contextIsolation, sandbox, no nodeIntegration, nav lockdown) + preload allowlist + typed IPC (`packages/ipc-contracts`, Zod-validated both ways)
+- [x] Engine supervisor (spawn/monitor/restart pinned 3.12 interpreter, ephemeral port, bearer token, exponential backoff)
+- [x] React + TS renderer (Vite + Tailwind dark shell) with engine status store + REST client
+- [x] Dialog-gated file access (PathAllowlist) — renderer can only read user-picked paths
+- [x] 31 TS tests green (contracts 7, desktop 12, renderer 12); `--smoke` e2e spawns real engine → running; commit
 
 ### M0.4 — 3D viewport
 - [ ] Three.js scene: orbit controls, lighting, grid
