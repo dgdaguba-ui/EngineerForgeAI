@@ -32,10 +32,10 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] STL loader (binary + ASCII, Z-up→Y-up) + click selection with highlight; scene tree panel (select/hide/remove); inspector (dims mm, triangle count)
 - [x] Dialog-gated import flow; 17 new tests (46 renderer/desktop/contracts total); visual + WebGL verification; commit
 
-### M0.5 — AI chat panel
-- [ ] Chat UI → engine `/ai/chat` via `AIProvider`
-- [ ] Offline request queue + retry-on-reconnect
-- [ ] Commit
+### M0.5 — AI chat panel ✅
+- [x] Chat UI → engine `/ai/chat` via `AIProvider` (multi-turn history, system prompt, provider/model badges, collapsible reasoning)
+- [x] Offline request queue: retryable failures queue with exponential backoff (3s→30s), auto-flush on engine reconnect, manual "Retry queued", correct reply ordering for queued backlogs
+- [x] 7 store tests (36 renderer total); request shape verified against the live engine; commit
 
 ### M0.6 — Project manager
 - [ ] `CloudService` port + `LocalStorageProvider` (source of truth) + `SupabaseProvider`

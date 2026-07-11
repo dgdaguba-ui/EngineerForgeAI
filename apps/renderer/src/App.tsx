@@ -4,6 +4,7 @@ import { EngineCard } from "./components/EngineCard";
 import { InspectorPanel } from "./components/InspectorPanel";
 import { ScenePanel } from "./components/ScenePanel";
 import { StatusBar } from "./components/StatusBar";
+import { ChatPanel } from "./features/chat/ChatPanel";
 import { Viewport } from "./features/viewport/Viewport";
 import { useEngineStore } from "./state/engineStore";
 
@@ -49,8 +50,13 @@ export default function App() {
           <Viewport />
         </section>
 
-        <aside className="w-72 shrink-0 border-l border-surface-border bg-surface-panel">
-          <InspectorPanel />
+        <aside className="flex w-80 shrink-0 flex-col border-l border-surface-border bg-surface-panel">
+          <div className="max-h-64 shrink-0 overflow-auto border-b border-surface-border">
+            <InspectorPanel />
+          </div>
+          <div className="min-h-0 flex-1">
+            <ChatPanel />
+          </div>
         </aside>
       </main>
     </div>
