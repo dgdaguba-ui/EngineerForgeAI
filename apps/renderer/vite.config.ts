@@ -41,6 +41,14 @@ export default defineConfig({
   build: {
     outDir: "dist",
     target: "chrome120",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ["three", "@react-three/fiber", "@react-three/drei"],
+          react: ["react", "react-dom"],
+        },
+      },
+    },
   },
   test: {
     environment: "jsdom",

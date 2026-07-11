@@ -27,10 +27,10 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Dialog-gated file access (PathAllowlist) — renderer can only read user-picked paths
 - [x] 31 TS tests green (contracts 7, desktop 12, renderer 12); `--smoke` e2e spawns real engine → running; commit
 
-### M0.4 — 3D viewport
-- [ ] Three.js scene: orbit controls, lighting, grid
-- [ ] STL loader + object selection (raycast)
-- [ ] Commit
+### M0.4 — 3D viewport ✅
+- [x] Three.js (r3f) scene: orbit controls (damped), 4-light rig, 220mm grid + axes, camera auto-fit on content change
+- [x] STL loader (binary + ASCII, Z-up→Y-up) + click selection with highlight; scene tree panel (select/hide/remove); inspector (dims mm, triangle count)
+- [x] Dialog-gated import flow; 17 new tests (46 renderer/desktop/contracts total); visual + WebGL verification; commit
 
 ### M0.5 — AI chat panel
 - [ ] Chat UI → engine `/ai/chat` via `AIProvider`
