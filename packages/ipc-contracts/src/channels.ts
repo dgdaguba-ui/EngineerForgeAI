@@ -8,6 +8,13 @@
  */
 import { z } from "zod";
 
+import {
+  CloudResultSchema,
+  CloudStatusSchema,
+  ProjectDocSchema,
+  ProjectInfoSchema,
+} from "./project.js";
+
 // ── Engine ────────────────────────────────────────────────────────────────────
 
 export const EngineStateSchema = z.enum([
@@ -73,6 +80,12 @@ export type ReadFileResult = z.infer<typeof ReadFileResultSchema>;
 
 // ── Channel map ───────────────────────────────────────────────────────────────
 
+/** Payload for opening/saving a project (returned by project channels). */
+export const ProjectBundleSchema = z.object({
+  info: ProjectInfoSchema,
+  doc: ProjectDocSchema,
+});
+
 export const channels = {
   "app:getVersion": {
     req: z.void(),
@@ -84,6 +97,30 @@ export const channels = {
   "dialog:openFile": { req: OpenFileRequestSchema, res: PickedFileSchema.nullable() },
   "dialog:saveFile": { req: SaveFileRequestSchema, res: PickedFileSchema.nullable() },
   "fs:readFile": { req: ReadFileRequestSchema, res: ReadFileResultSchema },
+  // ── projects (local-first .efproj bundles) ──────────────────────────────────
+  "project:create": { req: z.void(), res: ProjectBundleSchema.nullable() },
+  "project:open": { req: z.void(), res: ProjectBundleSchema.nullable() },
+  "project:openPath": { req: z.object({ path: z.string() }), res: ProjectBundleSchema },
+  "project:save": {
+    req: z.object({ path: z.string(), doc: ProjectDocSchema }),
+    res: ProjectInfoSchema,
+  },
+  "project:recent": { req: z.void(), res: z.array(ProjectInfoSchema) },
+  "project:importAsset": {
+    req: z.object({ projectPath: z.string(), sourcePath: z.string() }),
+    res: z.object({ relPath: z.string(), name: z.string() }),
+  },
+  // ── cloud (optional; app is fully functional without it) ───────────────────
+  "cloud:status": { req: z.void(), res: CloudStatusSchema },
+  "cloud:signIn": {
+    req: z.object({ email: z.string(), password: z.string() }),
+    res: CloudStatusSchema,
+  },
+  "cloud:signOut": { req: z.void(), res: CloudStatusSchema },
+  "cloud:pushProject": {
+    req: z.object({ path: z.string() }),
+    res: CloudResultSchema,
+  },
 } as const;
 
 export type Channels = typeof channels;

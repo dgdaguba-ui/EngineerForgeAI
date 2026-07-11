@@ -2,23 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { EfcBridge } from "@efc/ipc-contracts";
 
+import { stlBase64 } from "../../test/fixtures";
 import { importStlViaDialog } from "./import";
-import { makeBinaryStl } from "./stl.test";
-
-function stlBase64(): string {
-  const bytes = new Uint8Array(
-    makeBinaryStl([
-      [
-        [0, 0, 0],
-        [5, 0, 0],
-        [0, 5, 0],
-      ],
-    ]),
-  );
-  let binary = "";
-  for (const b of bytes) binary += String.fromCharCode(b);
-  return btoa(binary);
-}
 
 describe("importStlViaDialog", () => {
   it("returns null when the user cancels the dialog", async () => {

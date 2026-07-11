@@ -7,22 +7,37 @@ export function newSessionToken(): string {
 }
 
 /**
- * Tracks filesystem paths the user explicitly granted via native dialogs.
- * `fs:readFile` only serves approved paths, so a compromised renderer cannot
- * read arbitrary files through IPC.
+ * Tracks filesystem paths the user explicitly granted — individual files via
+ * native dialogs, and whole directories for opened projects. `fs:readFile`
+ * only serves approved paths, so a compromised renderer cannot read arbitrary
+ * files through IPC.
  */
 export class PathAllowlist {
-  private approved = new Set<string>();
+  private approvedFiles = new Set<string>();
+  private approvedDirs = new Set<string>();
 
   private normalize(p: string): string {
     return path.resolve(p);
   }
 
   approve(p: string): void {
-    this.approved.add(this.normalize(p));
+    this.approvedFiles.add(this.normalize(p));
+  }
+
+  /** Approve a directory tree (e.g. an opened .efproj bundle). */
+  approveDir(dir: string): void {
+    this.approvedDirs.add(this.normalize(dir));
   }
 
   isApproved(p: string): boolean {
-    return this.approved.has(this.normalize(p));
+    const resolved = this.normalize(p);
+    if (this.approvedFiles.has(resolved)) return true;
+    for (const dir of this.approvedDirs) {
+      const rel = path.relative(dir, resolved);
+      if (rel !== "" && !rel.startsWith("..") && !path.isAbsolute(rel)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

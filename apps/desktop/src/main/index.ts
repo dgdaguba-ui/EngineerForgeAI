@@ -10,10 +10,20 @@ import path from "node:path";
 import { app, BrowserWindow } from "electron";
 import { events, type EngineStatus } from "@efc/ipc-contracts";
 
+import { buildCloudService } from "./cloud/registry.js";
+import { loadDotenvFile } from "./dotenv.js";
 import { resolveEngineDir } from "./engine-locator.js";
 import { registerIpc } from "./ipc.js";
+import { LocalProjectStore } from "./projects/local-store.js";
+import { RecentProjects } from "./projects/recents.js";
 import { newSessionToken, PathAllowlist } from "./security.js";
 import { EngineSupervisor } from "./supervisor.js";
+
+// Dev convenience: pick up the repo-root .env (Supabase/AI keys). Existing
+// process env always wins; packaged builds read the OS environment only.
+if (!app.isPackaged) {
+  loadDotenvFile(path.resolve(app.getAppPath(), "..", "..", ".env"));
+}
 
 const SMOKE_MODE = process.argv.includes("--smoke");
 const RENDERER_DEV_URL = process.env.EFC_RENDERER_URL ?? "http://localhost:5173";
@@ -37,6 +47,14 @@ const supervisor = new EngineSupervisor({
 });
 
 const allowlist = new PathAllowlist();
+const projects = new LocalProjectStore();
+const recents = new RecentProjects(
+  path.join(app.getPath("userData"), "recent-projects.json"),
+);
+const cloud = buildCloudService({
+  SUPABASE_URL: process.env.SUPABASE_URL,
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+});
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -105,7 +123,14 @@ if (!gotLock && !SMOKE_MODE) {
       await runSmoke();
       return;
     }
-    registerIpc({ supervisor, allowlist, getWindow: () => mainWindow });
+    registerIpc({
+      supervisor,
+      allowlist,
+      projects,
+      recents,
+      cloud,
+      getWindow: () => mainWindow,
+    });
     createWindow();
     void supervisor.start();
 

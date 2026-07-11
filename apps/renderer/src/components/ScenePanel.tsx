@@ -1,7 +1,4 @@
-import { useState } from "react";
-
-import { importStlViaDialog } from "../features/viewport/import";
-import { getBridge } from "../ipc/efc";
+import { useProjectStore } from "../state/projectStore";
 import { useViewportStore } from "../state/viewportStore";
 
 export function ScenePanel() {
@@ -10,41 +7,23 @@ export function ScenePanel() {
   const select = useViewportStore((s) => s.select);
   const toggleVisible = useViewportStore((s) => s.toggleVisible);
   const removeObject = useViewportStore((s) => s.removeObject);
-  const addMesh = useViewportStore((s) => s.addMesh);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const busy = useProjectStore((s) => s.busy);
+  const importStl = useProjectStore((s) => s.importStl);
 
-  const onImport = async () => {
-    const bridge = getBridge();
-    if (!bridge) {
-      setError("File import requires the desktop shell.");
-      return;
-    }
-    setBusy(true);
-    setError(null);
-    try {
-      const imported = await importStlViaDialog(bridge);
-      if (imported) addMesh(imported);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setBusy(false);
-    }
-  };
+  const onImport = () => void importStl();
 
   return (
     <section className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-surface-border px-3 py-2">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-zinc-400">Scene</h2>
         <button
-          onClick={() => void onImport()}
+          onClick={onImport}
           disabled={busy}
           className="rounded border border-surface-border bg-surface-raised px-2 py-1 text-xs text-zinc-200 hover:border-accent-dim disabled:opacity-50"
         >
-          {busy ? "Importing…" : "Import STL"}
+          {busy ? "Working…" : "Import STL"}
         </button>
       </div>
-      {error && <p className="px-3 py-2 text-xs text-red-400">{error}</p>}
       <ul className="flex-1 overflow-auto p-1">
         {objects.length === 0 && (
           <li className="px-2 py-1 text-xs text-zinc-600">No objects loaded</li>

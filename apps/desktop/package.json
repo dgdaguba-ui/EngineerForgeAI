@@ -14,7 +14,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@efc/ipc-contracts": "workspace:*"
+    "@efc/ipc-contracts": "workspace:*",
+    "@supabase/supabase-js": "^2.46.1"
   },
   "devDependencies": {
     "@efc/config": "workspace:*",

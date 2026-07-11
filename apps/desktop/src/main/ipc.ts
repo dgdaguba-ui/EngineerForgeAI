@@ -6,14 +6,20 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { app, dialog, ipcMain, type BrowserWindow } from "electron";
-import { channels, type ChannelName } from "@efc/ipc-contracts";
+import { channels, type ChannelName, type ProjectDoc } from "@efc/ipc-contracts";
 
-import type { EngineSupervisor } from "./supervisor.js";
+import type { CloudService } from "./cloud/service.js";
+import type { LocalProjectStore } from "./projects/local-store.js";
+import type { RecentProjects } from "./projects/recents.js";
 import type { PathAllowlist } from "./security.js";
+import type { EngineSupervisor } from "./supervisor.js";
 
 interface IpcDeps {
   supervisor: EngineSupervisor;
   allowlist: PathAllowlist;
+  projects: LocalProjectStore;
+  recents: RecentProjects;
+  cloud: CloudService;
   getWindow: () => BrowserWindow | null;
 }
 
@@ -30,7 +36,9 @@ function handle<C extends ChannelName>(
 }
 
 export function registerIpc(deps: IpcDeps): void {
-  const { supervisor, allowlist, getWindow } = deps;
+  const { supervisor, allowlist, projects, recents, cloud, getWindow } = deps;
+
+  // ── app / engine ────────────────────────────────────────────────────────────
 
   handle("app:getVersion", () => ({
     app: app.getVersion(),
@@ -48,6 +56,8 @@ export function registerIpc(deps: IpcDeps): void {
   });
 
   handle("engine:restart", async () => await supervisor.restart());
+
+  // ── dialogs & files ─────────────────────────────────────────────────────────
 
   handle("dialog:openFile", async (req) => {
     const options = req as { title?: string; filters?: { name: string; extensions: string[] }[] };
@@ -94,5 +104,89 @@ export function registerIpc(deps: IpcDeps): void {
       byteLength: data.byteLength,
       dataBase64: data.toString("base64"),
     };
+  });
+
+  // ── projects (local-first) ──────────────────────────────────────────────────
+
+  handle("project:create", async () => {
+    const win = getWindow();
+    const options: Electron.SaveDialogOptions = {
+      title: "Create EngineerForge project",
+      defaultPath: "MyProject.efproj",
+      buttonLabel: "Create",
+    };
+    const result = win
+      ? await dialog.showSaveDialog(win, options)
+      : await dialog.showSaveDialog(options);
+    if (result.canceled || !result.filePath) return null;
+    const bundle = await projects.createProject(result.filePath);
+    allowlist.approveDir(bundle.info.path);
+    await recents.add(bundle.info);
+    return bundle;
+  });
+
+  handle("project:open", async () => {
+    const win = getWindow();
+    const options: Electron.OpenDialogOptions = {
+      title: "Open EngineerForge project (.efproj folder)",
+      properties: ["openDirectory"],
+    };
+    const result = win
+      ? await dialog.showOpenDialog(win, options)
+      : await dialog.showOpenDialog(options);
+    const dirPath = result.filePaths[0];
+    if (result.canceled || !dirPath) return null;
+    const bundle = await projects.openProject(dirPath);
+    allowlist.approveDir(bundle.info.path);
+    await recents.add(bundle.info);
+    return bundle;
+  });
+
+  handle("project:openPath", async (req) => {
+    const { path: dirPath } = req as { path: string };
+    const bundle = await projects.openProject(dirPath);
+    allowlist.approveDir(bundle.info.path);
+    await recents.add(bundle.info);
+    return bundle;
+  });
+
+  handle("project:save", async (req) => {
+    const { path: dirPath, doc } = req as { path: string; doc: ProjectDoc };
+    if (!allowlist.isApproved(path.join(dirPath, "project.json"))) {
+      throw new Error("Cannot save to a project that was not opened in this session.");
+    }
+    const info = await projects.saveProject(dirPath, doc);
+    await recents.add(info);
+    return info;
+  });
+
+  handle("project:recent", async () => await recents.list());
+
+  handle("project:importAsset", async (req) => {
+    const { projectPath, sourcePath } = req as { projectPath: string; sourcePath: string };
+    if (!allowlist.isApproved(sourcePath)) {
+      throw new Error("Source file not approved: pick it via a dialog first.");
+    }
+    if (!allowlist.isApproved(path.join(projectPath, "project.json"))) {
+      throw new Error("Project not opened in this session.");
+    }
+    return await projects.importAsset(projectPath, sourcePath);
+  });
+
+  // ── cloud (optional) ────────────────────────────────────────────────────────
+
+  handle("cloud:status", async () => await cloud.status());
+
+  handle("cloud:signIn", async (req) => {
+    const { email, password } = req as { email: string; password: string };
+    return await cloud.signIn(email, password);
+  });
+
+  handle("cloud:signOut", async () => await cloud.signOut());
+
+  handle("cloud:pushProject", async (req) => {
+    const { path: dirPath } = req as { path: string };
+    const bundle = await projects.openProject(dirPath);
+    return await cloud.pushProject(bundle.info, bundle.doc);
   });
 }

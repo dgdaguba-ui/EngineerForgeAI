@@ -25,8 +25,8 @@ _Living document. Updated at every milestone._
 | 0.3 | Electron + React + TS shell (supervisor, IPC, health) | ✅ 31 TS tests + smoke e2e |
 | 0.4 | 3D viewport (Three.js: orbit, lights, grid, selection, STL) | ✅ 46 TS tests |
 | 0.5 | AI chat panel (→ AIProvider, offline queue) | ✅ 36 renderer tests |
-| 0.6 | Project manager (CloudService: Local source-of-truth + Supabase) | 🟡 in progress |
-| 0.7 | Blender integration (detect/launch/exec, STL/STEP/OBJ/3MF/GLB IO) | ⬜ |
+| 0.6 | Project manager (CloudService: Local source-of-truth + Supabase) | ✅ 86 TS tests total |
+| 0.7 | Blender integration (detect/launch/exec, STL/STEP/OBJ/3MF/GLB IO) | 🟡 in progress |
 | 0.8 | Flashforge workspace (profiles, materials, build volume, FlashPrint export) | ⬜ |
 
 ## Key decisions in force

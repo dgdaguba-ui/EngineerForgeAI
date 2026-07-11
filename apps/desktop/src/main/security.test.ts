@@ -33,4 +33,17 @@ describe("PathAllowlist", () => {
     list.approve(path.join("C:", "data", "part.stl"));
     expect(list.isApproved(path.join("C:", "data", "other.stl"))).toBe(false);
   });
+
+  it("approveDir approves everything under the tree, not outside it", () => {
+    const list = new PathAllowlist();
+    const proj = path.join("C:", "work", "Bracket.efproj");
+    list.approveDir(proj);
+    expect(list.isApproved(path.join(proj, "project.json"))).toBe(true);
+    expect(list.isApproved(path.join(proj, "assets", "part.stl"))).toBe(true);
+    expect(list.isApproved(path.join("C:", "work", "other.txt"))).toBe(false);
+    // traversal out of the approved dir must not pass
+    expect(list.isApproved(path.join(proj, "..", "secret.txt"))).toBe(false);
+    // sibling with the approved dir as a name prefix must not pass
+    expect(list.isApproved(path.join("C:", "work", "Bracket.efproj-evil", "x"))).toBe(false);
+  });
 });

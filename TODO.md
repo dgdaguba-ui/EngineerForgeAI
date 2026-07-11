@@ -37,10 +37,12 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Offline request queue: retryable failures queue with exponential backoff (3s→30s), auto-flush on engine reconnect, manual "Retry queued", correct reply ordering for queued backlogs
 - [x] 7 store tests (36 renderer total); request shape verified against the live engine; commit
 
-### M0.6 — Project manager
-- [ ] `CloudService` port + `LocalStorageProvider` (source of truth) + `SupabaseProvider`
-- [ ] `.efproj` create/open/save; recent projects list UI
-- [ ] Commit
+### M0.6 — Project manager ✅
+- [x] `CloudService` port + `LocalOnlyCloud` (always works) + `SupabaseCloud` (auth + project backup; enabled by env, lazy client, network-failure-safe)
+- [x] `.efproj` bundle format (versioned schema, atomic writes, asset import with sanitized dedup names); recents (dedupe, prune-deleted, corrupt-safe)
+- [x] Project panel UI (new/open/recent/save/close, dirty indicator); opening a project reloads its parts into the viewport; STL import copies into project assets and records a part
+- [x] Directory-scoped path allowlist for opened projects (traversal + prefix-sibling tested)
+- [x] 24 new tests (contracts 11 / desktop 36 / renderer 39 total); smoke e2e re-verified; commit
 
 ### M0.7 — Blender integration
 - [ ] Detect local Blender (5.0) + configurable path

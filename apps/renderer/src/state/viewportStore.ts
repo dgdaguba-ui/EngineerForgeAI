@@ -10,6 +10,8 @@ export interface SceneObject {
   id: string;
   name: string;
   sourcePath: string | null;
+  /** Linked project part id (when the object belongs to an open project). */
+  partId: string | null;
   geometry: BufferGeometry;
   color: string;
   visible: boolean;
@@ -30,7 +32,12 @@ interface ViewportState {
   selectedId: string | null;
   /** Increments when contents change — consumed by the camera fit effect. */
   contentVersion: number;
-  addMesh: (input: { name: string; sourcePath: string | null; geometry: BufferGeometry }) => string;
+  addMesh: (input: {
+    name: string;
+    sourcePath: string | null;
+    geometry: BufferGeometry;
+    partId?: string | null;
+  }) => string;
   select: (id: string | null) => void;
   toggleVisible: (id: string) => void;
   removeObject: (id: string) => void;
@@ -42,11 +49,11 @@ export const useViewportStore = create<ViewportState>((set, get) => ({
   selectedId: null,
   contentVersion: 0,
 
-  addMesh: ({ name, sourcePath, geometry }) => {
+  addMesh: ({ name, sourcePath, geometry, partId = null }) => {
     const id = newId();
     const color = PALETTE[get().objects.length % PALETTE.length] ?? "#8b9dc3";
     set((s) => ({
-      objects: [...s.objects, { id, name, sourcePath, geometry, color, visible: true }],
+      objects: [...s.objects, { id, name, sourcePath, partId, geometry, color, visible: true }],
       selectedId: id,
       contentVersion: s.contentVersion + 1,
     }));

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { EngineCard } from "./components/EngineCard";
 import { InspectorPanel } from "./components/InspectorPanel";
+import { ProjectPanel } from "./components/ProjectPanel";
 import { ScenePanel } from "./components/ScenePanel";
 import { StatusBar } from "./components/StatusBar";
 import { ChatPanel } from "./features/chat/ChatPanel";
@@ -38,6 +39,7 @@ export default function App() {
 
       <main className="flex min-h-0 flex-1">
         <aside className="flex w-64 shrink-0 flex-col border-r border-surface-border bg-surface-panel">
+          <ProjectPanel />
           <div className="min-h-0 flex-1">
             <ScenePanel />
           </div>

@@ -1,39 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { makeBinaryStl, UNIT_TRIANGLE as TRIANGLE } from "../../test/fixtures";
 import { base64ToArrayBuffer, meshStats, parseStlToGeometry } from "./stl";
-
-type Vec3 = [number, number, number];
-type Triangle = [Vec3, Vec3, Vec3];
-
-/** Build a minimal binary STL (80-byte header + count + 50 bytes/triangle). */
-export function makeBinaryStl(triangles: Triangle[]): ArrayBuffer {
-  const buffer = new ArrayBuffer(84 + triangles.length * 50);
-  const view = new DataView(buffer);
-  view.setUint32(80, triangles.length, true);
-  let offset = 84;
-  for (const tri of triangles) {
-    // normal (unused by the parser's bbox logic)
-    view.setFloat32(offset, 0, true);
-    view.setFloat32(offset + 4, 0, true);
-    view.setFloat32(offset + 8, 1, true);
-    offset += 12;
-    for (const v of tri) {
-      view.setFloat32(offset, v[0], true);
-      view.setFloat32(offset + 4, v[1], true);
-      view.setFloat32(offset + 8, v[2], true);
-      offset += 12;
-    }
-    view.setUint16(offset, 0, true);
-    offset += 2;
-  }
-  return buffer;
-}
-
-const TRIANGLE: Triangle = [
-  [0, 0, 0],
-  [10, 0, 0],
-  [0, 20, 0],
-];
 
 describe("parseStlToGeometry (binary)", () => {
   it("parses vertices and applies the Z-up → Y-up rotation", () => {
