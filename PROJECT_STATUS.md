@@ -26,8 +26,8 @@ _Living document. Updated at every milestone._
 | 0.4 | 3D viewport (Three.js: orbit, lights, grid, selection, STL) | ✅ 46 TS tests |
 | 0.5 | AI chat panel (→ AIProvider, offline queue) | ✅ 36 renderer tests |
 | 0.6 | Project manager (CloudService: Local source-of-truth + Supabase) | ✅ 86 TS tests total |
-| 0.7 | Blender integration (detect/launch/exec, STL/STEP/OBJ/3MF/GLB IO) | 🟡 in progress |
-| 0.8 | Flashforge workspace (profiles, materials, build volume, FlashPrint export) | ⬜ |
+| 0.7 | Blender integration (detect/launch/exec, mesh formats + 3MF; STEP→Phase 1) | ✅ 56 engine tests, real-Blender e2e |
+| 0.8 | Flashforge workspace (profiles, materials, build volume, FlashPrint export) | 🟡 in progress |
 
 ## Key decisions in force
 - **Offline-first.** Local `.efproj` files are the source of truth; Claude + Supabase are wired but never required. See [ADR-0004](docs/adr/0004-local-first-with-cloud-sync.md).

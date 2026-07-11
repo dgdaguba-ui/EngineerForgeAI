@@ -64,3 +64,30 @@ export interface EngineErrorEnvelope {
     retryable: boolean;
   };
 }
+
+// ── Blender & conversion (engine /api/v1/blender, /api/v1/convert) ───────────
+
+export interface BlenderInfo {
+  executable: string;
+  version: string;
+}
+
+export interface BlenderStatus {
+  detected: boolean;
+  info: BlenderInfo | null;
+  detail: string;
+}
+
+export interface BlenderLaunchResult {
+  pid: number;
+  executable: string;
+  file: string | null;
+}
+
+export interface ConvertResult {
+  srcFormat: string;
+  dstFormat: string;
+  dstPath: string;
+  engine: "native" | "blender" | "blender+native";
+  triangles: number | null;
+}

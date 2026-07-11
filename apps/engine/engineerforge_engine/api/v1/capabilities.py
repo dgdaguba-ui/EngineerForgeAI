@@ -6,20 +6,28 @@ negotiates against this instead of hardcoding assumptions.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
+from ...application.blender_service import BlenderService
 from ...application.chat_service import ChatService
+from ...application.convert_service import NATIVE_FORMATS, SUPPORTED_FORMATS
 from ...config import Settings
-from ..deps import get_chat_service, get_settings_dep
+from ..deps import get_chat_service, get_container, get_settings_dep
 
 router = APIRouter(tags=["meta"])
+
+
+def _blender_service(request: Request) -> BlenderService:
+    return get_container(request).blender_service
 
 
 @router.get("/capabilities")
 async def capabilities(
     settings: Settings = Depends(get_settings_dep),
     chat: ChatService = Depends(get_chat_service),
+    blender: BlenderService = Depends(_blender_service),
 ) -> dict[str, object]:
+    blender_status = blender.status()
     return {
         "version": settings.version,
         "ai": {
@@ -28,13 +36,20 @@ async def capabilities(
             "planned_providers": ["openai", "ollama"],
             "model": settings.ai_model,
         },
+        "formats": {
+            "native": sorted(NATIVE_FORMATS),
+            "with_blender": sorted(SUPPORTED_FORMATS),
+            "cad_pending_phase1": ["step", "iges", "dxf", "svg"],
+        },
         "features": {
             "ai_chat": True,
+            "mesh_convert": True,
+            "blender_bridge": blender_status.detected,
             # roadmap features — surfaced as they are implemented
             "cad_kernel": False,
             "mesh_repair": False,
             "fea": False,
             "slicer_export": False,
-            "blender_bridge": False,
         },
+        "blender": blender_status.model_dump(),
     }

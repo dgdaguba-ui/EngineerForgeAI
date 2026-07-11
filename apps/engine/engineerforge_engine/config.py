@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     ai_max_tokens: int = Field(default=8192, validation_alias="EFC_AI_MAX_TOKENS")
     ai_thinking: str = Field(default="adaptive", validation_alias="EFC_AI_THINKING")  # adaptive|off
 
+    # --- integrations ---
+    blender_path: str | None = Field(default=None, validation_alias="EFC_BLENDER_PATH")
+
     # --- provider credentials (standard env var names, no EFC_ prefix) ---
     anthropic_api_key: SecretStr | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
     openai_api_key: SecretStr | None = Field(default=None, validation_alias="OPENAI_API_KEY")

@@ -44,11 +44,13 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Directory-scoped path allowlist for opened projects (traversal + prefix-sibling tested)
 - [x] 24 new tests (contracts 11 / desktop 36 / renderer 39 total); smoke e2e re-verified; commit
 
-### M0.7 — Blender integration
-- [ ] Detect local Blender (5.0) + configurable path
-- [ ] Launch Blender; execute Blender Python scripts (headless)
-- [ ] Import/export STL, OBJ, GLB (trimesh) + STEP, 3MF (Blender/OCP)
-- [ ] Commit
+### M0.7 — Blender integration ✅
+- [x] Detect local Blender (env override → PATH → versioned Program Files scan; version probe cached) — finds Blender 5.0 on this machine
+- [x] Launch Blender (detached GUI, optional file); execute headless Python scripts with `EFC_RESULT` JSON round-trip, timeouts, output capture
+- [x] Conversion service: STL/OBJ/PLY/GLB/GLTF/3MF natively (trimesh + own spec-compliant 3MF reader/writer — works without Blender); FBX via Blender with version-fallback operators; FBX⇄3MF via STL hop; STEP/IGES → honest 501 CAPABILITY_NOT_AVAILABLE (Phase 1 CAD kernel)
+- [x] API: /blender/status,/launch,/run-script + /convert; capabilities reports formats + blender detection
+- [x] Renderer: Inspector "Open in Blender" + "Export As…" (3MF/STL/OBJ/PLY/GLB/FBX)
+- [x] 20 engine tests incl. 3 real-Blender integration tests (script exec + real STL→FBX); engine 56 / renderer 40; commit
 
 ### M0.8 — Flashforge workspace
 - [ ] Printer profiles (build volume, nozzles, materials)

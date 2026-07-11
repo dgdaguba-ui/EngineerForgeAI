@@ -66,6 +66,40 @@ describe("EngineClient", () => {
     expect((err as EngineApiError).retryable).toBe(true);
   });
 
+  it("fetches blender status and posts conversions", async () => {
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({ detected: true, info: { executable: "b.exe", version: "5.0" }, detail: "" }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          srcFormat: "stl",
+          dstFormat: "3mf",
+          dstPath: "C:/out/p.3mf",
+          engine: "native",
+          triangles: 12,
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ pid: 77, executable: "b.exe", file: "C:/p.stl" }));
+    const client = new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, fetchFn);
+
+    const status = await client.blenderStatus();
+    expect(status.detected).toBe(true);
+
+    const converted = await client.convertMesh("C:/p.stl", "C:/out/p.3mf");
+    expect(converted.engine).toBe("native");
+    const [convertUrl, convertInit] = fetchFn.mock.calls[1]!;
+    expect(convertUrl).toBe("http://127.0.0.1:9000/api/v1/convert");
+    expect(JSON.parse(convertInit!.body as string)).toEqual({
+      srcPath: "C:/p.stl",
+      dstPath: "C:/out/p.3mf",
+    });
+
+    const launched = await client.blenderLaunch("C:/p.stl");
+    expect(launched.pid).toBe(77);
+  });
+
   it("posts chat messages", async () => {
     const fetchFn = vi.fn().mockResolvedValue(
       jsonResponse({

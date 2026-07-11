@@ -3,8 +3,11 @@
  * EngineApiError using the engine's single error envelope.
  */
 import type {
+  BlenderLaunchResult,
+  BlenderStatus,
   ChatRequestBody,
   ChatResponseBody,
+  ConvertResult,
   EngineCapabilities,
   EngineErrorEnvelope,
   EngineHealth,
@@ -100,6 +103,24 @@ export class EngineClient {
     return await this.request<ChatResponseBody>("/api/v1/ai/chat", {
       method: "POST",
       body: JSON.stringify(body),
+    });
+  }
+
+  async blenderStatus(): Promise<BlenderStatus> {
+    return await this.request<BlenderStatus>("/api/v1/blender/status");
+  }
+
+  async blenderLaunch(file?: string): Promise<BlenderLaunchResult> {
+    return await this.request<BlenderLaunchResult>("/api/v1/blender/launch", {
+      method: "POST",
+      body: JSON.stringify({ file: file ?? null }),
+    });
+  }
+
+  async convertMesh(srcPath: string, dstPath: string): Promise<ConvertResult> {
+    return await this.request<ConvertResult>("/api/v1/convert", {
+      method: "POST",
+      body: JSON.stringify({ srcPath, dstPath }),
     });
   }
 }

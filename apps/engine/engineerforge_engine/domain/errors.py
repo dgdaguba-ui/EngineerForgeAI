@@ -37,3 +37,18 @@ class AIProviderError(EngineError):
 class ProviderUnavailableError(EngineError):
     code = "AI_PROVIDER_UNAVAILABLE"
     http_status = 503
+
+
+class CapabilityNotAvailableError(EngineError):
+    """A requested feature exists on the roadmap but is not implemented yet.
+
+    Used instead of fake/placeholder behavior — the API tells the truth.
+    """
+
+    code = "CAPABILITY_NOT_AVAILABLE"
+    http_status = 501
+
+
+class FileOperationError(EngineError):
+    code = "FILE_OPERATION_ERROR"
+    http_status = 400
