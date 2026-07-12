@@ -10,6 +10,7 @@ from __future__ import annotations
 from ..adapters.ai.registry import build_ai_provider
 from ..adapters.blender.local import LocalBlenderAdapter
 from ..adapters.cad.cadquery_kernel import CadQueryKernel
+from ..application.ai_tools import AiToolbox
 from ..application.blender_service import BlenderService
 from ..application.chat_service import ChatService
 from ..application.convert_service import ConvertService
@@ -24,8 +25,6 @@ from ..templates import default_registry
 class Container:
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings: Settings = settings or get_settings()
-        self.ai_provider: AIProvider = build_ai_provider(self.settings)
-        self.chat_service: ChatService = ChatService(self.ai_provider)
         self.blender: BlenderPort = LocalBlenderAdapter(
             path_override=self.settings.blender_path
         )
@@ -35,3 +34,7 @@ class Container:
         self.cad_kernel: CadKernelPort = CadQueryKernel()
         self.templates = default_registry()
         self.parts_service: PartsService = PartsService(self.cad_kernel, self.templates)
+        # AI: provider + the engine capabilities it may orchestrate (ADR-0003)
+        self.ai_provider: AIProvider = build_ai_provider(self.settings)
+        self.ai_toolbox: AiToolbox = AiToolbox(self.parts_service)
+        self.chat_service: ChatService = ChatService(self.ai_provider, self.ai_toolbox)

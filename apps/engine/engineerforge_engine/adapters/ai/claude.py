@@ -13,9 +13,16 @@ unavailable and the registry falls back to the StubProvider.
 
 from __future__ import annotations
 
-from ...domain.ai import ChatRequest, ChatResponse, ProviderHealth, Role, Usage
+from typing import TYPE_CHECKING, Any
+
+from ...domain.ai import ChatAction, ChatRequest, ChatResponse, ProviderHealth, Role, Usage
 from ...domain.errors import AIProviderError, InvalidRequestError, ProviderUnavailableError
 from ...ports.ai_provider import AIProvider
+
+if TYPE_CHECKING:
+    from ...application.ai_tools import AiToolbox
+
+MAX_TOOL_ITERATIONS = 6
 
 try:  # optional dependency / import-time resilience
     import anthropic
@@ -83,57 +90,100 @@ class ClaudeProvider(AIProvider):
         # UI can optionally surface reasoning instead of a silent pause.
         return {"type": "adaptive", "display": "summarized"}
 
-    async def chat(self, request: ChatRequest) -> ChatResponse:
+    async def chat(
+        self, request: ChatRequest, toolbox: AiToolbox | None = None
+    ) -> ChatResponse:
         client = self._get_client()
         system, messages = split_system_and_messages(request)
         if not messages:
             raise InvalidRequestError("request contains no user/assistant messages")
 
         model = request.model or self._model
-        kwargs: dict[str, object] = {
+        base_kwargs: dict[str, object] = {
             "model": model,
             "max_tokens": request.max_tokens or self._max_tokens,
-            "messages": messages,
         }
         if system:
-            kwargs["system"] = system
+            base_kwargs["system"] = system
         thinking = self._thinking_param()
         if thinking is not None:
-            kwargs["thinking"] = thinking
+            base_kwargs["thinking"] = thinking
+        if toolbox is not None:
+            base_kwargs["tools"] = toolbox.definitions()
 
-        try:
-            resp = await client.messages.create(**kwargs)  # type: ignore[attr-defined]
-        except Exception as exc:  # map SDK errors → engine errors
-            raise self._map_error(exc) from exc
-
+        conversation: list[dict[str, Any]] = list(messages)
+        actions: list[ChatAction] = []
         text_parts: list[str] = []
         thinking_parts: list[str] = []
-        for block in getattr(resp, "content", []) or []:
-            btype = getattr(block, "type", None)
-            if btype == "text":
-                text_parts.append(getattr(block, "text", ""))
-            elif btype == "thinking":
-                t = getattr(block, "thinking", "") or ""
-                if t:
-                    thinking_parts.append(t)
+        total_in = 0
+        total_out = 0
+        resp: Any = None
+
+        # Manual tool loop (ADR-0003): execute engine tools until Claude stops
+        # asking for them, or the iteration cap is hit.
+        for _ in range(MAX_TOOL_ITERATIONS):
+            try:
+                resp = await client.messages.create(  # type: ignore[attr-defined]
+                    **base_kwargs, messages=conversation
+                )
+            except Exception as exc:  # map SDK errors → engine errors
+                raise self._map_error(exc) from exc
+
+            usage_obj = getattr(resp, "usage", None)
+            total_in += getattr(usage_obj, "input_tokens", 0) or 0
+            total_out += getattr(usage_obj, "output_tokens", 0) or 0
+
+            tool_uses: list[Any] = []
+            for block in getattr(resp, "content", []) or []:
+                btype = getattr(block, "type", None)
+                if btype == "text":
+                    text_parts.append(getattr(block, "text", ""))
+                elif btype == "thinking":
+                    t = getattr(block, "thinking", "") or ""
+                    if t:
+                        thinking_parts.append(t)
+                elif btype == "tool_use":
+                    tool_uses.append(block)
+
+            if getattr(resp, "stop_reason", None) != "tool_use" or not tool_uses:
+                break
+            if toolbox is None:  # defensive: model requested tools we never offered
+                break
+
+            # echo the assistant turn, then answer every tool call in ONE user turn
+            conversation.append(
+                {"role": "assistant", "content": getattr(resp, "content", [])}
+            )
+            results: list[dict[str, Any]] = []
+            for tool_use in tool_uses:
+                execution = toolbox.execute(
+                    getattr(tool_use, "name", ""),
+                    dict(getattr(tool_use, "input", {}) or {}),
+                )
+                actions.append(execution.action)
+                results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": getattr(tool_use, "id", ""),
+                        "content": execution.model_output,
+                        "is_error": not execution.action.ok,
+                    }
+                )
+            conversation.append({"role": "user", "content": results})
 
         content = "".join(text_parts)
-        stop_reason = getattr(resp, "stop_reason", None)
+        stop_reason = getattr(resp, "stop_reason", None) if resp is not None else None
         if stop_reason == "refusal" and not content:
             content = "[Claude declined to respond to this request.]"
 
-        usage_obj = getattr(resp, "usage", None)
-        usage = Usage(
-            input_tokens=getattr(usage_obj, "input_tokens", 0) or 0,
-            output_tokens=getattr(usage_obj, "output_tokens", 0) or 0,
-        )
         return ChatResponse(
             content=content,
             provider=self.name,
-            model=getattr(resp, "model", model),
+            model=getattr(resp, "model", model) if resp is not None else model,
             stop_reason=stop_reason,
             thinking="\n".join(thinking_parts) or None,
-            usage=usage,
+            usage=Usage(input_tokens=total_in, output_tokens=total_out),
+            actions=actions,
         )
 
     def _map_error(self, exc: Exception) -> AIProviderError:

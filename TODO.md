@@ -77,10 +77,13 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Renderer: ParametricPanel (sliders/inputs, mass/warnings, undo/redo), debounced live rebuild with geometry swap, template creation, Inspector STEP export, `.efproj` persistence (parametric parts recompile on open)
 - [x] Verified: 40 new engine tests (127 total) + 12 new renderer tests (59 total); live e2e — rebuilds avg 162ms/max 250ms (<500ms target), STEP ISO-10303 verified, reopen identical; commit
 
-### M1.3 — AI design pipeline (next)
-- [ ] Engine AI tools: create_part_from_template / edit_part_parameters wired into /ai/chat tool-calling loop (Claude + deterministic stub path)
-- [ ] Intent → template planner; IR patch proposals surfaced as diffs in chat
-- [ ] Chat panel: apply-proposal flow creating/updating viewport parts
+### M1.3 — AI design pipeline ✅
+- [x] AiToolbox: engine capabilities as tools (list_part_templates, create_part_from_template, update_part_parameters) — all numbers from the kernel, never generated text (ADR-0003)
+- [x] Claude provider: manual tool-calling loop (assistant echo + tool_result turns, error results, usage summed, 6-iteration cap) — tested against a scripted fake client
+- [x] StubProvider: deterministic offline design flow ("Design a bracket 50x70, 4 mm thick, with 2 holes, in petg" → real compiled part) — the MVP story works with zero credentials
+- [x] ChatResponse.actions → renderer: created parts auto-load into viewport + project doc; updated parts refresh geometry; action chips in chat
+- [x] 10 engine + 1 renderer tests (137/60); live HTTP chat-design verified; commit
+- [ ] Later (Phase 2): IR patch proposals as reviewable diffs before apply; streaming tool progress over WS
 
 ### M1.4 — MVP polish
 - [ ] Print estimate for parametric parts (volume-based, no temp file) in Flashforge panel

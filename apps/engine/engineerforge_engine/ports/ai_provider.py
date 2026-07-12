@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from ..domain.ai import ChatRequest, ChatResponse, ProviderHealth
+
+if TYPE_CHECKING:
+    from ..application.ai_tools import AiToolbox
 
 
 class AIProvider(ABC):
@@ -19,8 +23,13 @@ class AIProvider(ABC):
     name: str = "unknown"
 
     @abstractmethod
-    async def chat(self, request: ChatRequest) -> ChatResponse:
-        """Produce a single assistant response for the given request."""
+    async def chat(self, request: ChatRequest, toolbox: AiToolbox | None = None) -> ChatResponse:
+        """Produce a single assistant response.
+
+        When a toolbox is provided, the provider may invoke engine tools
+        (part creation/editing); every invocation is reported in
+        ``ChatResponse.actions`` so the UI can react.
+        """
 
     @abstractmethod
     async def health(self) -> ProviderHealth:

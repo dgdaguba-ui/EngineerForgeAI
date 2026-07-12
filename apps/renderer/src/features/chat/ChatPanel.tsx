@@ -14,6 +14,28 @@ function MessageBubble({ item }: { item: ChatItem }) {
         }`}
       >
         <p className="whitespace-pre-wrap break-words">{item.content}</p>
+        {item.actions && item.actions.length > 0 && (
+          <div className="mt-1.5 flex flex-wrap gap-1" data-testid="chat-actions">
+            {item.actions.map((action, i) => (
+              <span
+                key={`${action.tool}-${i}`}
+                title={action.summary}
+                className={`rounded px-1.5 py-0.5 text-[10px] ${
+                  action.ok
+                    ? "bg-emerald-500/15 text-emerald-400"
+                    : "bg-red-500/15 text-red-400"
+                }`}
+              >
+                {action.ok ? "✓" : "✗"}{" "}
+                {action.tool === "create_part_from_template"
+                  ? "Part created"
+                  : action.tool === "update_part_parameters"
+                    ? "Part updated"
+                    : action.tool}
+              </span>
+            ))}
+          </div>
+        )}
         {item.thinking && (
           <details className="mt-1 text-xs text-zinc-500">
             <summary className="cursor-pointer select-none">Reasoning</summary>

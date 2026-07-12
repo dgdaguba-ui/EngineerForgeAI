@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EngineApiError, EngineClient } from "../../engine/client";
+import { EngineClient } from "../../engine/client";
 import type { ChatRequestBody } from "../../engine/types";
 import { useEngineStore } from "../../state/engineStore";
+import { useViewportStore } from "../../state/viewportStore";
+import { makePartDetail } from "../../test/fixtures";
+import { useParametricStore } from "../parametric/parametricStore";
 import { CHAT_SYSTEM_PROMPT, useChatStore } from "./chatStore";
 
 function okResponse(content: string): Response {
@@ -99,6 +102,58 @@ describe("chatStore.send", () => {
     const item = useChatStore.getState().items[0]!;
     expect(item.status).toBe("error");
     expect(item.error).toContain("bad");
+  });
+});
+
+describe("AI design actions", () => {
+  it("a create action loads the new part into the viewport", async () => {
+    useViewportStore.getState().clear();
+    useParametricStore.getState().clear();
+    const detail = makePartDetail({ partId: "eng-ai-1" });
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.endsWith("/api/v1/ai/chat")) {
+        return new Response(
+          JSON.stringify({
+            content: "Created your bracket.",
+            provider: "stub",
+            model: "stub",
+            stop_reason: "end_turn",
+            thinking: null,
+            usage: { input_tokens: 1, output_tokens: 1 },
+            actions: [
+              {
+                tool: "create_part_from_template",
+                ok: true,
+                summary: "Created L-Bracket",
+                partId: "eng-ai-1",
+              },
+            ],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      if (url.endsWith("/api/v1/parts/eng-ai-1")) {
+        return new Response(JSON.stringify(detail), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      throw new Error(`unexpected url ${url}`);
+    });
+    useEngineStore.setState({
+      client: new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, fetchMock),
+    });
+
+    await useChatStore.getState().send("Design a bracket 50x70");
+
+    const assistant = useChatStore.getState().items.find((i) => i.role === "assistant");
+    expect(assistant?.actions).toHaveLength(1);
+    expect(assistant?.actions?.[0]?.ok).toBe(true);
+
+    const objects = useViewportStore.getState().objects;
+    expect(objects).toHaveLength(1);
+    expect(objects[0]!.parametricPartId).toBe("eng-ai-1");
+    expect(useParametricStore.getState().active?.partId).toBe("eng-ai-1");
   });
 });
 

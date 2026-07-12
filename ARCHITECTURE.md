@@ -46,6 +46,7 @@ Selection: `EFC_AI_PROVIDER` / `EFC_CLOUD_PROVIDER` config → DI container reso
 - ✅ **Renderer** (`apps/renderer`, Vite/React): dark workspace shell; r3f viewport (orbit/grid/lights/selection/STL, printer build volume); AI chat with offline delivery queue; project panel; Flashforge panel (slots, compatibility, estimates, 3MF export); Inspector with Blender/export actions. 47 tests.
 - ✅ **Contracts** (`packages/ipc-contracts`): channel map + `.efproj` schema shared by main/preload/renderer. 11 tests.
 - ✅ **Parametric core (M1.2):** Feature Program IR v1 + safe expression evaluator (`domain/`), CadQueryKernel behind `CadKernelPort` (exact B-rep props, RawMesh transport), template registry (L-Bracket first) with engineering checks, PartsService session store, parts/templates API; renderer ParametricPanel (live debounced rebuild, undo/redo), STEP export, `.efproj` parametric persistence. Golden-tested vs closed-form volumes; live rebuild ~160 ms.
-- ⬜ **Phase 1 remaining:** M1.3 AI design pipeline (tool-calling → templates → IR patches as diffs), M1.4 MVP polish (see `TODO.md`).
+- ✅ **AI design pipeline (M1.3):** `AiToolbox` exposes parts capabilities as provider tools; Claude runs a manual tool loop, the stub a deterministic template flow; `ChatResponse.actions` drive viewport/project sync. The AI never invents numbers — geometry facts come from tool results (ADR-0003 realized).
+- ⬜ **Phase 1 remaining:** M1.4 MVP polish (parametric print estimates, bulk 3MF inclusion, acceptance checklist — see `TODO.md`).
 
 _When a milestone lands, update this file's "current state" and the relevant section._

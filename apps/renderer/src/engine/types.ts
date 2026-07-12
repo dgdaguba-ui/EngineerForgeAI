@@ -22,6 +22,13 @@ export interface ChatUsage {
   output_tokens: number;
 }
 
+export interface ChatToolAction {
+  tool: string;
+  ok: boolean;
+  summary: string;
+  partId: string | null;
+}
+
 export interface ChatResponseBody {
   content: string;
   provider: string;
@@ -29,6 +36,7 @@ export interface ChatResponseBody {
   stop_reason: string | null;
   thinking: string | null;
   usage: ChatUsage;
+  actions: ChatToolAction[];
 }
 
 export interface ProviderHealth {

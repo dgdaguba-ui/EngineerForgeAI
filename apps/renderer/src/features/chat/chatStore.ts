@@ -10,16 +10,19 @@
 import { create } from "zustand";
 
 import { EngineApiError } from "../../engine/client";
-import type { ChatMessage } from "../../engine/types";
+import type { ChatMessage, ChatToolAction } from "../../engine/types";
 import { useEngineStore } from "../../state/engineStore";
+import { useParametricStore } from "../parametric/parametricStore";
 
 export const CHAT_SYSTEM_PROMPT =
   "You are the EngineerForge AI copilot: a mechanical-engineering and 3D-printing " +
   "assistant embedded in a desktop CAD workspace. Be precise and practical; use metric " +
   "units (mm, g, MPa) unless asked otherwise. When discussing strength, printability, " +
-  "or materials, state your assumptions. Parametric CAD generation is a later milestone " +
-  "of this app — if asked to generate geometry, explain what will be possible and give " +
-  "engineering guidance instead of pretending to model.";
+  "or materials, state your assumptions. You can CREATE and EDIT parametric parts with " +
+  "your tools: use list_part_templates to discover parameters, " +
+  "create_part_from_template for design requests, and update_part_parameters to modify " +
+  "existing parts. Every dimension and mass you state must come from tool results — " +
+  "never invent numbers. Created parts stay fully editable in the Parameters panel.";
 
 export type ChatItemStatus = "sending" | "sent" | "queued" | "error";
 
@@ -32,6 +35,7 @@ export interface ChatItem {
   model?: string;
   thinking?: string | null;
   error?: string;
+  actions?: ChatToolAction[];
 }
 
 const INITIAL_RETRY_MS = 3000;
@@ -51,6 +55,28 @@ interface ChatState {
   send: (text: string) => Promise<void>;
   flushQueued: () => Promise<void>;
   clear: () => void;
+}
+
+/**
+ * React to engine tool invocations from a chat turn: created parts load into
+ * the viewport (and the open project); edited parts refresh their geometry.
+ */
+async function applyChatActions(actions: ChatToolAction[]): Promise<void> {
+  const client = useEngineStore.getState().client;
+  const parametric = useParametricStore.getState();
+  for (const action of actions) {
+    if (!action.ok || !action.partId) continue;
+    try {
+      if (action.tool === "create_part_from_template") {
+        const detail = await client.getPart(action.partId);
+        parametric.registerCompiledPart(detail);
+      } else if (action.tool === "update_part_parameters") {
+        await parametric.refreshPart(action.partId);
+      }
+    } catch {
+      // the part summary is already in the chat text; scene sync is best-effort
+    }
+  }
 }
 
 function historyFor(items: ChatItem[], upToId: string): ChatMessage[] {
@@ -106,11 +132,13 @@ export const useChatStore = create<ChatState>((set, get) => {
           provider: res.provider,
           model: res.model,
           thinking: res.thinking,
+          actions: res.actions,
         };
         const items = [...s.items];
         items.splice(idx + 1, 0, assistant);
         return { items, retryDelayMs: INITIAL_RETRY_MS };
       });
+      await applyChatActions(res.actions ?? []);
       return true;
     } catch (e) {
       if (e instanceof EngineApiError && e.retryable) {

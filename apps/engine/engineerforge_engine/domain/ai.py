@@ -39,6 +39,22 @@ class Usage(BaseModel):
     output_tokens: int = 0
 
 
+class ChatAction(BaseModel):
+    """An engine capability the AI invoked during this chat turn.
+
+    The UI uses these to react (e.g. load a created part into the viewport).
+    Numbers/geometry always originate from tools, never from free text
+    (ADR-0003).
+    """
+
+    tool: str
+    ok: bool
+    summary: str
+    part_id: str | None = Field(default=None, alias="partId")
+
+    model_config = {"populate_by_name": True}
+
+
 class ChatResponse(BaseModel):
     content: str
     provider: str
@@ -46,6 +62,7 @@ class ChatResponse(BaseModel):
     stop_reason: str | None = None
     thinking: str | None = None
     usage: Usage = Field(default_factory=Usage)
+    actions: list[ChatAction] = Field(default_factory=list)
 
 
 class ProviderHealth(BaseModel):

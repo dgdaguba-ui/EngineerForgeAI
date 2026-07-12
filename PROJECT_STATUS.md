@@ -3,18 +3,18 @@
 _Living document. Updated at every milestone._
 
 **Last updated:** 2026-07-12
-**Current phase:** 🟢 Phase 1 in progress — M1.2 (parametric CAD core) complete; next M1.3 (AI design pipeline)
+**Current phase:** 🟢 Phase 1 — M1.2 (parametric CAD) + M1.3 (AI design pipeline) complete; next M1.4 (MVP polish)
 **Build health:** 🟢 all gates green
 
 ## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. real-Blender + CAD golden tests) | 127 | ✅ |
-| Renderer (vitest) | 59 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden tests) | 137 | ✅ |
+| Renderer (vitest) | 60 | ✅ |
 | Desktop (vitest) | 36 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **234** | ✅ |
+| **Total** | **245** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
@@ -40,7 +40,16 @@ _Living document. Updated at every milestone._
 | 0.6 | Local-first `.efproj` projects + CloudService (Local/Supabase) | `0ee5323` |
 | 0.7 | Blender bridge + mesh conversion + native 3MF | `ad4f4da` |
 | 0.8 | Flashforge workspace (printers/materials/compat/estimates/3MF export) | `b9556db` |
-| 1.2 | **Feature Program IR + CadQuery kernel + live parametric rebuild** | HEAD |
+| 1.2 | **Feature Program IR + CadQuery kernel + live parametric rebuild** | `5ec1a6a` |
+| 1.3 | **AI design pipeline: chat creates/edits real parametric parts** | HEAD |
+
+## The MVP story now works — offline
+> *"Design a bracket 50x70, 4 mm thick, with 2 holes, in petg"* typed into the chat
+> creates a real CadQuery-compiled part (analytic-exact volume, PETG mass) that
+> appears in the viewport, stays live-editable in the Parameters panel (~160 ms
+> rebuilds, undo/redo), exports to STEP/3MF/STL, and persists in the project.
+> With `ANTHROPIC_API_KEY` set, Claude drives the same tools with real language
+> understanding; without it, the deterministic stub handles template commands.
 
 ## What M1.2 adds (the product's core)
 - Click **"+ New L-Bracket"** → an editable parametric part compiles through CadQuery/OpenCascade and appears in the viewport.

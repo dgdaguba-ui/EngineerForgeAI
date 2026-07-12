@@ -36,6 +36,11 @@ interface ParametricState {
   pendingTimer: ReturnType<typeof setTimeout> | null;
 
   createFromTemplate: (templateId: string) => Promise<void>;
+  /** Register a freshly compiled part: project record + viewport mesh + active
+   * state. Used by template creation and by AI chat actions. */
+  registerCompiledPart: (detail: PartDetail) => string;
+  /** Re-fetch a part from the engine and refresh its scene object (AI edits). */
+  refreshPart: (partId: string) => Promise<void>;
   /** Adopt an already-compiled part (e.g. loaded from a project). */
   adopt: (detail: PartDetail, objectId: string, projectPartId: string | null) => void;
   setParam: (paramId: string, value: number) => void;
@@ -131,54 +136,82 @@ export const useParametricStore = create<ParametricState>((set, get) => {
       set({ rebuilding: true, error: null });
       try {
         const detail = await client.createPartFromTemplate(templateId);
-        const geometry = rawMeshToGeometry(detail.compiled.mesh);
-
-        // record in the open project (if any) so save/reopen restores it
-        let projectPartId: string | null = null;
-        const project = useProjectStore.getState();
-        if (project.doc) {
-          projectPartId = newProjectPartId();
-          const partId = projectPartId;
-          project.updateDoc((doc) => ({
-            ...doc,
-            parts: [
-              ...doc.parts,
-              {
-                id: partId,
-                name: detail.name,
-                kind: "parametric" as const,
-                program: detail.program,
-                colorHex: null,
-              },
-            ],
-          }));
-        }
-
-        const objectId = useViewportStore.getState().addMesh({
-          name: detail.name,
-          sourcePath: null,
-          geometry,
-          partId: projectPartId,
-          parametricPartId: detail.partId,
-        });
-        set({
-          active: {
-            partId: detail.partId,
-            objectId,
-            projectPartId,
-            templateId: detail.templateId,
-            name: detail.name,
-            parameters: detail.program.parameters,
-            massProps: detail.compiled.massProps,
-            warnings: detail.compiled.warnings,
-          },
-          undoStack: [],
-          redoStack: [],
-        });
+        get().registerCompiledPart(detail);
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       } finally {
         set({ rebuilding: false });
+      }
+    },
+
+    registerCompiledPart: (detail: PartDetail) => {
+      const geometry = rawMeshToGeometry(detail.compiled.mesh);
+
+      // record in the open project (if any) so save/reopen restores it
+      let projectPartId: string | null = null;
+      const project = useProjectStore.getState();
+      if (project.doc) {
+        projectPartId = newProjectPartId();
+        const partId = projectPartId;
+        project.updateDoc((doc) => ({
+          ...doc,
+          parts: [
+            ...doc.parts,
+            {
+              id: partId,
+              name: detail.name,
+              kind: "parametric" as const,
+              program: detail.program,
+              colorHex: null,
+            },
+          ],
+        }));
+      }
+
+      const objectId = useViewportStore.getState().addMesh({
+        name: detail.name,
+        sourcePath: null,
+        geometry,
+        partId: projectPartId,
+        parametricPartId: detail.partId,
+      });
+      set({
+        active: {
+          partId: detail.partId,
+          objectId,
+          projectPartId,
+          templateId: detail.templateId,
+          name: detail.name,
+          parameters: detail.program.parameters,
+          massProps: detail.compiled.massProps,
+          warnings: detail.compiled.warnings,
+        },
+        undoStack: [],
+        redoStack: [],
+        error: null,
+      });
+      return objectId;
+    },
+
+    refreshPart: async (partId: string) => {
+      const client = useEngineStore.getState().client;
+      const object = useViewportStore
+        .getState()
+        .objects.find((o) => o.parametricPartId === partId);
+      if (!object) return;
+      try {
+        const detail = await client.getPart(partId);
+        const geometry = rawMeshToGeometry(detail.compiled.mesh);
+        useViewportStore.getState().replaceGeometry(object.id, geometry);
+        const { active } = get();
+        if (active?.partId === partId) {
+          applyDetail(detail, active.objectId, active.projectPartId);
+          persistProgram(detail, active.projectPartId);
+        } else if (object.partId) {
+          persistProgram(detail, object.partId);
+        }
+      } catch (e) {
+        set({ error: e instanceof Error ? e.message : String(e) });
       }
     },
 
