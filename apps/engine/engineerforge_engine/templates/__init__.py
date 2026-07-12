@@ -51,7 +51,9 @@ class TemplateRegistry:
 
 def default_registry() -> TemplateRegistry:
     from .bracket_l import BRACKET_L_TEMPLATE
+    from .mounting_plate import MOUNTING_PLATE_TEMPLATE
 
     registry = TemplateRegistry()
     registry.register(BRACKET_L_TEMPLATE)
+    registry.register(MOUNTING_PLATE_TEMPLATE)
     return registry

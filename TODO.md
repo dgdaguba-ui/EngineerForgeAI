@@ -93,9 +93,21 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] MVP acceptance checklist run and recorded in docs/06-mvp-plan.md (deviations documented: diff-approval → Phase 2, time estimate → Phase 4 slicer profiles, FlashPrint manual gate)
 
 ## Phase 2 — next up (docs/05-roadmap.md)
-- [ ] Template library expansion (gear, enclosure, adapter, clamp, pipe fitting…) — one tested template per PR
+
+### M2.1 — Template library expansion (in progress)
+- [x] **Mounting/adapter plate** template: rectangular plate, symmetric 4-corner hole pattern (two linear-row holes), center bore, optional rounded corners — built entirely from the existing IR (no kernel changes needed). 16 new golden/API tests incl. fillet-delta formula and hole-symmetry checks (160 engine tests total).
+- [x] Proved the template registry is a true plugin seam: `AiToolbox.list_part_templates` and the Claude/stub design flows discover new templates with zero AI-layer code change.
+- [ ] Gear (spur) — needs involute-curve sketch support (new profile kind) or an approximation strategy; scope it before starting
+- [ ] Enclosure/project-box — needs a `shell` IR feature (hollow via wall offset) or boolean-subtract between two solids; IR extension required, not just a new template
+- [ ] Standoff/bushing, pipe fitting, clamp — evaluate case by case against current IR feature set (sketch/extrude/hole/fillet only)
+
+### M2.2 — AI & UX depth
 - [ ] Reviewable IR diffs for AI edits before apply; WS streaming for chat + rebuild progress
-- [ ] Data plane: Prisma migrations + Supabase sync (needs Docker/Postgres — user action)
+
+### M2.3 — Data plane (blocked on Docker — user action)
+- [ ] Prisma migrations + Supabase sync
+
+### M2.4 — UI depth
 - [ ] Property inspector depth + feature timeline panel
 
 ## Deferred / needs user action

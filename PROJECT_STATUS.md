@@ -3,18 +3,18 @@
 _Living document. Updated at every milestone._
 
 **Last updated:** 2026-07-12
-**Current phase:** ✅ **Phase 1 MVP COMPLETE** (M1.2 parametric CAD, M1.3 AI design, M1.4 polish) — next: Phase 2 (template library, IR diffs, data plane)
+**Current phase:** 🟢 Phase 2 in progress — M2.1 template library expansion started (Mounting Plate template landed)
 **Build health:** 🟢 all gates green
 
 ## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. real-Blender + CAD golden tests) | 144 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden tests) | 160 | ✅ |
 | Renderer (vitest) | 60 | ✅ |
 | Desktop (vitest) | 36 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **252** | ✅ |
+| **Total** | **268** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
@@ -42,7 +42,8 @@ _Living document. Updated at every milestone._
 | 0.8 | Flashforge workspace (printers/materials/compat/estimates/3MF export) | `b9556db` |
 | 1.2 | **Feature Program IR + CadQuery kernel + live parametric rebuild** | `5ec1a6a` |
 | 1.3 | **AI design pipeline: chat creates/edits real parametric parts** | `c06ee7c` |
-| 1.4 | **MVP polish: parametric estimates + mixed 3MF export + CI + checklist** | HEAD |
+| 1.4 | **MVP polish: parametric estimates + mixed 3MF export + CI + checklist** | `59d49b1` |
+| 2.1a | **Mounting Plate template — second part in the library** | HEAD |
 
 ## The MVP story now works — offline
 > *"Design a bracket 50x70, 4 mm thick, with 2 holes, in petg"* typed into the chat
