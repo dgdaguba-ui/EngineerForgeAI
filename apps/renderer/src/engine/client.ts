@@ -14,9 +14,13 @@ import type {
   EngineHealth,
   Export3mfPart,
   Export3mfResult,
+  FeatureProgramDoc,
   Material,
+  PartDetail,
+  PartExportResult,
   PrinterProfile,
   PurgeEstimate,
+  TemplateInfo,
   UsageEstimate,
 } from "./types";
 
@@ -184,6 +188,57 @@ export class EngineClient {
     return await this.request<Export3mfResult>("/api/v1/export/3mf", {
       method: "POST",
       body: JSON.stringify({ parts, dstPath }),
+    });
+  }
+
+  async listTemplates(): Promise<TemplateInfo[]> {
+    return await this.request<TemplateInfo[]>("/api/v1/templates");
+  }
+
+  async createPartFromTemplate(
+    templateId: string,
+    values?: Record<string, number>,
+    materialId?: string | null,
+  ): Promise<PartDetail> {
+    return await this.request<PartDetail>("/api/v1/parts/from-template", {
+      method: "POST",
+      body: JSON.stringify({ templateId, values: values ?? {}, materialId: materialId ?? null }),
+    });
+  }
+
+  async compilePart(
+    program: FeatureProgramDoc | unknown,
+    materialId?: string | null,
+  ): Promise<PartDetail> {
+    return await this.request<PartDetail>("/api/v1/parts/compile", {
+      method: "POST",
+      body: JSON.stringify({ program, materialId: materialId ?? null }),
+    });
+  }
+
+  async getPart(partId: string): Promise<PartDetail> {
+    return await this.request<PartDetail>(`/api/v1/parts/${partId}`);
+  }
+
+  async patchPartParams(
+    partId: string,
+    values: Record<string, number>,
+    materialId?: string | null,
+  ): Promise<PartDetail> {
+    return await this.request<PartDetail>(`/api/v1/parts/${partId}/params`, {
+      method: "PATCH",
+      body: JSON.stringify({ values, materialId: materialId ?? null }),
+    });
+  }
+
+  async exportPart(
+    partId: string,
+    format: string,
+    dstPath: string,
+  ): Promise<PartExportResult> {
+    return await this.request<PartExportResult>(`/api/v1/parts/${partId}/export`, {
+      method: "POST",
+      body: JSON.stringify({ format, dstPath }),
     });
   }
 }

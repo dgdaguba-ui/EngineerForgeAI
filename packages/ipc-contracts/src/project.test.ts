@@ -34,6 +34,38 @@ describe("ProjectDocSchema", () => {
     expect(ProjectDocSchema.parse(good).parts[0]!.colorHex).toBe("#aabb01");
   });
 
+  it("supports mesh and parametric part kinds", () => {
+    const doc = newProjectDoc({ id: "p", name: "x", now: "t" });
+    // legacy mesh entries default kind
+    const mesh = ProjectDocSchema.parse({
+      ...doc,
+      parts: [{ id: "m", name: "m.stl", asset: "assets/m.stl" }],
+    });
+    expect(mesh.parts[0]!.kind).toBe("mesh");
+
+    const parametric = ProjectDocSchema.parse({
+      ...doc,
+      parts: [
+        { id: "b", name: "L-Bracket", kind: "parametric", program: { schema: "efir/1" } },
+      ],
+    });
+    expect(parametric.parts[0]!.kind).toBe("parametric");
+
+    // kind/payload mismatches rejected
+    expect(() =>
+      ProjectDocSchema.parse({
+        ...doc,
+        parts: [{ id: "m", name: "m.stl" }], // mesh without asset
+      }),
+    ).toThrow();
+    expect(() =>
+      ProjectDocSchema.parse({
+        ...doc,
+        parts: [{ id: "b", name: "B", kind: "parametric" }], // no program
+      }),
+    ).toThrow();
+  });
+
   it("defaults optional collections", () => {
     const doc = newProjectDoc({ id: "p", name: "x", now: "t" });
     const parsed = ProjectDocSchema.parse({

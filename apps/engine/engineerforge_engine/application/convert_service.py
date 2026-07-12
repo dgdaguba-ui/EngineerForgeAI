@@ -67,9 +67,10 @@ class ConvertService:
         for fmt in (src_fmt, dst_fmt):
             if fmt in CAD_FORMATS:
                 raise CapabilityNotAvailableError(
-                    f"{fmt.upper()} conversion requires the CAD kernel "
-                    "(roadmap Phase 1); mesh formats available now: "
-                    + ", ".join(sorted(SUPPORTED_FORMATS))
+                    f"{fmt.upper()} conversion of mesh files needs feature recognition "
+                    "(reverse engineering, roadmap Phase 8). Parametric parts export "
+                    "STEP directly via POST /api/v1/parts/{id}/export. Mesh formats "
+                    "available now: " + ", ".join(sorted(SUPPORTED_FORMATS))
                 )
             if fmt not in SUPPORTED_FORMATS:
                 raise InvalidRequestError(

@@ -45,6 +45,7 @@ Selection: `EFC_AI_PROVIDER` / `EFC_CLOUD_PROVIDER` config → DI container reso
 - ✅ **Desktop** (`apps/desktop`, Electron): hardened shell, engine supervisor (pinned 3.12, token, backoff restarts, `--smoke` e2e), Zod-validated IPC, dialog-gated file access, local-first `.efproj` store + recents, `CloudService` (LocalOnly/Supabase). 36 tests.
 - ✅ **Renderer** (`apps/renderer`, Vite/React): dark workspace shell; r3f viewport (orbit/grid/lights/selection/STL, printer build volume); AI chat with offline delivery queue; project panel; Flashforge panel (slots, compatibility, estimates, 3MF export); Inspector with Blender/export actions. 47 tests.
 - ✅ **Contracts** (`packages/ipc-contracts`): channel map + `.efproj` schema shared by main/preload/renderer. 11 tests.
-- ⬜ **Phase 1 next:** Feature Program IR + CadQuery kernel + parametric bracket + AI design pipeline (see `docs/05-roadmap.md`, `docs/06-mvp-plan.md`).
+- ✅ **Parametric core (M1.2):** Feature Program IR v1 + safe expression evaluator (`domain/`), CadQueryKernel behind `CadKernelPort` (exact B-rep props, RawMesh transport), template registry (L-Bracket first) with engineering checks, PartsService session store, parts/templates API; renderer ParametricPanel (live debounced rebuild, undo/redo), STEP export, `.efproj` parametric persistence. Golden-tested vs closed-form volumes; live rebuild ~160 ms.
+- ⬜ **Phase 1 remaining:** M1.3 AI design pipeline (tool-calling → templates → IR patches as diffs), M1.4 MVP polish (see `TODO.md`).
 
 _When a milestone lands, update this file's "current state" and the relevant section._

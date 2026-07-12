@@ -12,6 +12,8 @@ export interface SceneObject {
   sourcePath: string | null;
   /** Linked project part id (when the object belongs to an open project). */
   partId: string | null;
+  /** Engine session part id for live parametric parts. */
+  parametricPartId: string | null;
   geometry: BufferGeometry;
   color: string;
   visible: boolean;
@@ -46,7 +48,10 @@ interface ViewportState {
     sourcePath: string | null;
     geometry: BufferGeometry;
     partId?: string | null;
+    parametricPartId?: string | null;
   }) => string;
+  /** Swap an object's geometry (live parametric rebuild); disposes the old one. */
+  replaceGeometry: (id: string, geometry: BufferGeometry) => void;
   select: (id: string | null) => void;
   toggleVisible: (id: string) => void;
   removeObject: (id: string) => void;
@@ -60,16 +65,30 @@ export const useViewportStore = create<ViewportState>((set, get) => ({
   buildVolume: null,
   setBuildVolume: (volume) => set({ buildVolume: volume }),
 
-  addMesh: ({ name, sourcePath, geometry, partId = null }) => {
+  addMesh: ({ name, sourcePath, geometry, partId = null, parametricPartId = null }) => {
     const id = newId();
     const color = PALETTE[get().objects.length % PALETTE.length] ?? "#8b9dc3";
     set((s) => ({
-      objects: [...s.objects, { id, name, sourcePath, partId, geometry, color, visible: true }],
+      objects: [
+        ...s.objects,
+        { id, name, sourcePath, partId, parametricPartId, geometry, color, visible: true },
+      ],
       selectedId: id,
       contentVersion: s.contentVersion + 1,
     }));
     return id;
   },
+
+  replaceGeometry: (id, geometry) =>
+    set((s) => {
+      const target = s.objects.find((o) => o.id === id);
+      if (!target) return s;
+      target.geometry.dispose();
+      return {
+        objects: s.objects.map((o) => (o.id === id ? { ...o, geometry } : o)),
+        contentVersion: s.contentVersion + 1,
+      };
+    }),
 
   select: (id) => set({ selectedId: id }),
 

@@ -9,12 +9,16 @@ from __future__ import annotations
 
 from ..adapters.ai.registry import build_ai_provider
 from ..adapters.blender.local import LocalBlenderAdapter
+from ..adapters.cad.cadquery_kernel import CadQueryKernel
 from ..application.blender_service import BlenderService
 from ..application.chat_service import ChatService
 from ..application.convert_service import ConvertService
+from ..application.parts_service import PartsService
 from ..config import Settings, get_settings
 from ..ports.ai_provider import AIProvider
 from ..ports.blender import BlenderPort
+from ..ports.cad_kernel import CadKernelPort
+from ..templates import default_registry
 
 
 class Container:
@@ -27,3 +31,7 @@ class Container:
         )
         self.blender_service: BlenderService = BlenderService(self.blender)
         self.convert_service: ConvertService = ConvertService(self.blender)
+        # CAD kernel imports lazily inside compile (heavy OCP import).
+        self.cad_kernel: CadKernelPort = CadQueryKernel()
+        self.templates = default_registry()
+        self.parts_service: PartsService = PartsService(self.cad_kernel, self.templates)

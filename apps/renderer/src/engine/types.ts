@@ -180,3 +180,68 @@ export interface Export3mfResult {
   parts: number;
   sizeBytes: number;
 }
+
+// ── Parametric parts (Feature Program IR, engine /api/v1/parts) ──────────────
+
+export interface IrParameter {
+  id: string;
+  label: string;
+  value: number;
+  unit: string;
+  min: number | null;
+  max: number | null;
+  step: number | null;
+  integer: boolean;
+}
+
+/** The IR document is engine-owned; the renderer treats it as opaque JSON
+ * apart from the parameter list it edits. */
+export interface FeatureProgramDoc {
+  schema: string;
+  name: string;
+  parameters: IrParameter[];
+  [key: string]: unknown;
+}
+
+export interface RawMeshPayload {
+  positionsB64: string;
+  indicesB64: string;
+  vertexCount: number;
+  triangleCount: number;
+}
+
+export interface PartMassProps {
+  volumeMm3: number;
+  volumeCm3: number;
+  massG: number | null;
+  materialId: string | null;
+  cogMm: [number, number, number];
+  bboxMm: { x: number; y: number; z: number };
+}
+
+export interface PartDetail {
+  partId: string;
+  name: string;
+  templateId: string | null;
+  program: FeatureProgramDoc;
+  compiled: {
+    mesh: RawMeshPayload;
+    massProps: PartMassProps;
+    warnings: string[];
+  };
+  materialId: string | null;
+}
+
+export interface TemplateInfo {
+  id: string;
+  name: string;
+  description: string;
+  parameters: IrParameter[];
+}
+
+export interface PartExportResult {
+  partId: string;
+  format: string;
+  dstPath: string;
+  sizeBytes: number;
+}

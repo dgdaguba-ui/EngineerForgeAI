@@ -18,7 +18,8 @@ def test_capabilities(client: TestClient) -> None:
     data = client.get("/api/v1/capabilities").json()
     assert data["ai"]["active_provider"] == "stub"
     assert data["features"]["ai_chat"] is True
-    assert data["features"]["cad_kernel"] is False
+    assert data["features"]["cad_kernel"] is True
+    assert data["features"]["fea"] is False  # honest roadmap flag
 
 
 def test_chat_endpoint(client: TestClient) -> None:

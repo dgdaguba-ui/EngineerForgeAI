@@ -13,7 +13,8 @@ dependencies = [
     "anthropic>=0.40",
     "httpx>=0.27",
     "trimesh>=4.12.2",
-    "numpy>=2.5.1",
+    "numpy>=1.26",
+    "cadquery>=2.5",
 ]
 
 [dependency-groups]
@@ -23,6 +24,11 @@ dev = [
     "ruff>=0.7",
     "mypy>=1.13",
 ]
+
+[tool.uv]
+# Keep transitive resolution on wheel-available versions (old sdists of
+# numba/llvmlite cannot build on Python 3.12).
+constraint-dependencies = ["numba>=0.60", "llvmlite>=0.43"]
 
 [build-system]
 requires = ["hatchling"]

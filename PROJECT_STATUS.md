@@ -3,22 +3,22 @@
 _Living document. Updated at every milestone._
 
 **Last updated:** 2026-07-12
-**Current phase:** ✅ Phase 0 complete — next up: Phase 1 (MVP walking skeleton)
+**Current phase:** 🟢 Phase 1 in progress — M1.2 (parametric CAD core) complete; next M1.3 (AI design pipeline)
 **Build health:** 🟢 all gates green
 
-## Test & quality gates (Phase 0 final)
+## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. 3 real-Blender integration tests) | 87 | ✅ |
-| Renderer (vitest) | 47 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden tests) | 127 | ✅ |
+| Renderer (vitest) | 59 | ✅ |
 | Desktop (vitest) | 36 | ✅ |
-| IPC contracts (vitest) | 11 | ✅ |
-| **Total** | **181** | ✅ |
+| IPC contracts (vitest) | 12 | ✅ |
+| **Total** | **234** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
-| Live API e2e (chat, convert, catalog, estimates, 3MF export) | — | ✅ |
+| Live API e2e (parametric loop: create→5 rebuilds→STEP/3MF→reopen) | — | ✅ avg 162ms rebuild (<500ms target) |
 
 ## Environment (verified)
 | Tool | Status | Notes |
@@ -29,7 +29,7 @@ _Living document. Updated at every milestone._
 | Blender | 5.0 ✅ | auto-detected; integration tests run against it |
 | Docker | ❌ deferred | not required offline-first; needed for local Postgres/hosted mode |
 
-## Phase 0 milestones — all complete
+## Milestones
 | # | Milestone | Commit |
 |---|---|---|
 | 0.1 | Repo foundation + tracking docs + shared config | `ab4b7fb` |
@@ -39,7 +39,14 @@ _Living document. Updated at every milestone._
 | 0.5 | AI chat panel with offline delivery queue | `402c6e5` |
 | 0.6 | Local-first `.efproj` projects + CloudService (Local/Supabase) | `0ee5323` |
 | 0.7 | Blender bridge + mesh conversion + native 3MF | `ad4f4da` |
-| 0.8 | Flashforge workspace (printers/materials/compat/estimates/3MF export) | HEAD |
+| 0.8 | Flashforge workspace (printers/materials/compat/estimates/3MF export) | `b9556db` |
+| 1.2 | **Feature Program IR + CadQuery kernel + live parametric rebuild** | HEAD |
+
+## What M1.2 adds (the product's core)
+- Click **"+ New L-Bracket"** → an editable parametric part compiles through CadQuery/OpenCascade and appears in the viewport.
+- Drag any parameter (width, thickness, hole count/diameter, fillet…) → validated, debounced **live rebuild** (~160 ms) with exact B-rep mass properties and engineering warnings (min wall, fillet feasibility, hole overlap).
+- IR-level **undo/redo**; **STEP/3MF/STL/OBJ/GLB export** of the B-rep; parts persist in `.efproj` as editable Feature Programs and recompile on reopen.
+- Compiler correctness is golden-tested against closed-form volumes (1e-6 relative).
 
 ## What works today (run `pnpm dev`)
 - Desktop app boots; supervisor spawns the Python engine (health-gated, auto-restart).

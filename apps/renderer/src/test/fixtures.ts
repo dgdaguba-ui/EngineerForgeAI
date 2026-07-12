@@ -38,3 +38,83 @@ export function stlBase64(triangles: Triangle[] = [UNIT_TRIANGLE]): string {
   for (const b of bytes) binary += String.fromCharCode(b);
   return btoa(binary);
 }
+
+// ── parametric part fixtures ─────────────────────────────────────────────────
+
+import type { IrParameter, PartDetail, RawMeshPayload } from "../engine/types";
+
+export function bufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}
+
+/** One CAD-frame triangle as an engine RawMesh payload. */
+export function makeRawMeshPayload(
+  vertices: Vec3[] = [
+    [0, 0, 0],
+    [10, 0, 0],
+    [0, 5, 20],
+  ],
+): RawMeshPayload {
+  const positions = new Float32Array(vertices.flat());
+  const indices = new Uint32Array(vertices.map((_, i) => i));
+  return {
+    positionsB64: bufferToBase64(positions.buffer),
+    indicesB64: bufferToBase64(indices.buffer),
+    vertexCount: vertices.length,
+    triangleCount: Math.floor(vertices.length / 3),
+  };
+}
+
+export function makeIrParameter(overrides: Partial<IrParameter> & { id: string }): IrParameter {
+  return {
+    label: overrides.id,
+    value: 10,
+    unit: "mm",
+    min: 1,
+    max: 300,
+    step: 1,
+    integer: false,
+    ...overrides,
+  };
+}
+
+export function makePartDetail(
+  overrides: Partial<{
+    partId: string;
+    values: Record<string, number>;
+    warnings: string[];
+    volumeCm3: number;
+  }> = {},
+): PartDetail {
+  const values = overrides.values ?? { W: 40, H: 60 };
+  const parameters = Object.entries(values).map(([id, value]) =>
+    makeIrParameter({ id, value }),
+  );
+  return {
+    partId: overrides.partId ?? "engpart1",
+    name: "L-Bracket",
+    templateId: "bracket-l",
+    program: {
+      schema: "efir/1",
+      name: "L-Bracket",
+      parameters,
+      features: [],
+    },
+    compiled: {
+      mesh: makeRawMeshPayload(),
+      massProps: {
+        volumeMm3: (overrides.volumeCm3 ?? 30) * 1000,
+        volumeCm3: overrides.volumeCm3 ?? 30,
+        massG: null,
+        materialId: null,
+        cogMm: [0, 0, 0],
+        bboxMm: { x: values.W ?? 40, y: 40, z: values.H ?? 60 },
+      },
+      warnings: overrides.warnings ?? [],
+    },
+    materialId: null,
+  };
+}

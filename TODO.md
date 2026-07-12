@@ -61,7 +61,31 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Renderer: Flashforge panel (printer select, 4-slot material/color setup, compatibility warnings, per-part slot assignment, estimates, Export 3MF); build volume + bed grid in viewport; all state mirrored into `.efproj`
 - [x] 31 engine tests + 7 store tests; live e2e of the full flow; commit
 
-**PHASE 0 COMPLETE** — next: Phase 1 MVP (Feature Program IR + CadQuery bracket + parametric rebuild, per docs/05-roadmap.md)
+**PHASE 0 COMPLETE**
+
+## Phase 1 — MVP walking skeleton
+
+### M1.1 — Skeleton & viewport ✅ (delivered during Phase 0: shell, supervisor, IPC, viewport)
+
+### M1.2 — Feature Program IR + CadQuery kernel + parametric rebuild ✅
+- [x] CadQuery 2.8 installed on Python 3.12 (risk gate passed; resolved numpy/numba constraint conflict)
+- [x] Safe expression evaluator (AST whitelist: arithmetic, params, min/max/abs/round; injection-tested)
+- [x] Feature Program IR v1 (`efir/1`): parameters + sketch(rect/circle/polygon)/extrude/hole(rows)/fillet, validation, camelCase wire form
+- [x] CadQueryKernel: lazy OCP import, exact B-rep volume/CoG/bbox, RawMesh transport, typed GeometryError with actionable hints
+- [x] L-Bracket template with engineering checks (min wall, fillet<T/2, hole overlap); golden tests vs closed-form volumes (rel 1e-6)
+- [x] PartsService + API: /templates, /parts/from-template, /parts/compile, GET, PATCH /params (validated live rebuild), /export (STEP/STL/3MF/OBJ/GLB)
+- [x] Renderer: ParametricPanel (sliders/inputs, mass/warnings, undo/redo), debounced live rebuild with geometry swap, template creation, Inspector STEP export, `.efproj` persistence (parametric parts recompile on open)
+- [x] Verified: 40 new engine tests (127 total) + 12 new renderer tests (59 total); live e2e — rebuilds avg 162ms/max 250ms (<500ms target), STEP ISO-10303 verified, reopen identical; commit
+
+### M1.3 — AI design pipeline (next)
+- [ ] Engine AI tools: create_part_from_template / edit_part_parameters wired into /ai/chat tool-calling loop (Claude + deterministic stub path)
+- [ ] Intent → template planner; IR patch proposals surfaced as diffs in chat
+- [ ] Chat panel: apply-proposal flow creating/updating viewport parts
+
+### M1.4 — MVP polish
+- [ ] Print estimate for parametric parts (volume-based, no temp file) in Flashforge panel
+- [ ] Parametric parts in bulk 3MF export (Flashforge panel currently exports mesh parts only)
+- [ ] MVP acceptance checklist run (docs/06-mvp-plan.md)
 
 ## Deferred / needs user action
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`

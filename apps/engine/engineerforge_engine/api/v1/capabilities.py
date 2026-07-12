@@ -50,8 +50,10 @@ def capabilities(
             "material_compatibility": True,
             "print_estimate": True,
             "multi_material_3mf_export": True,
+            "cad_kernel": True,
+            "parametric_templates": True,
+            "step_export": True,
             # roadmap features — surfaced as they are implemented
-            "cad_kernel": False,
             "mesh_repair": False,
             "fea": False,
             "slicer_export": False,

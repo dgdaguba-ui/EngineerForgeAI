@@ -9,9 +9,11 @@ import { create } from "zustand";
 
 import type { ProjectDoc, ProjectInfo } from "@efc/ipc-contracts";
 
+import { rawMeshToGeometry } from "../features/parametric/rawMesh";
 import { importStlViaDialog } from "../features/viewport/import";
 import { base64ToArrayBuffer, parseStlToGeometry } from "../features/viewport/stl";
 import { getBridge } from "../ipc/efc";
+import { useEngineStore } from "./engineStore";
 import { useViewportStore } from "./viewportStore";
 
 let partCounter = 0;
@@ -46,24 +48,47 @@ async function loadBundleIntoScene(info: ProjectInfo, doc: ProjectDoc): Promise<
   if (!bridge) return "Desktop shell not available.";
   const viewport = useViewportStore.getState();
   viewport.clear();
+  const errors: string[] = [];
   for (const part of doc.parts) {
     try {
-      const file = await bridge.invoke("fs:readFile", {
-        path: `${info.path}/${part.asset}`,
-      });
-      const geometry = parseStlToGeometry(base64ToArrayBuffer(file.dataBase64));
-      useViewportStore.getState().addMesh({
-        name: part.name,
-        sourcePath: `${info.path}/${part.asset}`,
-        geometry,
-        partId: part.id,
-      });
+      if (part.kind === "parametric") {
+        // recompile the saved Feature Program through the engine
+        const client = useEngineStore.getState().client;
+        if (!client.connected) {
+          errors.push(
+            `Parametric part "${part.name}" needs the engine — reopen the project once the engine is running.`,
+          );
+          continue;
+        }
+        const detail = await client.compilePart(part.program);
+        const geometry = rawMeshToGeometry(detail.compiled.mesh);
+        useViewportStore.getState().addMesh({
+          name: part.name,
+          sourcePath: null,
+          geometry,
+          partId: part.id,
+          parametricPartId: detail.partId,
+        });
+      } else {
+        const file = await bridge.invoke("fs:readFile", {
+          path: `${info.path}/${part.asset}`,
+        });
+        const geometry = parseStlToGeometry(base64ToArrayBuffer(file.dataBase64));
+        useViewportStore.getState().addMesh({
+          name: part.name,
+          sourcePath: `${info.path}/${part.asset}`,
+          geometry,
+          partId: part.id,
+        });
+      }
     } catch (e) {
-      return `Failed to load part "${part.name}": ${e instanceof Error ? e.message : String(e)}`;
+      errors.push(
+        `Failed to load part "${part.name}": ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
   useViewportStore.getState().select(null);
-  return null;
+  return errors.length > 0 ? errors.join(" · ") : null;
 }
 
 export const useProjectStore = create<ProjectState>((set, get) => {
@@ -159,7 +184,13 @@ export const useProjectStore = create<ProjectState>((set, get) => {
               ...doc,
               parts: [
                 ...doc.parts,
-                { id: partId, name: asset.name, asset: asset.relPath, colorHex: null },
+                {
+                  id: partId,
+                  name: asset.name,
+                  kind: "mesh" as const,
+                  asset: asset.relPath,
+                  colorHex: null,
+                },
               ],
             },
             dirty: true,

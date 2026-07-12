@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ..config import Settings, get_settings
 from ..di.container import Container
 from .errors import register_error_handlers
-from .v1 import ai, blender, capabilities, catalog, convert, health, print_prep
+from .v1 import ai, blender, capabilities, catalog, convert, health, parts, print_prep
 
 # Renderer runs on localhost (dev server) or is loaded from disk in the packaged
 # Electron app (origin file:// / null). Restrict CORS to those.
@@ -50,6 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(convert.router, prefix="/api/v1")
     app.include_router(catalog.router, prefix="/api/v1")
     app.include_router(print_prep.router, prefix="/api/v1")
+    app.include_router(parts.router, prefix="/api/v1")
     return app
 
 

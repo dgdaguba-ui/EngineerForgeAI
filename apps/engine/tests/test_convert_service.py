@@ -107,7 +107,7 @@ class TestErrorPaths:
             )
 
     def test_step_is_capability_error(self, cube_stl: Path, tmp_path: Path) -> None:
-        with pytest.raises(CapabilityNotAvailableError, match="CAD kernel"):
+        with pytest.raises(CapabilityNotAvailableError, match="feature recognition"):
             ConvertService(FakeBlender()).convert(str(cube_stl), str(tmp_path / "part.step"))
 
     def test_unknown_format(self, cube_stl: Path, tmp_path: Path) -> None:

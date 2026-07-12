@@ -18,6 +18,64 @@ const EXPORT_FILTERS = [
   { name: "FBX (via Blender)", extensions: ["fbx"] },
 ];
 
+const PARAMETRIC_EXPORT_FILTERS = [
+  { name: "STEP (B-rep CAD)", extensions: ["step"] },
+  { name: "3MF (FlashPrint compatible)", extensions: ["3mf"] },
+  { name: "STL", extensions: ["stl"] },
+  { name: "OBJ", extensions: ["obj"] },
+  { name: "glTF binary", extensions: ["glb"] },
+];
+
+/** Export actions for a live parametric part (B-rep in the engine session). */
+function ParametricActions({ partId, name }: { partId: string; name: string }) {
+  const client = useEngineStore((s) => s.client);
+  const [message, setMessage] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const exportAs = async () => {
+    const bridge = getBridge();
+    if (!bridge) {
+      setMessage("Export requires the desktop shell.");
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    try {
+      const stem = name.replace(/[^A-Za-z0-9._-]+/g, "_");
+      const picked = await bridge.invoke("dialog:saveFile", {
+        title: "Export part as…",
+        defaultName: `${stem}.step`,
+        filters: PARAMETRIC_EXPORT_FILTERS,
+      });
+      if (picked) {
+        const format = picked.name.split(".").pop() ?? "step";
+        const result = await client.exportPart(partId, format, picked.path);
+        setMessage(`Exported ${result.format.toUpperCase()} → ${picked.name}`);
+      }
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div data-testid="parametric-actions">
+      <dt className="text-xs text-zinc-500">Actions</dt>
+      <dd className="mt-1">
+        <button
+          onClick={() => void exportAs()}
+          disabled={busy}
+          className="rounded border border-surface-border bg-surface-raised px-2 py-1 text-xs text-zinc-200 hover:border-accent-dim disabled:opacity-50"
+        >
+          Export As… (STEP/3MF/STL)
+        </button>
+      </dd>
+      {message && <dd className="mt-1 break-words text-xs text-zinc-400">{message}</dd>}
+    </div>
+  );
+}
+
 /** Blender + export actions for a mesh that has a source file on disk. */
 function ObjectActions({ sourcePath, name }: { sourcePath: string; name: string }) {
   const client = useEngineStore((s) => s.client);
@@ -132,8 +190,12 @@ function SelectedDetails({ id }: { id: string }) {
         <dt className="text-xs text-zinc-500">Triangles</dt>
         <dd className="text-zinc-200">{stats.triangles.toLocaleString()}</dd>
       </div>
-      {object.sourcePath && (
-        <ObjectActions sourcePath={object.sourcePath} name={object.name} />
+      {object.parametricPartId ? (
+        <ParametricActions partId={object.parametricPartId} name={object.name} />
+      ) : (
+        object.sourcePath && (
+          <ObjectActions sourcePath={object.sourcePath} name={object.name} />
+        )
       )}
     </dl>
   );

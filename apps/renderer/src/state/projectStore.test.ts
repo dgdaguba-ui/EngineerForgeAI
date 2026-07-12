@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { EfcBridge, ProjectDoc, ProjectInfo } from "@efc/ipc-contracts";
 import { newProjectDoc } from "@efc/ipc-contracts";
 
-import { stlBase64 } from "../test/fixtures";
+import { EngineClient } from "../engine/client";
+import { makePartDetail, stlBase64 } from "../test/fixtures";
+import { useEngineStore } from "./engineStore";
 import { useProjectStore } from "./projectStore";
 import { useViewportStore } from "./viewportStore";
 
@@ -75,6 +77,8 @@ beforeEach(() => {
     busy: false,
     error: null,
   });
+  // disconnected engine client unless a test installs one
+  useEngineStore.setState({ client: new EngineClient({ baseUrl: null, token: null }) });
   delete (window as { efc?: EfcBridge }).efc;
 });
 
@@ -97,7 +101,13 @@ describe("projectStore", () => {
 
   it("openRecent loads parts into the viewport with part links", async () => {
     const b = bundle("WithParts", [
-      { id: "part-1", name: "bracket.stl", asset: "assets/bracket.stl", colorHex: null },
+      {
+        id: "part-1",
+        name: "bracket.stl",
+        kind: "mesh" as const,
+        asset: "assets/bracket.stl",
+        colorHex: null,
+      },
     ]);
     const { bridge, calls } = makeBridge({ openResult: b });
     (window as { efc?: EfcBridge }).efc = bridge;
@@ -167,7 +177,7 @@ describe("projectStore", () => {
 
   it("closeProject clears state and scene", async () => {
     const b = bundle("Close", [
-      { id: "p", name: "a.stl", asset: "assets/a.stl", colorHex: null },
+      { id: "p", name: "a.stl", kind: "mesh" as const, asset: "assets/a.stl", colorHex: null },
     ]);
     const { bridge } = makeBridge({ openResult: b });
     (window as { efc?: EfcBridge }).efc = bridge;
@@ -177,6 +187,59 @@ describe("projectStore", () => {
     useProjectStore.getState().closeProject();
     expect(useProjectStore.getState().info).toBeNull();
     expect(useViewportStore.getState().objects).toHaveLength(0);
+  });
+
+  it("loads parametric parts by recompiling their program via the engine", async () => {
+    const b = bundle("Para", [
+      {
+        id: "part-p",
+        name: "L-Bracket",
+        kind: "parametric",
+        program: { schema: "efir/1", name: "L-Bracket", parameters: [] },
+        colorHex: null,
+      },
+    ]);
+    const { bridge } = makeBridge({ openResult: b });
+    (window as { efc?: EfcBridge }).efc = bridge;
+    const engineFetch = vi.fn(async (_url: string, _init?: RequestInit) =>
+      new Response(JSON.stringify(makePartDetail({ partId: "eng-9" })), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    useEngineStore.setState({
+      client: new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, engineFetch),
+    });
+
+    await useProjectStore.getState().openRecent(b.info.path);
+    const objects = useViewportStore.getState().objects;
+    expect(objects).toHaveLength(1);
+    expect(objects[0]!.parametricPartId).toBe("eng-9");
+    expect(objects[0]!.partId).toBe("part-p");
+    expect(objects[0]!.sourcePath).toBeNull();
+    expect(engineFetch.mock.calls[0]![0]).toContain("/api/v1/parts/compile");
+    expect(useProjectStore.getState().error).toBeNull();
+  });
+
+  it("reports parametric parts cleanly when the engine is offline", async () => {
+    const b = bundle("ParaOffline", [
+      {
+        id: "part-p",
+        name: "L-Bracket",
+        kind: "parametric",
+        program: { schema: "efir/1" },
+        colorHex: null,
+      },
+    ]);
+    const { bridge } = makeBridge({ openResult: b });
+    (window as { efc?: EfcBridge }).efc = bridge;
+    // engine client left disconnected by beforeEach
+
+    await useProjectStore.getState().openRecent(b.info.path);
+    expect(useViewportStore.getState().objects).toHaveLength(0);
+    expect(useProjectStore.getState().error).toContain("needs the engine");
+    // the project still opens — doc is intact
+    expect(useProjectStore.getState().doc?.parts).toHaveLength(1);
   });
 
   it("surfaces errors without leaving busy stuck", async () => {

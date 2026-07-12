@@ -7,6 +7,7 @@ import { ScenePanel } from "./components/ScenePanel";
 import { StatusBar } from "./components/StatusBar";
 import { ChatPanel } from "./features/chat/ChatPanel";
 import { FlashforgePanel } from "./features/flashforge/FlashforgePanel";
+import { ParametricPanel } from "./features/parametric/ParametricPanel";
 import { Viewport } from "./features/viewport/Viewport";
 import { useEngineStore } from "./state/engineStore";
 
@@ -55,7 +56,8 @@ export default function App() {
         </section>
 
         <aside className="flex w-80 shrink-0 flex-col border-l border-surface-border bg-surface-panel">
-          <div className="max-h-64 shrink-0 overflow-auto border-b border-surface-border">
+          <div className="max-h-[55%] shrink-0 overflow-auto border-b border-surface-border">
+            <ParametricPanel />
             <InspectorPanel />
           </div>
           <div className="min-h-0 flex-1">

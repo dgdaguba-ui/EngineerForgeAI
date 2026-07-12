@@ -11,17 +11,36 @@ export const EFPROJ_SCHEMA_VERSION = "efproj/1" as const;
 export const PROJECT_FILE_NAME = "project.json" as const;
 export const PROJECT_DIR_EXTENSION = ".efproj" as const;
 
-/** A part in the project. `asset` is a path relative to the project directory. */
-export const PartRefSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().min(1),
-  asset: z.string().min(1),
-  colorHex: z
-    .string()
-    .regex(/^#[0-9a-fA-F]{6}$/)
-    .nullable()
-    .default(null),
-});
+/**
+ * A part in the project. Two kinds:
+ *  - "mesh": imported geometry; `asset` is a path relative to the project dir.
+ *  - "parametric": an editable Feature Program (`efir/1`); `program` holds the
+ *    IR document and the engine recompiles it on open.
+ */
+export const PartRefSchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    kind: z.enum(["mesh", "parametric"]).default("mesh"),
+    asset: z.string().min(1).optional(),
+    program: z.unknown().optional(),
+    colorHex: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/)
+      .nullable()
+      .default(null),
+  })
+  .superRefine((part, ctx) => {
+    if (part.kind === "mesh" && !part.asset) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "mesh part requires asset" });
+    }
+    if (part.kind === "parametric" && part.program === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "parametric part requires program",
+      });
+    }
+  });
 export type PartRef = z.infer<typeof PartRefSchema>;
 
 /** A material slot on the active printer (multi-material support, M0.8+). */
