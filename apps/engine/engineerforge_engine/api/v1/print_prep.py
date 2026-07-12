@@ -1,24 +1,37 @@
-"""Print preparation: usage/purge estimates + multi-material 3MF export."""
+"""Print preparation: usage/purge estimates + multi-material 3MF export.
+
+Estimate and export accept either a mesh file path OR a live parametric
+part id — parametric parts use exact B-rep metrics (no temp files).
+"""
 
 from __future__ import annotations
 
 from pathlib import Path
 
+import trimesh
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
+from ...application.parts_service import PartsService
 from ...application.print_service import (
     PurgeEstimate,
     UsageEstimate,
+    estimate_from_metrics,
     estimate_purge,
     estimate_usage,
 )
+from ...di.container import Container
+from ...domain.errors import InvalidRequestError
 from ...services.mesh_io import load_mesh
 from ...services.threemf import Part3MF, write_3mf
-from ..deps import require_auth
+from ..deps import get_container, require_auth
 
 router = APIRouter(tags=["print"], dependencies=[Depends(require_auth)])
+
+
+def get_parts_service(container: Container = Depends(get_container)) -> PartsService:
+    return container.parts_service
 
 
 class _CamelModel(BaseModel):
@@ -26,14 +39,32 @@ class _CamelModel(BaseModel):
 
 
 class EstimateRequest(_CamelModel):
-    mesh_path: str
+    mesh_path: str | None = None
+    part_id: str | None = None
     material_id: str
     infill: float = 0.2
     printer_id: str | None = None
 
 
 @router.post("/print/estimate", response_model=UsageEstimate, response_model_by_alias=True)
-def print_estimate(request: EstimateRequest) -> UsageEstimate:
+def print_estimate(
+    request: EstimateRequest,
+    parts: PartsService = Depends(get_parts_service),
+) -> UsageEstimate:
+    if (request.mesh_path is None) == (request.part_id is None):
+        raise InvalidRequestError("provide exactly one of meshPath or partId")
+    if request.part_id is not None:
+        detail = parts.get(request.part_id)
+        props = detail.compiled.mass_props
+        return estimate_from_metrics(
+            props.volume_mm3,
+            props.bbox_mm,
+            watertight=True,  # B-rep solids are closed by construction
+            material_id=request.material_id,
+            infill=request.infill,
+            printer_id=request.printer_id,
+        )
+    assert request.mesh_path is not None
     return estimate_usage(
         request.mesh_path,
         request.material_id,
@@ -64,7 +95,8 @@ def purge_estimate(request: PurgeRequest) -> PurgeEstimate:
 
 
 class ExportPart(_CamelModel):
-    mesh_path: str
+    mesh_path: str | None = None
+    part_id: str | None = None
     name: str
     color_hex: str | None = None
     material_name: str | None = None
@@ -82,12 +114,25 @@ class Export3mfResult(_CamelModel):
 
 
 @router.post("/export/3mf", response_model=Export3mfResult, response_model_by_alias=True)
-def export_3mf(request: Export3mfRequest) -> Export3mfResult:
+def export_3mf(
+    request: Export3mfRequest,
+    parts_service: PartsService = Depends(get_parts_service),
+) -> Export3mfResult:
     """Write a multi-object 3MF with per-part material/color — the container
-    FlashPrint (and Orca/Bambu/Prusa) opens for multi-material jobs."""
+    FlashPrint (and Orca/Bambu/Prusa) opens for multi-material jobs.
+    Parts may mix imported mesh files and live parametric parts."""
     parts: list[Part3MF] = []
     for part in request.parts:
-        mesh = load_mesh(part.mesh_path)
+        if (part.mesh_path is None) == (part.part_id is None):
+            raise InvalidRequestError(
+                f"part {part.name!r}: provide exactly one of meshPath or partId"
+            )
+        mesh: trimesh.Trimesh
+        if part.part_id is not None:
+            mesh = parts_service.mesh_of(part.part_id)
+        else:
+            assert part.mesh_path is not None
+            mesh = load_mesh(part.mesh_path)
         parts.append(
             Part3MF(
                 name=part.name,

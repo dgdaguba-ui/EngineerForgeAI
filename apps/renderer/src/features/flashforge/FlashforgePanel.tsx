@@ -46,7 +46,7 @@ export function FlashforgePanel() {
   const selected = objects.find((o) => o.id === selectedId) ?? null;
 
   const runEstimate = async () => {
-    if (!selected?.sourcePath) return;
+    if (!selected || (!selected.sourcePath && !selected.parametricPartId)) return;
     const slotIndex = store.assignments[selected.id];
     const slot = slotIndex !== undefined ? store.slots[slotIndex] : undefined;
     if (!slot?.materialId) {
@@ -56,9 +56,13 @@ export function FlashforgePanel() {
     setBusy(true);
     setMessage(null);
     try {
+      // the guard above ensures one of the two identifiers exists
+      const source = selected.parametricPartId
+        ? { partId: selected.parametricPartId }
+        : { meshPath: selected.sourcePath as string };
       setEstimate(
         await client.printEstimate({
-          meshPath: selected.sourcePath,
+          ...source,
           materialId: slot.materialId,
           printerId: store.printerId,
         }),
@@ -97,9 +101,11 @@ export function FlashforgePanel() {
       setMessage("Export requires the desktop shell.");
       return;
     }
-    const exportable = objects.filter((o) => o.visible && o.sourcePath);
+    const exportable = objects.filter(
+      (o) => o.visible && (o.sourcePath || o.parametricPartId),
+    );
     if (exportable.length === 0) {
-      setMessage("Nothing to export — import at least one model.");
+      setMessage("Nothing to export — import or create at least one model.");
       return;
     }
     setBusy(true);
@@ -116,7 +122,9 @@ export function FlashforgePanel() {
           const slot = slotIndex !== undefined ? store.slots[slotIndex] : undefined;
           const material = store.materials.find((m) => m.id === slot?.materialId);
           return {
-            meshPath: o.sourcePath as string,
+            ...(o.parametricPartId
+              ? { partId: o.parametricPartId }
+              : { meshPath: o.sourcePath as string }),
             name: o.name,
             colorHex: slot?.colorHex ?? material?.colorHex ?? null,
             materialName: material?.name ?? null,
@@ -279,7 +287,7 @@ export function FlashforgePanel() {
               </div>
             )}
 
-            {selected?.sourcePath && (
+            {selected && (selected.sourcePath || selected.parametricPartId) && (
               <div>
                 <button
                   onClick={() => void runEstimate()}
@@ -321,6 +329,11 @@ export function FlashforgePanel() {
                       </>
                     )}
                   </dl>
+                )}
+                {estimate?.orientationHint && (
+                  <p className="mt-1 text-[11px] leading-tight text-zinc-500">
+                    {estimate.orientationHint}
+                  </p>
                 )}
               </div>
             )}

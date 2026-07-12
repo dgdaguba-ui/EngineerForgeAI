@@ -36,6 +36,7 @@ class UsageEstimate(_CamelModel):
     watertight: bool
     fits_printer: bool | None = None
     printer_id: str | None = None
+    orientation_hint: str = ""
     assumptions: list[str]
 
 
@@ -56,40 +57,57 @@ def fits_build_volume(bbox_mm: dict[str, float], volume: BuildVolume) -> bool:
     )
 
 
-def estimate_usage(
-    mesh_path: str,
+def orientation_hint(bbox_mm: dict[str, float]) -> str:
+    """First-order bed-orientation heuristic: lay the flattest side down.
+
+    Larger bed contact and lower height generally mean better adhesion and
+    less support. A bbox heuristic cannot see overhang geometry — the slicer
+    has the final word (full orientation optimisation is roadmap Phase 5).
+    """
+    smallest_axis = min(bbox_mm, key=lambda k: bbox_mm[k])
+    if smallest_axis == "z":
+        return (
+            f"Orientation OK: the flattest extent is already the height "
+            f"({bbox_mm['z']} mm) — good bed contact."
+        )
+    return (
+        f"Lay flat: rotate so the {smallest_axis.upper()} extent "
+        f"({bbox_mm[smallest_axis]} mm) becomes the height — more bed contact, "
+        "lower profile, typically less support."
+    )
+
+
+def estimate_from_metrics(
+    volume_mm3: float,
+    bbox_mm: dict[str, float],
+    watertight: bool,
     material_id: str,
     infill: float = 0.2,
     printer_id: str | None = None,
 ) -> UsageEstimate:
+    """Core estimate math over pre-computed geometry metrics.
+
+    Used for mesh files (via :func:`estimate_usage`) and for parametric parts,
+    whose exact B-rep volume/bbox come straight from the CAD kernel.
+    """
     if not 0.0 <= infill <= 1.0:
         raise InvalidRequestError("infill must be between 0 and 1")
     material = material_by_id(material_id)
     if material is None:
         raise InvalidRequestError(f"unknown material id: {material_id}")
 
-    mesh = load_mesh(mesh_path)
-    watertight = bool(mesh.is_watertight)
-    volume_mm3 = float(abs(mesh.volume)) if watertight else float(mesh.convex_hull.volume)
     volume_cm3 = volume_mm3 / 1000.0
-
     solid_fraction = min(1.0, infill + WALL_OVERHEAD_FRACTION * (1.0 - infill))
     solid_volume_cm3 = volume_cm3 * solid_fraction
     mass_g = solid_volume_cm3 * material.density_g_cm3
     cost = mass_g / 1000.0 * material.cost_per_kg
-
-    extents = mesh.bounding_box.extents
-    bbox = {
-        "x": round(float(extents[0]), 2),
-        "y": round(float(extents[1]), 2),
-        "z": round(float(extents[2]), 2),
-    }
 
     assumptions = [
         f"solid fraction = infill ({infill:.0%}) "
         f"+ {WALL_OVERHEAD_FRACTION:.0%} wall/shell overhead",
         "no support material included",
         f"material density {material.density_g_cm3} g/cm³, cost {material.cost_per_kg}/kg",
+        "orientation hint is a bounding-box heuristic; the slicer has the final word",
     ]
     if not watertight:
         assumptions.append(
@@ -103,7 +121,7 @@ def estimate_usage(
         printer = printer_by_id(printer_id)
         if printer is None:
             raise InvalidRequestError(f"unknown printer id: {printer_id}")
-        fits = fits_build_volume(bbox, printer.build_volume)
+        fits = fits_build_volume(bbox_mm, printer.build_volume)
         resolved_printer_id = printer.id
         assumptions.append("fit check allows rotation about Z only (flat on the bed)")
 
@@ -113,11 +131,32 @@ def estimate_usage(
         solid_volume_cm3=round(solid_volume_cm3, 3),
         mass_g=round(mass_g, 2),
         cost=round(cost, 2),
-        bbox_mm=bbox,
+        bbox_mm=bbox_mm,
         watertight=watertight,
         fits_printer=fits,
         printer_id=resolved_printer_id,
+        orientation_hint=orientation_hint(bbox_mm),
         assumptions=assumptions,
+    )
+
+
+def estimate_usage(
+    mesh_path: str,
+    material_id: str,
+    infill: float = 0.2,
+    printer_id: str | None = None,
+) -> UsageEstimate:
+    mesh = load_mesh(mesh_path)
+    watertight = bool(mesh.is_watertight)
+    volume_mm3 = float(abs(mesh.volume)) if watertight else float(mesh.convex_hull.volume)
+    extents = mesh.bounding_box.extents
+    bbox = {
+        "x": round(float(extents[0]), 2),
+        "y": round(float(extents[1]), 2),
+        "z": round(float(extents[2]), 2),
+    }
+    return estimate_from_metrics(
+        volume_mm3, bbox, watertight, material_id, infill=infill, printer_id=printer_id
     )
 
 

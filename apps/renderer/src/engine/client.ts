@@ -151,7 +151,8 @@ export class EngineClient {
   }
 
   async printEstimate(input: {
-    meshPath: string;
+    meshPath?: string;
+    partId?: string;
     materialId: string;
     infill?: number;
     printerId?: string | null;
@@ -159,7 +160,8 @@ export class EngineClient {
     return await this.request<UsageEstimate>("/api/v1/print/estimate", {
       method: "POST",
       body: JSON.stringify({
-        meshPath: input.meshPath,
+        meshPath: input.meshPath ?? null,
+        partId: input.partId ?? null,
         materialId: input.materialId,
         infill: input.infill ?? 0.2,
         printerId: input.printerId ?? null,

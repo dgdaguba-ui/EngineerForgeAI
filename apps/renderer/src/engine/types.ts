@@ -164,6 +164,7 @@ export interface UsageEstimate {
   watertight: boolean;
   fitsPrinter: boolean | null;
   printerId: string | null;
+  orientationHint: string;
   assumptions: string[];
 }
 
@@ -176,8 +177,10 @@ export interface PurgeEstimate {
   assumptions: string[];
 }
 
+/** One job part: either an imported mesh file or a live parametric part. */
 export interface Export3mfPart {
-  meshPath: string;
+  meshPath?: string;
+  partId?: string;
   name: string;
   colorHex?: string | null;
   materialName?: string | null;

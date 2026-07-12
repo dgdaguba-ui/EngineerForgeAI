@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  js:
+    name: TypeScript (contracts, desktop, renderer)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      # corepack signing keys are unreliable on some Node builds — install pnpm directly
+      - run: npm install -g pnpm@9.12.0
+      - uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @efc/ipc-contracts build
+      - run: pnpm --filter @efc/ipc-contracts test
+      - run: pnpm --filter desktop build
+      - run: pnpm --filter desktop test
+      - run: pnpm --filter renderer build
+      - run: pnpm --filter renderer test
+
+  engine:
+    name: Python engine (3.12)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: apps/engine/uv.lock
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run mypy engineerforge_engine
+      # Blender integration tests self-skip when no Blender is installed
+      - run: uv run pytest -q

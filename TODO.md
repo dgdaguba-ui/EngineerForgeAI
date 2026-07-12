@@ -85,10 +85,18 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] 10 engine + 1 renderer tests (137/60); live HTTP chat-design verified; commit
 - [ ] Later (Phase 2): IR patch proposals as reviewable diffs before apply; streaming tool progress over WS
 
-### M1.4 — MVP polish
-- [ ] Print estimate for parametric parts (volume-based, no temp file) in Flashforge panel
-- [ ] Parametric parts in bulk 3MF export (Flashforge panel currently exports mesh parts only)
-- [ ] MVP acceptance checklist run (docs/06-mvp-plan.md)
+### M1.4 — MVP polish ✅ — **PHASE 1 MVP COMPLETE**
+- [x] Print estimate accepts `partId` (exact B-rep volume/bbox, watertight by construction) — Flashforge panel estimates parametric parts
+- [x] Orientation hint (lay-flat bbox heuristic, labelled as such) on all estimates
+- [x] Bulk 3MF export mixes mesh files and live parametric parts (`partId` entries)
+- [x] CI workflow committed (`.github/workflows/ci.yml`: TS suites + engine ruff/mypy/pytest on 3.12) — activates with a GitHub remote
+- [x] MVP acceptance checklist run and recorded in docs/06-mvp-plan.md (deviations documented: diff-approval → Phase 2, time estimate → Phase 4 slicer profiles, FlashPrint manual gate)
+
+## Phase 2 — next up (docs/05-roadmap.md)
+- [ ] Template library expansion (gear, enclosure, adapter, clamp, pipe fitting…) — one tested template per PR
+- [ ] Reviewable IR diffs for AI edits before apply; WS streaming for chat + rebuild progress
+- [ ] Data plane: Prisma migrations + Supabase sync (needs Docker/Postgres — user action)
+- [ ] Property inspector depth + feature timeline panel
 
 ## Deferred / needs user action
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`

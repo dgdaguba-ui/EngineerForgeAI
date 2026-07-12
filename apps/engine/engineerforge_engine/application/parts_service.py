@@ -193,11 +193,15 @@ class PartsService:
         )
 
     def export_to_temp_stl(self, part_id: str) -> str:
-        """Write the part's current mesh to a temp STL (for estimate/Blender flows)."""
+        """Write the part's current mesh to a temp STL (for Blender flows)."""
         record = self._get_record(part_id)
         tmp = Path(tempfile.mkdtemp(prefix="efc-part-")) / f"{part_id}.stl"
         self._kernel.export_solid(record.native_solid, str(tmp))
         return str(tmp)
+
+    def mesh_of(self, part_id: str) -> trimesh.Trimesh:
+        """The part's current tessellation as a Trimesh (for 3MF export etc.)."""
+        return self._as_trimesh(self._get_record(part_id))
 
     # ── internals ─────────────────────────────────────────────────────────────
 
