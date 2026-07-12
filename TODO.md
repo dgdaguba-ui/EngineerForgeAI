@@ -52,12 +52,16 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Renderer: Inspector "Open in Blender" + "Export As…" (3MF/STL/OBJ/PLY/GLB/FBX)
 - [x] 20 engine tests incl. 3 real-Blender integration tests (script exec + real STL→FBX); engine 56 / renderer 40; commit
 
-### M0.8 — Flashforge workspace
-- [ ] Printer profiles (build volume, nozzles, materials)
-- [ ] Material library (seed) + multi-material setup
-- [ ] Build-volume visualization in viewport
-- [ ] FlashPrint-compatible export
-- [ ] Commit
+### M0.8 — Flashforge workspace ✅
+- [x] Printer profiles: 6 Flashforge machines (AD5X 4-material filament-switching, Adventurer 5M/Pro, Creator Pro 2 + 4S IDEX, Guider 3) with build volume, temps, purge-per-change
+- [x] Material library: 10 curated materials (PLA→PC, PVA/HIPS soluble supports) with density, strength, modulus, temps, shrinkage, cost — schema-validated at load
+- [x] Compatibility engine: adhesion-family rules + nozzle-window/bed-delta checks (ok/caution/incompatible with reasons); caught 2 real data errors during testing
+- [x] Usage estimate (volume→mass/cost with stated assumptions, watertight check, rotation-aware fit) + purge-tower estimate (tool-change model)
+- [x] Multi-material 3MF export (per-part color/material) — FlashPrint-compatible container, verified by reader round-trip
+- [x] Renderer: Flashforge panel (printer select, 4-slot material/color setup, compatibility warnings, per-part slot assignment, estimates, Export 3MF); build volume + bed grid in viewport; all state mirrored into `.efproj`
+- [x] 31 engine tests + 7 store tests; live e2e of the full flow; commit
+
+**PHASE 0 COMPLETE** — next: Phase 1 MVP (Feature Program IR + CadQuery bracket + parametric rebuild, per docs/05-roadmap.md)
 
 ## Deferred / needs user action
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`

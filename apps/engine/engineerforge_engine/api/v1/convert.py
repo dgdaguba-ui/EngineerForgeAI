@@ -25,7 +25,7 @@ class ConvertRequest(BaseModel):
 
 
 @router.post("/convert", response_model=ConvertResult, response_model_by_alias=True)
-async def convert(
+def convert(
     request: ConvertRequest,
     service: ConvertService = Depends(get_convert_service),
 ) -> ConvertResult:

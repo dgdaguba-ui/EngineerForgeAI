@@ -27,11 +27,20 @@ function newId(): string {
     : `obj_${counter}`;
 }
 
+export interface BuildVolumeMm {
+  x: number;
+  y: number;
+  z: number;
+}
+
 interface ViewportState {
   objects: SceneObject[];
   selectedId: string | null;
   /** Increments when contents change — consumed by the camera fit effect. */
   contentVersion: number;
+  /** Active printer build volume (mm) — drawn as a wireframe box. */
+  buildVolume: BuildVolumeMm | null;
+  setBuildVolume: (volume: BuildVolumeMm | null) => void;
   addMesh: (input: {
     name: string;
     sourcePath: string | null;
@@ -48,6 +57,8 @@ export const useViewportStore = create<ViewportState>((set, get) => ({
   objects: [],
   selectedId: null,
   contentVersion: 0,
+  buildVolume: null,
+  setBuildVolume: (volume) => set({ buildVolume: volume }),
 
   addMesh: ({ name, sourcePath, geometry, partId = null }) => {
     const id = newId();

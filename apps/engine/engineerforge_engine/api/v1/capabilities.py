@@ -22,7 +22,7 @@ def _blender_service(request: Request) -> BlenderService:
 
 
 @router.get("/capabilities")
-async def capabilities(
+def capabilities(
     settings: Settings = Depends(get_settings_dep),
     chat: ChatService = Depends(get_chat_service),
     blender: BlenderService = Depends(_blender_service),
@@ -45,6 +45,11 @@ async def capabilities(
             "ai_chat": True,
             "mesh_convert": True,
             "blender_bridge": blender_status.detected,
+            "material_catalog": True,
+            "printer_profiles": True,
+            "material_compatibility": True,
+            "print_estimate": True,
+            "multi_material_3mf_export": True,
             # roadmap features — surfaced as they are implemented
             "cad_kernel": False,
             "mesh_repair": False,

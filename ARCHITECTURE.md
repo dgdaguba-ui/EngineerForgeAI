@@ -40,9 +40,11 @@ AIProvider (port)                     CloudService (port)
 ```
 Selection: `EFC_AI_PROVIDER` / `EFC_CLOUD_PROVIDER` config → DI container resolves the concrete adapter. Absent credentials ⇒ graceful fallback to `StubProvider` / `LocalStorageProvider`; the app never breaks.
 
-## Current implementation state
-- ✅ Architecture docs + ADRs + Prisma schema + monorepo scaffold.
-- 🟡 Python engine bootstrap (AIProvider abstraction, health, DI) — in progress.
-- ⬜ Electron/React shell, viewport, chat, project manager, Blender, Flashforge — queued (see `TODO.md`).
+## Current implementation state (Phase 0 complete)
+- ✅ **Engine** (`apps/engine`, Python 3.12/FastAPI): clean architecture + DI; `AIProvider` (Stub offline / Claude via adaptive-thinking Opus 4.8); Blender adapter (detect/launch/headless scripts); conversion service (STL/OBJ/PLY/GLB/GLTF/3MF native via trimesh + own 3MF reader/writer, FBX via Blender, STEP → honest 501 until Phase 1); material/printer catalogs; compatibility engine; usage/purge estimates; multi-material 3MF export. 87 tests, mypy strict.
+- ✅ **Desktop** (`apps/desktop`, Electron): hardened shell, engine supervisor (pinned 3.12, token, backoff restarts, `--smoke` e2e), Zod-validated IPC, dialog-gated file access, local-first `.efproj` store + recents, `CloudService` (LocalOnly/Supabase). 36 tests.
+- ✅ **Renderer** (`apps/renderer`, Vite/React): dark workspace shell; r3f viewport (orbit/grid/lights/selection/STL, printer build volume); AI chat with offline delivery queue; project panel; Flashforge panel (slots, compatibility, estimates, 3MF export); Inspector with Blender/export actions. 47 tests.
+- ✅ **Contracts** (`packages/ipc-contracts`): channel map + `.efproj` schema shared by main/preload/renderer. 11 tests.
+- ⬜ **Phase 1 next:** Feature Program IR + CadQuery kernel + parametric bracket + AI design pipeline (see `docs/05-roadmap.md`, `docs/06-mvp-plan.md`).
 
 _When a milestone lands, update this file's "current state" and the relevant section._

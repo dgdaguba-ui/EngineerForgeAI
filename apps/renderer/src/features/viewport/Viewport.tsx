@@ -5,7 +5,7 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
-import { Vector3 } from "three";
+import { BoxGeometry, EdgesGeometry, Vector3 } from "three";
 
 /** Minimal orbit-controls surface used by the camera fit (avoids a direct three-stdlib dep). */
 interface OrbitControlsLike {
@@ -73,10 +73,31 @@ function FitCamera() {
   return null;
 }
 
+/** Wireframe of the active printer's build volume (printer Z = world Y up). */
+function BuildVolumeBox() {
+  const buildVolume = useViewportStore((s) => s.buildVolume);
+  const edges = useMemo(() => {
+    if (!buildVolume) return null;
+    const box = new BoxGeometry(buildVolume.x, buildVolume.z, buildVolume.y);
+    const geometry = new EdgesGeometry(box);
+    box.dispose();
+    return geometry;
+  }, [buildVolume]);
+
+  if (!buildVolume || !edges) return null;
+  return (
+    <lineSegments geometry={edges} position={[0, buildVolume.z / 2, 0]}>
+      <lineBasicMaterial color="#155e6e" />
+    </lineSegments>
+  );
+}
+
 export function Viewport() {
   const objects = useViewportStore((s) => s.objects);
   const select = useViewportStore((s) => s.select);
+  const buildVolume = useViewportStore((s) => s.buildVolume);
   const gridColors = useMemo(() => ({ major: "#3f3f46", minor: "#232327" }), []);
+  const gridSize = buildVolume ? Math.max(buildVolume.x, buildVolume.y) : 220;
 
   return (
     <div className="relative h-full w-full" data-testid="viewport">
@@ -92,9 +113,12 @@ export function Viewport() {
         <directionalLight position={[80, 140, 60]} intensity={1.1} />
         <directionalLight position={[-60, 40, -80]} intensity={0.3} />
 
-        {/* 220mm-class printer scale: 10mm cells, 50mm sections */}
-        <gridHelper args={[220, 22, gridColors.major, gridColors.minor]} />
+        {/* bed grid sized to the active printer (10mm cells) */}
+        <gridHelper
+          args={[gridSize, Math.round(gridSize / 10), gridColors.major, gridColors.minor]}
+        />
         <axesHelper args={[30]} />
+        <BuildVolumeBox />
 
         {objects.map((o) => (
           <SceneMesh key={o.id} object={o} />

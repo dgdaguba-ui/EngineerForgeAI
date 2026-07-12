@@ -7,10 +7,17 @@ import type {
   BlenderStatus,
   ChatRequestBody,
   ChatResponseBody,
+  CompatibilityReport,
   ConvertResult,
   EngineCapabilities,
   EngineErrorEnvelope,
   EngineHealth,
+  Export3mfPart,
+  Export3mfResult,
+  Material,
+  PrinterProfile,
+  PurgeEstimate,
+  UsageEstimate,
 } from "./types";
 
 export interface EngineConnectionInfo {
@@ -121,6 +128,62 @@ export class EngineClient {
     return await this.request<ConvertResult>("/api/v1/convert", {
       method: "POST",
       body: JSON.stringify({ srcPath, dstPath }),
+    });
+  }
+
+  async materials(): Promise<Material[]> {
+    return await this.request<Material[]>("/api/v1/materials");
+  }
+
+  async printers(): Promise<PrinterProfile[]> {
+    return await this.request<PrinterProfile[]>("/api/v1/printers");
+  }
+
+  async materialCompatibility(materialIds: string[]): Promise<CompatibilityReport> {
+    return await this.request<CompatibilityReport>("/api/v1/materials/compatibility", {
+      method: "POST",
+      body: JSON.stringify({ materialIds }),
+    });
+  }
+
+  async printEstimate(input: {
+    meshPath: string;
+    materialId: string;
+    infill?: number;
+    printerId?: string | null;
+  }): Promise<UsageEstimate> {
+    return await this.request<UsageEstimate>("/api/v1/print/estimate", {
+      method: "POST",
+      body: JSON.stringify({
+        meshPath: input.meshPath,
+        materialId: input.materialId,
+        infill: input.infill ?? 0.2,
+        printerId: input.printerId ?? null,
+      }),
+    });
+  }
+
+  async purgeEstimate(input: {
+    printerId: string;
+    materialIds: string[];
+    heightMm: number;
+    layerHeightMm?: number;
+  }): Promise<PurgeEstimate> {
+    return await this.request<PurgeEstimate>("/api/v1/print/purge-estimate", {
+      method: "POST",
+      body: JSON.stringify({
+        printerId: input.printerId,
+        materialIds: input.materialIds,
+        heightMm: input.heightMm,
+        layerHeightMm: input.layerHeightMm ?? 0.2,
+      }),
+    });
+  }
+
+  async export3mf(parts: Export3mfPart[], dstPath: string): Promise<Export3mfResult> {
+    return await this.request<Export3mfResult>("/api/v1/export/3mf", {
+      method: "POST",
+      body: JSON.stringify({ parts, dstPath }),
     });
   }
 }

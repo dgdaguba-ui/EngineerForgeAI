@@ -19,7 +19,7 @@ def get_blender_service(container: Container = Depends(get_container)) -> Blende
 
 
 @router.get("/status", response_model=BlenderStatus)
-async def status(service: BlenderService = Depends(get_blender_service)) -> BlenderStatus:
+def status(service: BlenderService = Depends(get_blender_service)) -> BlenderStatus:
     return service.status()
 
 
@@ -28,7 +28,7 @@ class LaunchRequest(BaseModel):
 
 
 @router.post("/launch", response_model=LaunchResult)
-async def launch(
+def launch(
     request: LaunchRequest,
     service: BlenderService = Depends(get_blender_service),
 ) -> LaunchResult:
@@ -44,7 +44,7 @@ class RunScriptRequest(BaseModel):
 
 
 @router.post("/run-script", response_model=ScriptResult)
-async def run_script(
+def run_script(
     request: RunScriptRequest,
     service: BlenderService = Depends(get_blender_service),
 ) -> ScriptResult:

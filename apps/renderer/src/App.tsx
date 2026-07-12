@@ -6,6 +6,7 @@ import { ProjectPanel } from "./components/ProjectPanel";
 import { ScenePanel } from "./components/ScenePanel";
 import { StatusBar } from "./components/StatusBar";
 import { ChatPanel } from "./features/chat/ChatPanel";
+import { FlashforgePanel } from "./features/flashforge/FlashforgePanel";
 import { Viewport } from "./features/viewport/Viewport";
 import { useEngineStore } from "./state/engineStore";
 
@@ -38,10 +39,11 @@ export default function App() {
       </header>
 
       <main className="flex min-h-0 flex-1">
-        <aside className="flex w-64 shrink-0 flex-col border-r border-surface-border bg-surface-panel">
+        <aside className="flex w-72 shrink-0 flex-col border-r border-surface-border bg-surface-panel">
           <ProjectPanel />
-          <div className="min-h-0 flex-1">
+          <div className="min-h-0 flex-1 overflow-auto">
             <ScenePanel />
+            <FlashforgePanel />
           </div>
           <div className="border-t border-surface-border p-2">
             <EngineCard />

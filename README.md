@@ -10,7 +10,11 @@ EngineerForge AI combines a conversational engineering assistant, a parametric C
 
 ## Status
 
-🟡 **Phase 0 — Architecture & Foundations.** This repository currently contains the architecture package, roadmap, and project scaffold. Application code is built milestone-by-milestone per [`docs/05-roadmap.md`](docs/05-roadmap.md). Nothing here is a placeholder that ships to users; each milestone is functional, tested, and documented before the next begins.
+🟢 **Phase 0 complete — working desktop foundation.** The app boots an Electron shell that supervises the Python engine, renders STLs in a Three.js viewport, chats with an AI copilot (Claude or offline stub, with an offline request queue), manages local-first `.efproj` projects, drives a detected Blender install (launch/scripts/conversion incl. native 3MF), and provides a Flashforge multi-material workspace (printer profiles, material library + compatibility warnings, usage/purge estimates, FlashPrint-compatible multi-material 3MF export). 181 tests across four suites; see [`PROJECT_STATUS.md`](PROJECT_STATUS.md).
+
+**Run it:** `pnpm install && pnpm --filter engine setup` once, then `pnpm dev` (see [`docs/08-deployment.md`](docs/08-deployment.md)).
+
+Next: **Phase 1 — the MVP walking skeleton** (Feature Program IR, CadQuery kernel, AI-driven parametric parts) per [`docs/05-roadmap.md`](docs/05-roadmap.md).
 
 ## Start here
 

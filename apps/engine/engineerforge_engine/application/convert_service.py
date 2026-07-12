@@ -14,7 +14,6 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-import trimesh
 from pydantic import BaseModel, Field
 
 from ..domain.errors import (
@@ -24,7 +23,8 @@ from ..domain.errors import (
     InvalidRequestError,
 )
 from ..ports.blender import BlenderPort
-from ..services.threemf import Part3MF, read_3mf, write_3mf
+from ..services.mesh_io import load_mesh
+from ..services.threemf import Part3MF, write_3mf
 
 NATIVE_FORMATS = frozenset({"stl", "obj", "ply", "glb", "gltf", "3mf"})
 BLENDER_FORMATS = frozenset({"fbx"})
@@ -80,7 +80,7 @@ class ConvertService:
         dst_path.parent.mkdir(parents=True, exist_ok=True)
 
         if src_fmt in NATIVE_FORMATS and dst_fmt in NATIVE_FORMATS:
-            triangles = self._convert_native(src_path, dst_path, src_fmt, dst_fmt)
+            triangles = self._convert_native(src_path, dst_path, dst_fmt)
             return ConvertResult(
                 src_format=src_fmt,
                 dst_format=dst_fmt,
@@ -101,11 +101,11 @@ class ConvertService:
             with tempfile.TemporaryDirectory(prefix="efc-convert-") as tmp:
                 hop = Path(tmp) / "hop.stl"
                 if src_fmt == "3mf":
-                    self._convert_native(src_path, hop, "3mf", "stl")
+                    self._convert_native(src_path, hop, "stl")
                     self._convert_blender(str(hop), str(dst_path), timeout_sec)
                 else:  # fbx → 3mf
                     self._convert_blender(str(src_path), str(hop), timeout_sec)
-                    self._convert_native(hop, dst_path, "stl", "3mf")
+                    self._convert_native(hop, dst_path, "3mf")
             return ConvertResult(
                 src_format=src_fmt,
                 dst_format=dst_fmt,
@@ -123,23 +123,8 @@ class ConvertService:
 
     # ── strategies ──────────────────────────────────────────────────────────
 
-    def _load_native(self, src: Path, src_fmt: str) -> trimesh.Trimesh:
-        if src_fmt == "3mf":
-            parts = read_3mf(src)
-            if not parts:
-                raise ConversionFailedError(f"No mesh objects found in {src}")
-            meshes = [
-                trimesh.Trimesh(vertices=p.vertices, faces=p.triangles, process=False)
-                for p in parts
-            ]
-            return meshes[0] if len(meshes) == 1 else trimesh.util.concatenate(meshes)
-        loaded = trimesh.load(str(src), force="mesh")
-        if not isinstance(loaded, trimesh.Trimesh) or loaded.is_empty:
-            raise ConversionFailedError(f"Could not load a mesh from {src}")
-        return loaded
-
-    def _convert_native(self, src: Path, dst: Path, src_fmt: str, dst_fmt: str) -> int:
-        mesh = self._load_native(src, src_fmt)
+    def _convert_native(self, src: Path, dst: Path, dst_fmt: str) -> int:
+        mesh = load_mesh(src)
         if dst_fmt == "3mf":
             write_3mf(
                 dst,
