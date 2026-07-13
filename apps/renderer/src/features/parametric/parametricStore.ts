@@ -42,6 +42,9 @@ interface ParametricState {
   registerCompiledPart: (detail: PartDetail) => string;
   /** Re-fetch a part from the engine and refresh its scene object (AI edits). */
   refreshPart: (partId: string) => Promise<void>;
+  /** Apply an approved AI-proposed parameter diff: PATCH + scene sync. Throws
+   * on failure so the caller (chat UI) can show the diff card as failed. */
+  applyDiff: (partId: string, values: ParamValues) => Promise<void>;
   /** Adopt an already-compiled part (e.g. loaded from a project). */
   adopt: (detail: PartDetail, objectId: string, projectPartId: string | null) => void;
   setParam: (paramId: string, value: number) => void;
@@ -93,6 +96,21 @@ export const useParametricStore = create<ParametricState>((set, get) => {
         p.id === projectPartId ? { ...p, program: detail.program } : p,
       ),
     }));
+  }
+
+  /** Push a freshly fetched/patched detail's mesh into the viewport object and,
+   * if it's the active part or a known project part, sync store/doc state. */
+  function syncDetailToScene(detail: PartDetail, objectId: string): void {
+    const geometry = rawMeshToGeometry(detail.compiled.mesh);
+    useViewportStore.getState().replaceGeometry(objectId, geometry);
+    const object = useViewportStore.getState().objects.find((o) => o.id === objectId);
+    const { active } = get();
+    if (active?.partId === detail.partId) {
+      applyDetail(detail, active.objectId, active.projectPartId);
+      persistProgram(detail, active.projectPartId);
+    } else if (object?.partId) {
+      persistProgram(detail, object.partId);
+    }
   }
 
   async function rebuild(values: ParamValues): Promise<void> {
@@ -204,18 +222,19 @@ export const useParametricStore = create<ParametricState>((set, get) => {
       if (!object) return;
       try {
         const detail = await client.getPart(partId);
-        const geometry = rawMeshToGeometry(detail.compiled.mesh);
-        useViewportStore.getState().replaceGeometry(object.id, geometry);
-        const { active } = get();
-        if (active?.partId === partId) {
-          applyDetail(detail, active.objectId, active.projectPartId);
-          persistProgram(detail, active.projectPartId);
-        } else if (object.partId) {
-          persistProgram(detail, object.partId);
-        }
+        syncDetailToScene(detail, object.id);
       } catch (e) {
         set({ error: e instanceof Error ? e.message : String(e) });
       }
+    },
+
+    applyDiff: async (partId: string, values: ParamValues) => {
+      const client = useEngineStore.getState().client;
+      const object = useViewportStore
+        .getState()
+        .objects.find((o) => o.parametricPartId === partId);
+      const detail = await client.patchPartParams(partId, values);
+      if (object) syncDetailToScene(detail, object.id);
     },
 
     adopt: (detail, objectId, projectPartId) => {

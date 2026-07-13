@@ -83,7 +83,7 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] StubProvider: deterministic offline design flow ("Design a bracket 50x70, 4 mm thick, with 2 holes, in petg" → real compiled part) — the MVP story works with zero credentials
 - [x] ChatResponse.actions → renderer: created parts auto-load into viewport + project doc; updated parts refresh geometry; action chips in chat
 - [x] 10 engine + 1 renderer tests (137/60); live HTTP chat-design verified; commit
-- [ ] Later (Phase 2): IR patch proposals as reviewable diffs before apply; streaming tool progress over WS
+- [x] Later (Phase 2): IR patch proposals as reviewable diffs before apply → **done in M2.2**; streaming tool progress over WS → still pending
 
 ### M1.4 — MVP polish ✅ — **PHASE 1 MVP COMPLETE**
 - [x] Print estimate accepts `partId` (exact B-rep volume/bbox, watertight by construction) — Flashforge panel estimates parametric parts
@@ -103,7 +103,8 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [ ] Pipe fitting, clamp — evaluate case by case against the IR feature set
 
 ### M2.2 — AI & UX depth
-- [ ] Reviewable IR diffs for AI edits before apply; WS streaming for chat + rebuild progress
+- [x] **Reviewable IR diffs for AI edits before apply**: `update_part_parameters` now *proposes* a validated `ParamDiffEntry[]` (old→new per parameter) instead of mutating the part. The engine never recompiles on a proposal; the chat UI shows an Apply/Discard diff card, and only Apply triggers the real PATCH + geometry swap + project-doc persist. 15 new tests (engine preview/tool-loop + renderer store/component). No-op values are dropped from the diff.
+- [ ] WS streaming for chat + rebuild progress
 
 ### M2.3 — Data plane (blocked on Docker — user action)
 - [ ] Prisma migrations + Supabase sync
@@ -116,4 +117,4 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`
 - [ ] Provide `ANTHROPIC_API_KEY` (else AI runs on `StubProvider`)
 - [ ] Provide Supabase URL + keys (else cloud sync is inert; local still works)
-- [ ] Configure a git remote for backup/collaboration
+- [x] Configure a git remote for backup/collaboration → `origin` = github.com/dgdaguba-ui/EngineerForgeAI (CI now active)

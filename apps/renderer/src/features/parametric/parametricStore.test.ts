@@ -180,6 +180,71 @@ describe("parametricStore.setParam (live rebuild)", () => {
   });
 });
 
+describe("parametricStore.applyDiff (approved AI edit)", () => {
+  it("PATCHes the part, swaps geometry, and syncs active state", async () => {
+    const mock = installClient((url, init) => {
+      if (init?.method === "PATCH") {
+        const body = JSON.parse(init.body as string) as { values: Record<string, number> };
+        return makePartDetail({ partId: "eng-1", values: { W: body.values.W ?? 40, H: 60 } });
+      }
+      return makePartDetail({ partId: "eng-1" });
+    });
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+    const versionBefore = useViewportStore.getState().contentVersion;
+
+    await useParametricStore.getState().applyDiff("eng-1", { W: 65 });
+
+    const patches = mock.patchBodies();
+    expect(patches).toHaveLength(1);
+    expect(patches[0]!.values).toEqual({ W: 65 });
+    expect(
+      useParametricStore.getState().active?.parameters.find((p) => p.id === "W")?.value,
+    ).toBe(65);
+    expect(useViewportStore.getState().contentVersion).toBeGreaterThan(versionBefore);
+  });
+
+  it("persists the approved program into the open project doc", async () => {
+    installClient((url, init) => {
+      if (init?.method === "PATCH") {
+        const body = JSON.parse(init.body as string) as { values: Record<string, number> };
+        return makePartDetail({ values: body.values });
+      }
+      return makePartDetail();
+    });
+    openProject();
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await useParametricStore.getState().applyDiff("engpart1", { W: 90 });
+
+    const saved = useProjectStore.getState().doc!.parts[0]!.program as {
+      parameters: Array<{ id: string; value: number }>;
+    };
+    expect(saved.parameters.find((p) => p.id === "W")?.value).toBe(90);
+  });
+
+  it("throws on engine failure so the caller can surface it", async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (init?.method === "PATCH") {
+        return new Response(
+          JSON.stringify({
+            error: { code: "INVALID_REQUEST", message: "out of range", details: {}, retryable: false },
+          }),
+          { status: 400 },
+        );
+      }
+      return jsonResponse(makePartDetail({ partId: "eng-1" }));
+    });
+    useEngineStore.setState({
+      client: new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, fetchMock),
+    });
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await expect(
+      useParametricStore.getState().applyDiff("eng-1", { W: 9999 }),
+    ).rejects.toThrow("out of range");
+  });
+});
+
 describe("undo/redo", () => {
   it("restores previous values and triggers a rebuild", async () => {
     vi.useFakeTimers();

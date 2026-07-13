@@ -73,6 +73,20 @@ class Parameter(_CamelModel):
         return None
 
 
+class ParamDiffEntry(_CamelModel):
+    """One proposed-but-not-yet-applied parameter change.
+
+    Produced when validating an edit without committing it (e.g. an
+    AI-proposed change awaiting user review, M2.2) — never mutates the part.
+    """
+
+    param_id: str
+    label: str
+    old_value: float
+    new_value: float
+    unit: str
+
+
 # ── sketch profiles ───────────────────────────────────────────────────────────
 
 

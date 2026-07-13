@@ -20,11 +20,19 @@ export const CHAT_SYSTEM_PROMPT =
   "units (mm, g, MPa) unless asked otherwise. When discussing strength, printability, " +
   "or materials, state your assumptions. You can CREATE and EDIT parametric parts with " +
   "your tools: use list_part_templates to discover parameters, " +
-  "create_part_from_template for design requests, and update_part_parameters to modify " +
-  "existing parts. Every dimension and mass you state must come from tool results — " +
-  "never invent numbers. Created parts stay fully editable in the Parameters panel.";
+  "create_part_from_template for design requests, and update_part_parameters to propose " +
+  "changes to existing parts. Proposed changes are validated but NOT applied — the user " +
+  "reviews and approves or discards them in the UI. Every dimension and mass you state " +
+  "must come from tool results — never invent numbers. Created parts stay fully editable " +
+  "in the Parameters panel.";
 
 export type ChatItemStatus = "sending" | "sent" | "queued" | "error";
+
+/** A chat-turn action plus, for a pending edit proposal, whether the user has
+ * since applied or discarded it. */
+export type ChatActionState = ChatToolAction & {
+  resolved?: "applied" | "discarded";
+};
 
 export interface ChatItem {
   id: string;
@@ -35,7 +43,7 @@ export interface ChatItem {
   model?: string;
   thinking?: string | null;
   error?: string;
-  actions?: ChatToolAction[];
+  actions?: ChatActionState[];
 }
 
 const INITIAL_RETRY_MS = 3000;
@@ -54,25 +62,27 @@ interface ChatState {
   retryTimer: ReturnType<typeof setTimeout> | null;
   send: (text: string) => Promise<void>;
   flushQueued: () => Promise<void>;
+  /** Approve a pending update_part_parameters proposal: apply the diff via a
+   * real PATCH and mark the action resolved. */
+  applyProposedEdit: (itemId: string, actionIndex: number) => Promise<void>;
+  /** Reject a pending proposal without touching the part. */
+  discardProposedEdit: (itemId: string, actionIndex: number) => void;
   clear: () => void;
 }
 
 /**
  * React to engine tool invocations from a chat turn: created parts load into
- * the viewport (and the open project); edited parts refresh their geometry.
+ * the viewport (and the open project). Proposed parameter edits are left
+ * pending for the user to review in the chat UI — never auto-applied.
  */
 async function applyChatActions(actions: ChatToolAction[]): Promise<void> {
   const client = useEngineStore.getState().client;
   const parametric = useParametricStore.getState();
   for (const action of actions) {
-    if (!action.ok || !action.partId) continue;
+    if (!action.ok || !action.partId || action.tool !== "create_part_from_template") continue;
     try {
-      if (action.tool === "create_part_from_template") {
-        const detail = await client.getPart(action.partId);
-        parametric.registerCompiledPart(detail);
-      } else if (action.tool === "update_part_parameters") {
-        await parametric.refreshPart(action.partId);
-      }
+      const detail = await client.getPart(action.partId);
+      parametric.registerCompiledPart(detail);
     } catch {
       // the part summary is already in the chat text; scene sync is best-effort
     }
@@ -97,6 +107,22 @@ export const useChatStore = create<ChatState>((set, get) => {
   function patchItem(id: string, patch: Partial<ChatItem>): void {
     set((s) => ({
       items: s.items.map((it) => (it.id === id ? { ...it, ...patch } : it)),
+    }));
+  }
+
+  function patchAction(
+    itemId: string,
+    actionIndex: number,
+    patch: Partial<ChatActionState>,
+  ): void {
+    set((s) => ({
+      items: s.items.map((it) => {
+        if (it.id !== itemId || !it.actions) return it;
+        return {
+          ...it,
+          actions: it.actions.map((a, i) => (i === actionIndex ? { ...a, ...patch } : a)),
+        };
+      }),
     }));
   }
 
@@ -201,6 +227,27 @@ export const useChatStore = create<ChatState>((set, get) => {
         if (!ok) break;
       }
       set({ busy: false });
+    },
+
+    applyProposedEdit: async (itemId: string, actionIndex: number) => {
+      const item = get().items.find((it) => it.id === itemId);
+      const action = item?.actions?.[actionIndex];
+      if (!action || !action.partId || action.diff.length === 0) return;
+      const values = Object.fromEntries(action.diff.map((d) => [d.paramId, d.newValue]));
+      try {
+        await useParametricStore.getState().applyDiff(action.partId, values);
+        patchAction(itemId, actionIndex, { resolved: "applied" });
+      } catch (e) {
+        // leave the proposal unresolved so the user can retry; mark it failed
+        patchAction(itemId, actionIndex, {
+          ok: false,
+          summary: e instanceof Error ? e.message : String(e),
+        });
+      }
+    },
+
+    discardProposedEdit: (itemId: string, actionIndex: number) => {
+      patchAction(itemId, actionIndex, { resolved: "discarded" });
     },
 
     clear: () => {

@@ -6,6 +6,8 @@ from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
+from .feature_program import ParamDiffEntry
+
 
 class Role(StrEnum):
     system = "system"
@@ -51,6 +53,8 @@ class ChatAction(BaseModel):
     ok: bool
     summary: str
     part_id: str | None = Field(default=None, alias="partId")
+    diff: list[ParamDiffEntry] = Field(default_factory=list)
+    pending: bool = False
 
     model_config = {"populate_by_name": True}
 

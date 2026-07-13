@@ -21,7 +21,7 @@ from pydantic.alias_generators import to_camel
 
 from ..domain.errors import InvalidRequestError
 from ..domain.expressions import ExpressionError, evaluate
-from ..domain.feature_program import CompiledPart, FeatureProgram, Parameter
+from ..domain.feature_program import CompiledPart, FeatureProgram, ParamDiffEntry, Parameter
 from ..ports.cad_kernel import CadKernelPort
 from ..services.catalog import material_by_id
 from ..services.threemf import Part3MF, write_3mf
@@ -126,13 +126,7 @@ class PartsService:
             raise InvalidRequestError("nothing to update")
 
         program = record.program
-        for param_id, raw in values.items():
-            parameter = program.parameter_by_id(param_id)
-            if parameter is None:
-                raise InvalidRequestError(f"unknown parameter: {param_id}")
-            error = parameter.clamp_check(float(raw))
-            if error:
-                raise InvalidRequestError(error)
+        self._validate_values(program.parameters, values, allow_partial=True)
 
         updated_params = [
             p.model_copy(update={"value": float(values.get(p.id, p.value))})
@@ -148,6 +142,34 @@ class PartsService:
             record.native_solid = native
             record.material_id = new_material
         return self._detail(record)
+
+    def preview_params(self, part_id: str, values: dict[str, float]) -> list[ParamDiffEntry]:
+        """Validate a proposed parameter edit without applying it.
+
+        Used for AI-proposed edits awaiting user review (M2.2): the part is
+        never mutated or recompiled here. No-op entries (new value equals the
+        current value) are omitted from the returned diff.
+        """
+        record = self._get_record(part_id)
+        program = record.program
+        self._validate_values(program.parameters, values, allow_partial=True)
+        diff: list[ParamDiffEntry] = []
+        for param_id, raw in values.items():
+            parameter = program.parameter_by_id(param_id)
+            assert parameter is not None
+            new_value = float(raw)
+            if new_value == parameter.value:
+                continue
+            diff.append(
+                ParamDiffEntry(
+                    param_id=parameter.id,
+                    label=parameter.label,
+                    old_value=parameter.value,
+                    new_value=new_value,
+                    unit=parameter.unit,
+                )
+            )
+        return diff
 
     def get(self, part_id: str) -> PartDetail:
         return self._detail(self._get_record(part_id))

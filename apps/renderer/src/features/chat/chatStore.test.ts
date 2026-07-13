@@ -157,6 +157,107 @@ describe("AI design actions", () => {
   });
 });
 
+describe("AI proposed edits (reviewable diffs)", () => {
+  const proposeActions = [
+    {
+      tool: "update_part_parameters",
+      ok: true,
+      summary: "Proposed change to part eng-ai-1: W 40→65 mm",
+      partId: "eng-ai-1",
+      diff: [{ paramId: "W", label: "W", oldValue: 40, newValue: 65, unit: "mm" }],
+      pending: true,
+    },
+  ];
+
+  function chatWithActions(actions: unknown[]): Response {
+    return new Response(
+      JSON.stringify({
+        content: "I've proposed widening it.",
+        provider: "stub",
+        model: "stub",
+        stop_reason: "end_turn",
+        thinking: null,
+        usage: { input_tokens: 1, output_tokens: 1 },
+        actions,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  function seedActivePart(partId: string): void {
+    useViewportStore.getState().clear();
+    useParametricStore.getState().clear();
+    useParametricStore.getState().registerCompiledPart(makePartDetail({ partId }));
+  }
+
+  it("does NOT auto-apply an update proposal", async () => {
+    seedActivePart("eng-ai-1");
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.endsWith("/api/v1/ai/chat")) return chatWithActions(proposeActions);
+      throw new Error(`unexpected url ${url}`); // no GET/PATCH should happen
+    });
+    installClient(fetchMock);
+
+    await useChatStore.getState().send("make it 65 wide");
+
+    // the proposal is recorded but pending & unresolved; part unchanged (still 40)
+    const assistant = useChatStore.getState().items.find((i) => i.role === "assistant");
+    expect(assistant?.actions?.[0]?.pending).toBe(true);
+    expect(assistant?.actions?.[0]?.resolved).toBeUndefined();
+    expect(useParametricStore.getState().active?.parameters[0]?.value).toBe(40);
+    // only the chat POST happened — no auto GET/PATCH
+    expect(fetchMock.mock.calls).toHaveLength(1);
+  });
+
+  it("applyProposedEdit PATCHes the part and marks the action applied", async () => {
+    seedActivePart("eng-ai-1");
+    const patched = makePartDetail({ partId: "eng-ai-1", values: { W: 65, H: 60 } });
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.endsWith("/api/v1/ai/chat")) return chatWithActions(proposeActions);
+      if (url.endsWith("/api/v1/parts/eng-ai-1/params") && init?.method === "PATCH") {
+        return new Response(JSON.stringify(patched), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      throw new Error(`unexpected url ${url}`);
+    });
+    installClient(fetchMock);
+
+    await useChatStore.getState().send("make it 65 wide");
+    const itemId = useChatStore.getState().items.find((i) => i.role === "assistant")!.id;
+    await useChatStore.getState().applyProposedEdit(itemId, 0);
+
+    const action = useChatStore.getState().items.find((i) => i.id === itemId)!.actions![0]!;
+    expect(action.resolved).toBe("applied");
+    // the PATCH body carried the diff's new value
+    const patchCall = fetchMock.mock.calls.find(
+      (c) => (c[1] as RequestInit | undefined)?.method === "PATCH",
+    )!;
+    const body = JSON.parse((patchCall[1] as RequestInit).body as string);
+    expect(body.values).toEqual({ W: 65 });
+    expect(useParametricStore.getState().active?.parameters[0]?.value).toBe(65);
+  });
+
+  it("discardProposedEdit resolves without any engine call", async () => {
+    seedActivePart("eng-ai-1");
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.endsWith("/api/v1/ai/chat")) return chatWithActions(proposeActions);
+      throw new Error(`unexpected url ${url}`);
+    });
+    installClient(fetchMock);
+
+    await useChatStore.getState().send("make it 65 wide");
+    const itemId = useChatStore.getState().items.find((i) => i.role === "assistant")!.id;
+    useChatStore.getState().discardProposedEdit(itemId, 0);
+
+    const action = useChatStore.getState().items.find((i) => i.id === itemId)!.actions![0]!;
+    expect(action.resolved).toBe("discarded");
+    expect(useParametricStore.getState().active?.parameters[0]?.value).toBe(40);
+    expect(fetchMock.mock.calls).toHaveLength(1); // chat POST only
+  });
+});
+
 describe("offline queueing", () => {
   it("queues retryable failures and schedules a retry", async () => {
     vi.useFakeTimers();

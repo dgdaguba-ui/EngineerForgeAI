@@ -1,6 +1,63 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useChatStore, wireChatToEngine, type ChatItem } from "./chatStore";
+import { useChatStore, wireChatToEngine, type ChatActionState, type ChatItem } from "./chatStore";
+
+function actionLabel(action: ChatActionState): string {
+  if (action.tool === "create_part_from_template") return "Part created";
+  if (action.tool === "update_part_parameters") {
+    if (action.resolved === "applied") return "Edit applied";
+    if (action.resolved === "discarded") return "Edit discarded";
+    if (!action.ok) return "Edit failed";
+    if (action.diff.length === 0) return "No change";
+    return "Edit proposed";
+  }
+  return action.tool;
+}
+
+function DiffCard({
+  itemId,
+  action,
+  actionIndex,
+}: {
+  itemId: string;
+  action: ChatActionState;
+  actionIndex: number;
+}) {
+  const applyProposedEdit = useChatStore((s) => s.applyProposedEdit);
+  const discardProposedEdit = useChatStore((s) => s.discardProposedEdit);
+  return (
+    <div
+      className="mt-1.5 rounded border border-accent-dim/40 bg-surface-raised p-2 text-xs"
+      data-testid="diff-card"
+    >
+      <p className="mb-1 text-[10px] uppercase tracking-wide text-zinc-500">
+        Proposed parameter change
+      </p>
+      <ul className="space-y-0.5">
+        {action.diff.map((d) => (
+          <li key={d.paramId} className="text-zinc-300">
+            {d.label}: {d.oldValue}
+            {d.unit} → <span className="text-accent">{d.newValue}{d.unit}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-2 flex gap-2">
+        <button
+          onClick={() => void applyProposedEdit(itemId, actionIndex)}
+          className="rounded bg-accent-dim px-2 py-0.5 text-[10px] font-medium text-zinc-950 hover:bg-accent"
+        >
+          Apply
+        </button>
+        <button
+          onClick={() => discardProposedEdit(itemId, actionIndex)}
+          className="rounded border border-surface-border px-2 py-0.5 text-[10px] text-zinc-400 hover:text-zinc-200"
+        >
+          Discard
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function MessageBubble({ item }: { item: ChatItem }) {
   const isUser = item.role === "user";
@@ -15,25 +72,27 @@ function MessageBubble({ item }: { item: ChatItem }) {
       >
         <p className="whitespace-pre-wrap break-words">{item.content}</p>
         {item.actions && item.actions.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap gap-1" data-testid="chat-actions">
-            {item.actions.map((action, i) => (
-              <span
-                key={`${action.tool}-${i}`}
-                title={action.summary}
-                className={`rounded px-1.5 py-0.5 text-[10px] ${
-                  action.ok
-                    ? "bg-emerald-500/15 text-emerald-400"
-                    : "bg-red-500/15 text-red-400"
-                }`}
-              >
-                {action.ok ? "✓" : "✗"}{" "}
-                {action.tool === "create_part_from_template"
-                  ? "Part created"
-                  : action.tool === "update_part_parameters"
-                    ? "Part updated"
-                    : action.tool}
-              </span>
-            ))}
+          <div className="mt-1.5 flex flex-col gap-1" data-testid="chat-actions">
+            {item.actions.map((action, i) =>
+              action.tool === "update_part_parameters" &&
+              action.pending &&
+              !action.resolved &&
+              action.diff.length > 0 ? (
+                <DiffCard key={`${action.tool}-${i}`} itemId={item.id} action={action} actionIndex={i} />
+              ) : (
+                <span
+                  key={`${action.tool}-${i}`}
+                  title={action.summary}
+                  className={`w-fit rounded px-1.5 py-0.5 text-[10px] ${
+                    action.ok
+                      ? "bg-emerald-500/15 text-emerald-400"
+                      : "bg-red-500/15 text-red-400"
+                  }`}
+                >
+                  {action.ok ? "✓" : "✗"} {actionLabel(action)}
+                </span>
+              ),
+            )}
           </div>
         )}
         {item.thinking && (

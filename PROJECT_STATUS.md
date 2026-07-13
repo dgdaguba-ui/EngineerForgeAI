@@ -2,19 +2,19 @@
 
 _Living document. Updated at every milestone._
 
-**Last updated:** 2026-07-12
-**Current phase:** 🟢 Phase 2 in progress — 4 part templates (bracket, plate, enclosure, standoff), IR `shell` feature, Feature Timeline panel
-**Build health:** 🟢 all gates green
+**Last updated:** 2026-07-13
+**Current phase:** 🟢 Phase 2 in progress — 4 part templates (bracket, plate, enclosure, standoff), IR `shell` feature, Feature Timeline panel, reviewable AI edit diffs
+**Build health:** 🟢 all gates green — now pushed to GitHub (`origin`); CI active
 
 ## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. real-Blender + CAD golden tests) | 181 | ✅ |
-| Renderer (vitest) | 71 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden tests) | 183 | ✅ |
+| Renderer (vitest) | 81 | ✅ |
 | Desktop (vitest) | 36 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **300** | ✅ |
+| **Total** | **312** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
@@ -46,7 +46,8 @@ _Living document. Updated at every milestone._
 | 2.1a | Mounting Plate template — second part in the library | `bad46e1` |
 | 2.1b | **IR `shell` feature + Enclosure/project-box template** | `8ee0a49` |
 | 2.1c | Standoff / spacer template — fourth part | `3136ac3` |
-| 2.4a | **Feature Timeline panel (read-only IR recipe view)** | HEAD |
+| 2.4a | **Feature Timeline panel (read-only IR recipe view)** | `fe94634` |
+| 2.2a | **Reviewable diffs: AI proposes parameter edits, user applies/discards** | HEAD |
 
 ## The MVP story now works — offline
 > *"Design a bracket 50x70, 4 mm thick, with 2 holes, in petg"* typed into the chat
@@ -81,4 +82,4 @@ _Living document. Updated at every milestone._
 - Add `ANTHROPIC_API_KEY` to `.env` → live Claude copilot (offline stub otherwise).
 - Add `SUPABASE_URL` + `SUPABASE_ANON_KEY` → cloud auth/backup (local-only otherwise).
 - Install Docker Desktop → local Postgres for the Phase 2 data plane.
-- Configure a git remote for backup/collaboration.
+- ~~Configure a git remote~~ ✅ done — `origin` = github.com/dgdaguba-ui/EngineerForgeAI (GitHub Actions CI runs on push).

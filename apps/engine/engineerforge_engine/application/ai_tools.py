@@ -82,8 +82,10 @@ class AiToolbox:
             {
                 "name": "update_part_parameters",
                 "description": (
-                    "Change parameters on an existing parametric part and rebuild "
-                    "it. Values are validated against each parameter's range."
+                    "Propose changing parameters on an existing parametric part. "
+                    "Values are validated against each parameter's range but the "
+                    "part is NOT rebuilt — the change is returned as a diff for "
+                    "the user to review and apply or discard in the UI."
                 ),
                 "input_schema": {
                     "type": "object",
@@ -130,14 +132,26 @@ class AiToolbox:
                 )
 
             if name == "update_part_parameters":
-                detail = self._parts.patch_params(
-                    str(arguments.get("partId", "")),
-                    _number_map(arguments.get("values")),
-                )
-                summary = f"Updated {_part_summary(detail)}"
+                part_id = str(arguments.get("partId", ""))
+                diff = self._parts.preview_params(part_id, _number_map(arguments.get("values")))
+                if diff:
+                    changes = ", ".join(
+                        f"{d.label} {d.old_value}→{d.new_value} {d.unit}" for d in diff
+                    )
+                    summary = f"Proposed change to part {part_id}: {changes}"
+                else:
+                    summary = f"No change proposed for part {part_id} (values already current)"
+                model_output = summary + " (pending user approval in the UI)"
                 return ToolExecution(
-                    ChatAction(tool=name, ok=True, summary=summary, part_id=detail.part_id),
-                    summary,
+                    ChatAction(
+                        tool=name,
+                        ok=True,
+                        summary=summary,
+                        part_id=part_id,
+                        diff=diff,
+                        pending=bool(diff),
+                    ),
+                    model_output,
                 )
 
             failure = f"unknown tool: {name}"

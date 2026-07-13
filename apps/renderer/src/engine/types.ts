@@ -22,11 +22,21 @@ export interface ChatUsage {
   output_tokens: number;
 }
 
+export interface ParamDiffEntry {
+  paramId: string;
+  label: string;
+  oldValue: number;
+  newValue: number;
+  unit: string;
+}
+
 export interface ChatToolAction {
   tool: string;
   ok: boolean;
   summary: string;
   partId: string | null;
+  diff: ParamDiffEntry[];
+  pending: boolean;
 }
 
 export interface ChatResponseBody {

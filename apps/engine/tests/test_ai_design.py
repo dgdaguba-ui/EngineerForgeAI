@@ -17,6 +17,7 @@ from engineerforge_engine.adapters.cad.cadquery_kernel import CadQueryKernel
 from engineerforge_engine.application.ai_tools import AiToolbox
 from engineerforge_engine.application.parts_service import PartsService
 from engineerforge_engine.domain.ai import ChatMessage, ChatRequest, Role
+from engineerforge_engine.domain.errors import InvalidRequestError
 from engineerforge_engine.templates import default_registry
 from fastapi.testclient import TestClient
 
@@ -40,7 +41,7 @@ class TestToolbox:
         for d in defs:
             assert d["input_schema"]["type"] == "object"
 
-    def test_create_and_update_flow(self, toolbox: AiToolbox) -> None:
+    def test_create_and_propose_update_flow(self, toolbox: AiToolbox) -> None:
         created = toolbox.execute(
             "create_part_from_template",
             {"templateId": "bracket-l", "values": {"W": 50, "R": 0}, "materialId": "pla"},
@@ -49,12 +50,30 @@ class TestToolbox:
         assert created.action.part_id is not None
         assert "50" in created.model_output and "cm³" in created.model_output
 
-        updated = toolbox.execute(
+        proposed = toolbox.execute(
             "update_part_parameters",
             {"partId": created.action.part_id, "values": {"H": 80}},
         )
-        assert updated.action.ok
-        assert updated.action.part_id == created.action.part_id
+        # a proposal validates and returns a diff but does NOT mutate the part
+        assert proposed.action.ok
+        assert proposed.action.part_id == created.action.part_id
+        assert proposed.action.pending is True
+        assert len(proposed.action.diff) == 1
+        assert proposed.action.diff[0].param_id == "H"
+        assert proposed.action.diff[0].new_value == 80
+        assert "pending" in proposed.model_output.lower()
+
+        unchanged = toolbox._parts.get(created.action.part_id)
+        current_h = unchanged.program.parameter_by_id("H").value
+        assert current_h != 80
+
+        no_op = toolbox.execute(
+            "update_part_parameters",
+            {"partId": created.action.part_id, "values": {"H": current_h}},
+        )
+        assert no_op.action.ok
+        assert no_op.action.pending is False
+        assert no_op.action.diff == []
 
     def test_failures_are_reported_not_raised(self, toolbox: AiToolbox) -> None:
         unknown = toolbox.execute("teleport_part", {})
@@ -70,6 +89,29 @@ class TestToolbox:
         )
         assert not bad_value.action.ok
         assert "≥" in bad_value.model_output
+
+    def test_preview_params_validates_without_mutating(self, toolbox: AiToolbox) -> None:
+        parts = toolbox._parts
+        detail = parts.create_from_template("bracket-l", {"W": 50, "R": 0})
+        original_w = detail.program.parameter_by_id("W").value
+
+        diff = parts.preview_params(detail.part_id, {"W": 65})
+        assert len(diff) == 1
+        assert diff[0].param_id == "W"
+        assert diff[0].old_value == original_w
+        assert diff[0].new_value == 65
+        assert diff[0].unit == "mm"
+        # part is untouched — no recompile, no mutation
+        assert parts.get(detail.part_id).program.parameter_by_id("W").value == original_w
+
+        # no-op values are omitted from the diff
+        assert parts.preview_params(detail.part_id, {"W": original_w}) == []
+
+        # invalid values still raise (validation is shared with patch_params)
+        with pytest.raises(InvalidRequestError):
+            parts.preview_params(detail.part_id, {"T": 0.1})
+        with pytest.raises(InvalidRequestError):
+            parts.preview_params(detail.part_id, {"NOPE": 1})
 
     def test_list_templates_describes_parameters(self, toolbox: AiToolbox) -> None:
         listed = toolbox.execute("list_part_templates", {})
@@ -170,6 +212,51 @@ class TestClaudeToolLoop:
         assert response.actions[0].ok and response.actions[0].part_id
         assert "Done" in response.content
         assert response.usage.input_tokens == 30  # summed across iterations
+
+    async def test_update_proposes_a_pending_diff(self, toolbox: AiToolbox) -> None:
+        # seed a part the model can edit
+        seed = toolbox.execute(
+            "create_part_from_template",
+            {"templateId": "bracket-l", "values": {"W": 50, "R": 0}},
+        )
+        part_id = seed.action.part_id
+        assert part_id is not None
+
+        tool_turn = SimpleNamespace(
+            content=[
+                _block(
+                    type="tool_use",
+                    id="toolu_u",
+                    name="update_part_parameters",
+                    input={"partId": part_id, "values": {"W": 70}},
+                ),
+            ],
+            stop_reason="tool_use",
+            model="claude-opus-4-8",
+            usage=SimpleNamespace(input_tokens=3, output_tokens=2),
+        )
+        final_turn = SimpleNamespace(
+            content=[_block(type="text", text="I've proposed widening it to 70 mm.")],
+            stop_reason="end_turn",
+            model="claude-opus-4-8",
+            usage=SimpleNamespace(input_tokens=3, output_tokens=2),
+        )
+        fake = _FakeAnthropicClient([tool_turn, final_turn])
+        provider = ClaudeProvider(api_key="sk-test")
+        provider._client = fake
+
+        response = await provider.chat(
+            ChatRequest(messages=[ChatMessage(role=Role.user, content="make it 70 wide")]),
+            toolbox,
+        )
+        action = response.actions[0]
+        assert action.ok and action.pending is True
+        assert action.part_id == part_id
+        assert action.diff[0].param_id == "W" and action.diff[0].new_value == 70
+        # the tool_result fed back to Claude signals the pending state, not a done edit
+        assert "pending" in fake.calls[1]["messages"][-1]["content"][0]["content"].lower()
+        # the part was NOT mutated by the proposal
+        assert toolbox._parts.get(part_id).program.parameter_by_id("W").value == 50
 
     async def test_tool_failure_flows_back_as_error_result(self, toolbox: AiToolbox) -> None:
         tool_turn = SimpleNamespace(
