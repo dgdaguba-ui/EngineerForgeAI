@@ -95,11 +95,12 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 ## Phase 2 — next up (docs/05-roadmap.md)
 
 ### M2.1 — Template library expansion (in progress)
-- [x] **Mounting/adapter plate** template: rectangular plate, symmetric 4-corner hole pattern (two linear-row holes), center bore, optional rounded corners — built entirely from the existing IR (no kernel changes needed). 16 new golden/API tests incl. fillet-delta formula and hole-symmetry checks (160 engine tests total).
+- [x] **Mounting/adapter plate** template: rectangular plate, symmetric 4-corner hole pattern (two linear-row holes), center bore, optional rounded corners — built from the existing IR. 16 golden/API tests.
+- [x] **IR `shell` feature** (hollow a solid to a wall thickness, remove named faces) + kernel executor with a volume-decrease guard (caught CadQuery silently returning the un-hollowed solid for over-thick walls) + **Enclosure/project-box** template (open-top hollow box, floor, rounded corners). 15 golden/API tests incl. closed-form cavity volume.
 - [x] Proved the template registry is a true plugin seam: `AiToolbox.list_part_templates` and the Claude/stub design flows discover new templates with zero AI-layer code change.
-- [ ] Gear (spur) — needs involute-curve sketch support (new profile kind) or an approximation strategy; scope it before starting
-- [ ] Enclosure/project-box — needs a `shell` IR feature (hollow via wall offset) or boolean-subtract between two solids; IR extension required, not just a new template
-- [ ] Standoff/bushing, pipe fitting, clamp — evaluate case by case against current IR feature set (sketch/extrude/hole/fillet only)
+- [ ] Standoff/spacer (round tube + optional flange) — fits existing IR; next
+- [ ] Gear (spur) — needs involute-curve sketch support (new profile kind); scope before starting
+- [ ] Pipe fitting, clamp — evaluate case by case against the IR feature set
 
 ### M2.2 — AI & UX depth
 - [ ] Reviewable IR diffs for AI edits before apply; WS streaming for chat + rebuild progress

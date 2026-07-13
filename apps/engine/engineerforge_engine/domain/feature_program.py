@@ -28,6 +28,7 @@ EFIR_VERSION: Literal["efir/1"] = "efir/1"
 
 Axis = Literal["X", "Y", "Z"]
 PlaneName = Literal["XY", "YZ", "XZ"]
+FaceRef = Literal["+X", "-X", "+Y", "-Y", "+Z", "-Z"]
 
 _ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 
@@ -148,8 +149,22 @@ class FilletFeature(_CamelModel):
     radius: Expr
 
 
+class ShellFeature(_CamelModel):
+    """Hollow the current solid, leaving walls of `thickness`.
+
+    Faces named in `open_faces` are removed (e.g. ``["+Z"]`` opens the top,
+    producing an open-topped box). An empty list produces a fully closed
+    hollow shell. Signed convention: the wall grows inward.
+    """
+
+    op: Literal["shell"] = "shell"
+    id: str
+    thickness: Expr
+    open_faces: list[FaceRef] = Field(default_factory=list)
+
+
 Feature = Annotated[
-    SketchFeature | ExtrudeFeature | HoleFeature | FilletFeature,
+    SketchFeature | ExtrudeFeature | HoleFeature | FilletFeature | ShellFeature,
     Field(discriminator="op"),
 ]
 

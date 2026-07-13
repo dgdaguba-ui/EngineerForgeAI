@@ -25,6 +25,7 @@ from ...domain.feature_program import (
     HoleFeature,
     MassProps,
     RawMesh,
+    ShellFeature,
     SketchFeature,
 )
 from ...ports.cad_kernel import CadKernelPort
@@ -40,6 +41,15 @@ class GeometryError(EngineError):
 # (u, v) position axes per drill axis; third component is the drill direction.
 _HOLE_FRAME: dict[str, tuple[str, str]] = {"X": ("y", "z"), "Y": ("x", "z"), "Z": ("x", "y")}
 _AXIS_VECTORS = {"X": (1, 0, 0), "Y": (0, 1, 0), "Z": (0, 0, 1)}
+# FaceRef → CadQuery face selector string.
+_FACE_SELECTOR = {
+    "+X": ">X",
+    "-X": "<X",
+    "+Y": ">Y",
+    "-Y": "<Y",
+    "+Z": ">Z",
+    "-Z": "<Z",
+}
 
 
 class CadQueryKernel(CadKernelPort):
@@ -63,6 +73,8 @@ class CadQueryKernel(CadKernelPort):
                     solid, skip_note = self._fillet(cq, feature, values, solid)
                     if skip_note:
                         warnings.append(skip_note)
+                elif isinstance(feature, ShellFeature):
+                    solid = self._shell(feature, values, solid)
             except GeometryError:
                 raise
             except Exception as exc:
@@ -179,6 +191,39 @@ class CadQueryKernel(CadKernelPort):
                 "large for an adjacent wall — opposing edges on a face of thickness t "
                 f"allow r < t/2. Reduce the fillet radius. ({exc})"
             ) from exc
+
+    def _shell(
+        self, feature: ShellFeature, values: dict[str, float], solid: Any
+    ) -> Any:
+        if solid is None:
+            raise GeometryError(f"shell {feature.id}: no solid to shell yet")
+        thickness = evaluate(feature.thickness, values)
+        if thickness <= 0:
+            raise GeometryError(f"shell {feature.id}: thickness must be > 0")
+        before = float(solid.val().Volume())
+        selectors = [_FACE_SELECTOR[f] for f in feature.open_faces]
+        try:
+            if selectors:
+                wp = solid.faces(selectors[0])
+                for sel in selectors[1:]:
+                    wp = wp.add(solid.faces(sel))
+                result = wp.shell(-thickness)
+            else:
+                result = solid.shell(-thickness)
+        except Exception as exc:
+            raise GeometryError(
+                f"shell {feature.id} failed at thickness {thickness}: the wall is likely "
+                "too thick for the part's smallest dimension. Reduce the wall thickness. "
+                f"({exc})"
+            ) from exc
+        # CadQuery may silently return the un-hollowed solid when the wall is
+        # too thick — guard against that wrong-but-valid result.
+        if float(result.val().Volume()) >= before - 1e-6:
+            raise GeometryError(
+                f"shell {feature.id}: wall thickness {thickness} is too large — no cavity "
+                "was produced. Reduce the wall thickness relative to the part's dimensions."
+            )
+        return result
 
     # ── output ────────────────────────────────────────────────────────────────
 
