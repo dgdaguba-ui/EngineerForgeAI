@@ -14,9 +14,18 @@ testable and usable offline.
 from __future__ import annotations
 
 import re
+from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING
 
-from ...domain.ai import ChatAction, ChatRequest, ChatResponse, ProviderHealth, Role, Usage
+from ...domain.ai import (
+    ChatAction,
+    ChatRequest,
+    ChatResponse,
+    ChatStreamEvent,
+    ProviderHealth,
+    Role,
+    Usage,
+)
 from ...ports.ai_provider import AIProvider
 
 if TYPE_CHECKING:
@@ -112,6 +121,24 @@ class StubProvider(AIProvider):
             usage=Usage(input_tokens=in_chars // 4, output_tokens=len(body) // 4),
             actions=actions,
         )
+
+    async def stream(
+        self, request: ChatRequest, toolbox: AiToolbox | None = None
+    ) -> AsyncIterator[ChatStreamEvent]:
+        """Stream the deterministic reply word-by-word.
+
+        The content is identical to :meth:`chat`; it is simply chunked so the
+        UI exercises the same streaming path it uses for Claude (and so the
+        offline experience feels live). Actions are emitted before ``done``.
+        """
+        response = await self.chat(request, toolbox)
+        # chunk on whitespace boundaries, keeping the separators so the
+        # reassembled text is byte-identical to response.content
+        for chunk in re.findall(r"\S+\s*", response.content):
+            yield ChatStreamEvent(type="delta", text=chunk)
+        for action in response.actions:
+            yield ChatStreamEvent(type="action", action=action)
+        yield ChatStreamEvent(type="done", response=response)
 
     async def health(self) -> ProviderHealth:
         return ProviderHealth(

@@ -7,6 +7,7 @@ offline MVP story through the HTTP API.
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 from typing import Any
 
@@ -287,6 +288,160 @@ class TestClaudeToolLoop:
         )
         assert response.actions[0].ok is False
         assert fake.calls[1]["messages"][-1]["content"][0]["is_error"] is True
+
+
+class _FakeStream:
+    """One scripted streaming turn: text deltas then a final message."""
+
+    def __init__(self, texts: list[str], final: Any) -> None:
+        self._texts = texts
+        self._final = final
+
+    async def __aenter__(self) -> _FakeStream:
+        return self
+
+    async def __aexit__(self, *exc: Any) -> bool:
+        return False
+
+    @property
+    def text_stream(self) -> Any:
+        async def gen() -> Any:
+            for t in self._texts:
+                yield t
+
+        return gen()
+
+    async def get_final_message(self) -> Any:
+        return self._final
+
+
+class _FakeStreamingClient:
+    """Emulates client.messages.stream(...) as an async context manager."""
+
+    def __init__(self, scripted: list[tuple[list[str], Any]]) -> None:
+        self._scripted = scripted
+        self.calls: list[dict[str, Any]] = []
+        self.messages = SimpleNamespace(stream=self._stream)
+
+    def _stream(self, **kwargs: Any) -> _FakeStream:
+        self.calls.append(kwargs)
+        texts, final = self._scripted[min(len(self.calls) - 1, len(self._scripted) - 1)]
+        return _FakeStream(texts, final)
+
+
+async def _collect(stream: Any) -> list[Any]:
+    return [event async for event in stream]
+
+
+class TestStreaming:
+    async def test_stub_streams_words_then_done(self, toolbox: AiToolbox) -> None:
+        events = await _collect(
+            StubProvider().stream(
+                ChatRequest(messages=[ChatMessage(role=Role.user, content="hello")]),
+                toolbox,
+            )
+        )
+        deltas = [e for e in events if e.type == "delta"]
+        assert len(deltas) > 1  # actually chunked, not one blob
+        assert events[-1].type == "done"
+        # reassembled deltas are byte-identical to the final content
+        assert "".join(d.text for d in deltas) == events[-1].response.content
+
+    async def test_stub_stream_emits_action_for_a_design_prompt(
+        self, toolbox: AiToolbox
+    ) -> None:
+        events = await _collect(
+            StubProvider().stream(
+                ChatRequest(
+                    messages=[ChatMessage(role=Role.user, content="Design a bracket 50x70")]
+                ),
+                toolbox,
+            )
+        )
+        actions = [e for e in events if e.type == "action"]
+        assert len(actions) == 1 and actions[0].action.ok
+        assert events[-1].type == "done"
+        assert events[-1].response.actions[0].part_id
+
+    async def test_claude_stream_forwards_deltas_and_runs_the_tool_loop(
+        self, toolbox: AiToolbox
+    ) -> None:
+        tool_final = SimpleNamespace(
+            content=[
+                _block(type="text", text="Creating your bracket."),
+                _block(
+                    type="tool_use",
+                    id="toolu_s",
+                    name="create_part_from_template",
+                    input={"templateId": "bracket-l", "values": {"W": 55, "R": 0}},
+                ),
+            ],
+            stop_reason="tool_use",
+            model="claude-opus-4-8",
+            usage=SimpleNamespace(input_tokens=10, output_tokens=5),
+        )
+        end_final = SimpleNamespace(
+            content=[_block(type="text", text=" Done.")],
+            stop_reason="end_turn",
+            model="claude-opus-4-8",
+            usage=SimpleNamespace(input_tokens=20, output_tokens=8),
+        )
+        fake = _FakeStreamingClient(
+            [(["Creating ", "your bracket."], tool_final), ([" Done."], end_final)]
+        )
+        provider = ClaudeProvider(api_key="sk-test")
+        provider._client = fake
+
+        events = await _collect(
+            provider.stream(
+                ChatRequest(messages=[ChatMessage(role=Role.user, content="bracket 55")]),
+                toolbox,
+            )
+        )
+        deltas = [e.text for e in events if e.type == "delta"]
+        assert deltas == ["Creating ", "your bracket.", " Done."]
+        action_events = [e for e in events if e.type == "action"]
+        assert len(action_events) == 1 and action_events[0].action.ok
+        done = events[-1]
+        assert done.type == "done"
+        assert done.response.content == "Creating your bracket. Done."
+        assert done.response.actions[0].part_id
+        assert done.response.usage.input_tokens == 30  # summed across iterations
+        assert len(fake.calls) == 2  # streamed twice (tool loop)
+
+    async def test_claude_stream_reports_unavailable_as_error_event(self) -> None:
+        # no key configured → provider unavailable, surfaced as a terminal event
+        events = await _collect(
+            ClaudeProvider(api_key=None).stream(
+                ChatRequest(messages=[ChatMessage(role=Role.user, content="hi")])
+            )
+        )
+        assert len(events) == 1
+        assert events[0].type == "error"
+        assert events[0].code == "AI_PROVIDER_UNAVAILABLE"
+
+    def test_stream_endpoint_yields_ndjson_offline(self, client: TestClient) -> None:
+        resp = client.post(
+            "/api/v1/ai/chat/stream",
+            json={
+                "messages": [
+                    {"role": "user", "content": "Design a bracket 50x70, in petg"}
+                ]
+            },
+        )
+        assert resp.status_code == 200
+        assert resp.headers["content-type"].startswith("application/x-ndjson")
+        lines = [json.loads(ln) for ln in resp.text.splitlines() if ln.strip()]
+        assert lines, "stream produced no events"
+        assert {ln["type"] for ln in lines} >= {"delta", "done"}
+        done = lines[-1]
+        assert done["type"] == "done"
+        assert done["response"]["actions"][0]["partId"]
+
+    def test_stream_endpoint_rejects_empty_messages(self, client: TestClient) -> None:
+        resp = client.post("/api/v1/ai/chat/stream", json={"messages": []})
+        assert resp.status_code == 400
+        assert resp.json()["error"]["code"] == "INVALID_REQUEST"
 
 
 class TestMvpStoryOffline:

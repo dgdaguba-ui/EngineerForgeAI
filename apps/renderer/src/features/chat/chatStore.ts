@@ -139,34 +139,86 @@ export const useChatStore = create<ChatState>((set, get) => {
     });
   }
 
+  /** Insert an assistant bubble directly after its user message so conversation
+   * order (and the history sent on later turns) stays correct even when other
+   * messages were queued behind this one. Returns the new item id. */
+  function insertAssistantAfter(userItemId: string, fields: Partial<ChatItem>): string {
+    const assistantId = newId();
+    set((s) => {
+      const idx = s.items.findIndex((it) => it.id === userItemId);
+      const assistant: ChatItem = {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        status: "sending",
+        ...fields,
+      };
+      const items = [...s.items];
+      items.splice(idx + 1, 0, assistant);
+      return { items };
+    });
+    return assistantId;
+  }
+
   async function deliver(userItemId: string): Promise<boolean> {
     const client = useEngineStore.getState().client;
     const messages = historyFor(get().items, userItemId);
+    let assistantId: string | null = null;
+    let content = "";
     try {
-      const res = await client.chat({ messages, system: CHAT_SYSTEM_PROMPT });
-      patchItem(userItemId, { status: "sent" });
-      // Insert the reply directly after its user message so conversation order
-      // (and the history sent on later turns) stays correct even when other
-      // messages were queued behind this one.
-      set((s) => {
-        const idx = s.items.findIndex((it) => it.id === userItemId);
-        const assistant: ChatItem = {
-          id: newId(),
-          role: "assistant",
-          content: res.content,
-          status: "sent",
-          provider: res.provider,
-          model: res.model,
-          thinking: res.thinking,
-          actions: res.actions,
-        };
-        const items = [...s.items];
-        items.splice(idx + 1, 0, assistant);
-        return { items, retryDelayMs: INITIAL_RETRY_MS };
-      });
-      await applyChatActions(res.actions ?? []);
-      return true;
+      for await (const event of client.chatStream({
+        messages,
+        system: CHAT_SYSTEM_PROMPT,
+      })) {
+        if (event.type === "delta") {
+          content += event.text ?? "";
+          if (assistantId === null) {
+            patchItem(userItemId, { status: "sent" });
+            assistantId = insertAssistantAfter(userItemId, { content });
+          } else {
+            patchItem(assistantId, { content });
+          }
+        } else if (event.type === "error") {
+          throw new EngineApiError(
+            event.error ?? "chat stream failed",
+            event.code ?? "STREAM_ERROR",
+            0,
+            event.retryable ?? false,
+          );
+        } else if (event.type === "done") {
+          const res = event.response!;
+          patchItem(userItemId, { status: "sent" });
+          const finalFields = {
+            content: res.content,
+            status: "sent" as const,
+            provider: res.provider,
+            model: res.model,
+            thinking: res.thinking,
+            actions: res.actions,
+          };
+          if (assistantId === null) {
+            assistantId = insertAssistantAfter(userItemId, finalFields);
+          } else {
+            patchItem(assistantId, finalFields);
+          }
+          set({ retryDelayMs: INITIAL_RETRY_MS });
+          await applyChatActions(res.actions ?? []);
+          return true;
+        }
+        // "action" events are informational; the authoritative set arrives on done
+      }
+      // stream closed without a done event — treat as a retryable glitch
+      throw new EngineApiError("chat stream ended early", "STREAM_INCOMPLETE", 0, true);
     } catch (e) {
+      if (assistantId !== null) {
+        // partial reply already shown — surface the failure on that bubble and
+        // don't re-queue (we did get a response start)
+        patchItem(assistantId, {
+          status: "error",
+          error: e instanceof Error ? e.message : String(e),
+        });
+        return true;
+      }
       if (e instanceof EngineApiError && e.retryable) {
         patchItem(userItemId, { status: "queued" });
         scheduleRetry();

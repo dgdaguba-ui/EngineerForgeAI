@@ -8,18 +8,32 @@ import { makePartDetail } from "../../test/fixtures";
 import { useParametricStore } from "../parametric/parametricStore";
 import { CHAT_SYSTEM_PROMPT, useChatStore } from "./chatStore";
 
-function okResponse(content: string): Response {
-  return new Response(
-    JSON.stringify({
+/** Build an NDJSON streaming Response from a list of ChatStreamEvent objects. */
+function streamResponse(events: unknown[]): Response {
+  const body = events.map((e) => JSON.stringify(e)).join("\n") + "\n";
+  return new Response(body, {
+    status: 200,
+    headers: { "Content-Type": "application/x-ndjson" },
+  });
+}
+
+function doneEvent(content: string, actions: unknown[] = []): unknown {
+  return {
+    type: "done",
+    response: {
       content,
       provider: "stub",
       model: "stub",
       stop_reason: "end_turn",
       thinking: null,
       usage: { input_tokens: 1, output_tokens: 1 },
-    }),
-    { status: 200, headers: { "Content-Type": "application/json" } },
-  );
+      actions,
+    },
+  };
+}
+
+function okResponse(content: string): Response {
+  return streamResponse([doneEvent(content)]);
 }
 
 function installClient(fetchFn: (input: string, init?: RequestInit) => Promise<Response>): void {
@@ -69,6 +83,43 @@ describe("chatStore.send", () => {
     expect(body.messages).toEqual([{ role: "user", content: "How strong is PETG?" }]);
   });
 
+  it("streams deltas into a live assistant bubble before finalizing", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      streamResponse([
+        { type: "delta", text: "Hel" },
+        { type: "delta", text: "lo" },
+        doneEvent("Hello", []),
+      ]),
+    );
+    installClient(fetchMock);
+
+    await useChatStore.getState().send("hi");
+    const assistant = useChatStore.getState().items.find((i) => i.role === "assistant");
+    expect(assistant?.content).toBe("Hello");
+    expect(assistant?.status).toBe("sent");
+    // the streaming endpoint was used
+    expect(fetchMock.mock.calls[0]![0]).toContain("/api/v1/ai/chat/stream");
+  });
+
+  it("shows a partial reply then errors if the stream fails mid-flight", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      streamResponse([
+        { type: "delta", text: "partial" },
+        { type: "error", error: "provider exploded", code: "AI_PROVIDER_ERROR", retryable: false },
+      ]),
+    );
+    installClient(fetchMock);
+
+    await useChatStore.getState().send("hi");
+    const items = useChatStore.getState().items;
+    // user message counts as delivered (we got a response start), assistant errored
+    expect(items[0]!.status).toBe("sent");
+    const assistant = items.find((i) => i.role === "assistant")!;
+    expect(assistant.content).toBe("partial");
+    expect(assistant.status).toBe("error");
+    expect(assistant.error).toContain("provider exploded");
+  });
+
   it("includes prior sent turns as history", async () => {
     const fetchMock = vi
       .fn()
@@ -111,26 +162,19 @@ describe("AI design actions", () => {
     useParametricStore.getState().clear();
     const detail = makePartDetail({ partId: "eng-ai-1" });
     const fetchMock = vi.fn(async (url: string) => {
-      if (url.endsWith("/api/v1/ai/chat")) {
-        return new Response(
-          JSON.stringify({
-            content: "Created your bracket.",
-            provider: "stub",
-            model: "stub",
-            stop_reason: "end_turn",
-            thinking: null,
-            usage: { input_tokens: 1, output_tokens: 1 },
-            actions: [
-              {
-                tool: "create_part_from_template",
-                ok: true,
-                summary: "Created L-Bracket",
-                partId: "eng-ai-1",
-              },
-            ],
-          }),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        );
+      if (url.endsWith("/api/v1/ai/chat/stream")) {
+        return streamResponse([
+          doneEvent("Created your bracket.", [
+            {
+              tool: "create_part_from_template",
+              ok: true,
+              summary: "Created L-Bracket",
+              partId: "eng-ai-1",
+              diff: [],
+              pending: false,
+            },
+          ]),
+        ]);
       }
       if (url.endsWith("/api/v1/parts/eng-ai-1")) {
         return new Response(JSON.stringify(detail), {
@@ -170,18 +214,7 @@ describe("AI proposed edits (reviewable diffs)", () => {
   ];
 
   function chatWithActions(actions: unknown[]): Response {
-    return new Response(
-      JSON.stringify({
-        content: "I've proposed widening it.",
-        provider: "stub",
-        model: "stub",
-        stop_reason: "end_turn",
-        thinking: null,
-        usage: { input_tokens: 1, output_tokens: 1 },
-        actions,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } },
-    );
+    return streamResponse([doneEvent("I've proposed widening it.", actions)]);
   }
 
   function seedActivePart(partId: string): void {
@@ -193,7 +226,7 @@ describe("AI proposed edits (reviewable diffs)", () => {
   it("does NOT auto-apply an update proposal", async () => {
     seedActivePart("eng-ai-1");
     const fetchMock = vi.fn(async (url: string) => {
-      if (url.endsWith("/api/v1/ai/chat")) return chatWithActions(proposeActions);
+      if (url.endsWith("/api/v1/ai/chat/stream")) return chatWithActions(proposeActions);
       throw new Error(`unexpected url ${url}`); // no GET/PATCH should happen
     });
     installClient(fetchMock);
@@ -213,7 +246,7 @@ describe("AI proposed edits (reviewable diffs)", () => {
     seedActivePart("eng-ai-1");
     const patched = makePartDetail({ partId: "eng-ai-1", values: { W: 65, H: 60 } });
     const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
-      if (url.endsWith("/api/v1/ai/chat")) return chatWithActions(proposeActions);
+      if (url.endsWith("/api/v1/ai/chat/stream")) return chatWithActions(proposeActions);
       if (url.endsWith("/api/v1/parts/eng-ai-1/params") && init?.method === "PATCH") {
         return new Response(JSON.stringify(patched), {
           status: 200,
@@ -242,7 +275,7 @@ describe("AI proposed edits (reviewable diffs)", () => {
   it("discardProposedEdit resolves without any engine call", async () => {
     seedActivePart("eng-ai-1");
     const fetchMock = vi.fn(async (url: string) => {
-      if (url.endsWith("/api/v1/ai/chat")) return chatWithActions(proposeActions);
+      if (url.endsWith("/api/v1/ai/chat/stream")) return chatWithActions(proposeActions);
       throw new Error(`unexpected url ${url}`);
     });
     installClient(fetchMock);

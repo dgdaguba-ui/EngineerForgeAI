@@ -49,6 +49,17 @@ export interface ChatResponseBody {
   actions: ChatToolAction[];
 }
 
+/** One event from POST /api/v1/ai/chat/stream (newline-delimited JSON). */
+export interface ChatStreamEvent {
+  type: "delta" | "action" | "done" | "error";
+  text?: string | null;
+  action?: ChatToolAction | null;
+  response?: ChatResponseBody | null;
+  error?: string | null;
+  code?: string | null;
+  retryable?: boolean;
+}
+
 export interface ProviderHealth {
   provider: string;
   available: boolean;

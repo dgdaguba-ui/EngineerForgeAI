@@ -7,6 +7,7 @@ import type {
   BlenderStatus,
   ChatRequestBody,
   ChatResponseBody,
+  ChatStreamEvent,
   CompatibilityReport,
   ConvertResult,
   EngineCapabilities,
@@ -115,6 +116,53 @@ export class EngineClient {
       method: "POST",
       body: JSON.stringify(body),
     });
+  }
+
+  /**
+   * Stream a chat turn as `ChatStreamEvent`s (newline-delimited JSON over
+   * chunked HTTP). Yields events as they arrive. A non-2xx response (including
+   * a connection failure before the first byte) throws `EngineApiError`, so the
+   * caller's offline-queue logic behaves exactly as it does for `chat()`.
+   */
+  async *chatStream(body: ChatRequestBody): AsyncGenerator<ChatStreamEvent> {
+    if (!this.conn.baseUrl) {
+      throw new EngineApiError("Engine is not connected", "NOT_CONNECTED", 0, true);
+    }
+    let res: Response;
+    try {
+      res = await this.fetchFn(`${this.conn.baseUrl}/api/v1/ai/chat/stream`, {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify(body),
+      });
+    } catch (cause) {
+      throw new EngineApiError(
+        `Engine unreachable: ${cause instanceof Error ? cause.message : String(cause)}`,
+        "NETWORK_ERROR",
+        0,
+        true,
+      );
+    }
+    if (!res.ok) {
+      let code = "HTTP_ERROR";
+      let message = `Engine request failed (${res.status})`;
+      let retryable = res.status >= 500;
+      try {
+        const envelope = (await res.json()) as EngineErrorEnvelope;
+        if (envelope?.error) {
+          code = envelope.error.code;
+          message = envelope.error.message;
+          retryable = envelope.error.retryable;
+        }
+      } catch {
+        // non-JSON error body — keep defaults
+      }
+      throw new EngineApiError(message, code, res.status, retryable);
+    }
+
+    for await (const line of iterateNdjsonLines(res)) {
+      yield JSON.parse(line) as ChatStreamEvent;
+    }
   }
 
   async blenderStatus(): Promise<BlenderStatus> {
@@ -243,4 +291,35 @@ export class EngineClient {
       body: JSON.stringify({ format, dstPath }),
     });
   }
+}
+
+/**
+ * Yield complete newline-delimited lines from a streaming Response body.
+ * Falls back to buffering the whole body when the platform doesn't expose a
+ * readable stream (e.g. some test doubles). The trailing partial line, if any,
+ * is emitted once the stream ends.
+ */
+async function* iterateNdjsonLines(res: Response): AsyncGenerator<string> {
+  const reader = res.body?.getReader?.();
+  if (!reader) {
+    for (const line of (await res.text()).split("\n")) {
+      if (line.trim()) yield line;
+    }
+    return;
+  }
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (value) buffer += decoder.decode(value, { stream: true });
+    let newline: number;
+    while ((newline = buffer.indexOf("\n")) >= 0) {
+      const line = buffer.slice(0, newline);
+      buffer = buffer.slice(newline + 1);
+      if (line.trim()) yield line;
+    }
+    if (done) break;
+  }
+  buffer += decoder.decode();
+  if (buffer.trim()) yield buffer;
 }

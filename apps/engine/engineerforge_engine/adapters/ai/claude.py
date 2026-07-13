@@ -13,10 +13,24 @@ unavailable and the registry falls back to the StubProvider.
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Any
 
-from ...domain.ai import ChatAction, ChatRequest, ChatResponse, ProviderHealth, Role, Usage
-from ...domain.errors import AIProviderError, InvalidRequestError, ProviderUnavailableError
+from ...domain.ai import (
+    ChatAction,
+    ChatRequest,
+    ChatResponse,
+    ChatStreamEvent,
+    ProviderHealth,
+    Role,
+    Usage,
+)
+from ...domain.errors import (
+    AIProviderError,
+    EngineError,
+    InvalidRequestError,
+    ProviderUnavailableError,
+)
 from ...ports.ai_provider import AIProvider
 
 if TYPE_CHECKING:
@@ -90,14 +104,12 @@ class ClaudeProvider(AIProvider):
         # UI can optionally surface reasoning instead of a silent pause.
         return {"type": "adaptive", "display": "summarized"}
 
-    async def chat(
-        self, request: ChatRequest, toolbox: AiToolbox | None = None
-    ) -> ChatResponse:
-        client = self._get_client()
+    def _base_kwargs(
+        self, request: ChatRequest, toolbox: AiToolbox | None
+    ) -> tuple[dict[str, object], list[dict[str, Any]], str]:
         system, messages = split_system_and_messages(request)
         if not messages:
             raise InvalidRequestError("request contains no user/assistant messages")
-
         model = request.model or self._model
         base_kwargs: dict[str, object] = {
             "model": model,
@@ -110,8 +122,88 @@ class ClaudeProvider(AIProvider):
             base_kwargs["thinking"] = thinking
         if toolbox is not None:
             base_kwargs["tools"] = toolbox.definitions()
+        return base_kwargs, list(messages), model
 
-        conversation: list[dict[str, Any]] = list(messages)
+    @staticmethod
+    def _collect_blocks(
+        resp: Any, text_parts: list[str], thinking_parts: list[str]
+    ) -> list[Any]:
+        """Split a message's content blocks, appending text/thinking and
+        returning the tool_use blocks."""
+        tool_uses: list[Any] = []
+        for block in getattr(resp, "content", []) or []:
+            btype = getattr(block, "type", None)
+            if btype == "text":
+                text_parts.append(getattr(block, "text", ""))
+            elif btype == "thinking":
+                t = getattr(block, "thinking", "") or ""
+                if t:
+                    thinking_parts.append(t)
+            elif btype == "tool_use":
+                tool_uses.append(block)
+        return tool_uses
+
+    def _answer_tool_uses(
+        self,
+        conversation: list[dict[str, Any]],
+        resp: Any,
+        tool_uses: list[Any],
+        toolbox: AiToolbox,
+        actions: list[ChatAction],
+    ) -> list[ChatAction]:
+        """Echo the assistant turn and answer every tool call in one user turn.
+        Returns the actions produced this round (also appended to ``actions``)."""
+        conversation.append({"role": "assistant", "content": getattr(resp, "content", [])})
+        results: list[dict[str, Any]] = []
+        round_actions: list[ChatAction] = []
+        for tool_use in tool_uses:
+            execution = toolbox.execute(
+                getattr(tool_use, "name", ""),
+                dict(getattr(tool_use, "input", {}) or {}),
+            )
+            actions.append(execution.action)
+            round_actions.append(execution.action)
+            results.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": getattr(tool_use, "id", ""),
+                    "content": execution.model_output,
+                    "is_error": not execution.action.ok,
+                }
+            )
+        conversation.append({"role": "user", "content": results})
+        return round_actions
+
+    def _assemble(
+        self,
+        resp: Any,
+        model: str,
+        text_parts: list[str],
+        thinking_parts: list[str],
+        total_in: int,
+        total_out: int,
+        actions: list[ChatAction],
+    ) -> ChatResponse:
+        content = "".join(text_parts)
+        stop_reason = getattr(resp, "stop_reason", None) if resp is not None else None
+        if stop_reason == "refusal" and not content:
+            content = "[Claude declined to respond to this request.]"
+        return ChatResponse(
+            content=content,
+            provider=self.name,
+            model=getattr(resp, "model", model) if resp is not None else model,
+            stop_reason=stop_reason,
+            thinking="\n".join(thinking_parts) or None,
+            usage=Usage(input_tokens=total_in, output_tokens=total_out),
+            actions=actions,
+        )
+
+    async def chat(
+        self, request: ChatRequest, toolbox: AiToolbox | None = None
+    ) -> ChatResponse:
+        client = self._get_client()
+        base_kwargs, conversation, model = self._base_kwargs(request, toolbox)
+
         actions: list[ChatAction] = []
         text_parts: list[str] = []
         thinking_parts: list[str] = []
@@ -133,57 +225,87 @@ class ClaudeProvider(AIProvider):
             total_in += getattr(usage_obj, "input_tokens", 0) or 0
             total_out += getattr(usage_obj, "output_tokens", 0) or 0
 
-            tool_uses: list[Any] = []
-            for block in getattr(resp, "content", []) or []:
-                btype = getattr(block, "type", None)
-                if btype == "text":
-                    text_parts.append(getattr(block, "text", ""))
-                elif btype == "thinking":
-                    t = getattr(block, "thinking", "") or ""
-                    if t:
-                        thinking_parts.append(t)
-                elif btype == "tool_use":
-                    tool_uses.append(block)
-
+            tool_uses = self._collect_blocks(resp, text_parts, thinking_parts)
             if getattr(resp, "stop_reason", None) != "tool_use" or not tool_uses:
                 break
             if toolbox is None:  # defensive: model requested tools we never offered
                 break
+            self._answer_tool_uses(conversation, resp, tool_uses, toolbox, actions)
 
-            # echo the assistant turn, then answer every tool call in ONE user turn
-            conversation.append(
-                {"role": "assistant", "content": getattr(resp, "content", [])}
+        return self._assemble(
+            resp, model, text_parts, thinking_parts, total_in, total_out, actions
+        )
+
+    async def stream(
+        self, request: ChatRequest, toolbox: AiToolbox | None = None
+    ) -> AsyncIterator[ChatStreamEvent]:
+        """Stream a Claude turn, forwarding text deltas as they arrive.
+
+        The manual tool loop is preserved: each iteration opens a streaming
+        request, forwards text_stream deltas, then resolves the final message —
+        if it asked for tools we execute them (emitting ``action`` events) and
+        loop, otherwise we finish with a ``done`` event carrying the assembled
+        response. SDK errors become a terminal ``error`` event.
+        """
+        try:
+            client = self._get_client()
+            base_kwargs, conversation, model = self._base_kwargs(request, toolbox)
+        except EngineError as exc:
+            yield ChatStreamEvent(
+                type="error", error=exc.message, code=exc.code, retryable=exc.retryable
             )
-            results: list[dict[str, Any]] = []
-            for tool_use in tool_uses:
-                execution = toolbox.execute(
-                    getattr(tool_use, "name", ""),
-                    dict(getattr(tool_use, "input", {}) or {}),
-                )
-                actions.append(execution.action)
-                results.append(
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": getattr(tool_use, "id", ""),
-                        "content": execution.model_output,
-                        "is_error": not execution.action.ok,
-                    }
-                )
-            conversation.append({"role": "user", "content": results})
+            return
 
-        content = "".join(text_parts)
-        stop_reason = getattr(resp, "stop_reason", None) if resp is not None else None
-        if stop_reason == "refusal" and not content:
-            content = "[Claude declined to respond to this request.]"
+        actions: list[ChatAction] = []
+        text_parts: list[str] = []
+        thinking_parts: list[str] = []
+        total_in = 0
+        total_out = 0
+        resp: Any = None
 
-        return ChatResponse(
-            content=content,
-            provider=self.name,
-            model=getattr(resp, "model", model) if resp is not None else model,
-            stop_reason=stop_reason,
-            thinking="\n".join(thinking_parts) or None,
-            usage=Usage(input_tokens=total_in, output_tokens=total_out),
-            actions=actions,
+        for _ in range(MAX_TOOL_ITERATIONS):
+            try:
+                async with client.messages.stream(  # type: ignore[attr-defined]
+                    **base_kwargs, messages=conversation
+                ) as stream:
+                    async for text in stream.text_stream:
+                        if text:
+                            yield ChatStreamEvent(type="delta", text=text)
+                    resp = await stream.get_final_message()
+            except Exception as exc:  # map SDK errors → terminal error event
+                mapped = self._map_error(exc)
+                yield ChatStreamEvent(
+                    type="error",
+                    error=mapped.message,
+                    code=mapped.code,
+                    retryable=mapped.retryable,
+                )
+                return
+
+            usage_obj = getattr(resp, "usage", None)
+            total_in += getattr(usage_obj, "input_tokens", 0) or 0
+            total_out += getattr(usage_obj, "output_tokens", 0) or 0
+
+            # text_stream already surfaced the text; collect blocks for thinking
+            # + tool_use (drop text_parts collected here to avoid double-count).
+            block_text: list[str] = []
+            tool_uses = self._collect_blocks(resp, block_text, thinking_parts)
+            text_parts.extend(block_text)
+
+            if getattr(resp, "stop_reason", None) != "tool_use" or not tool_uses:
+                break
+            if toolbox is None:
+                break
+            for action in self._answer_tool_uses(
+                conversation, resp, tool_uses, toolbox, actions
+            ):
+                yield ChatStreamEvent(type="action", action=action)
+
+        yield ChatStreamEvent(
+            type="done",
+            response=self._assemble(
+                resp, model, text_parts, thinking_parts, total_in, total_out, actions
+            ),
         )
 
     def _map_error(self, exc: Exception) -> AIProviderError:

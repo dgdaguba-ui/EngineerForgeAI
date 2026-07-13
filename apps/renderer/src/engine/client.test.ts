@@ -118,4 +118,60 @@ describe("EngineClient", () => {
     expect(url).toBe("http://127.0.0.1:9000/api/v1/ai/chat");
     expect(init!.method).toBe("POST");
   });
+
+  it("streams NDJSON chat events, splitting across chunk boundaries", async () => {
+    // events deliberately span reader chunks (a line split mid-way) to exercise
+    // the buffering in iterateNdjsonLines
+    const lines = [
+      JSON.stringify({ type: "delta", text: "Hel" }),
+      JSON.stringify({ type: "delta", text: "lo" }),
+      JSON.stringify({ type: "done", response: { content: "Hello", actions: [] } }),
+    ];
+    const payload = lines.join("\n") + "\n";
+    const encoder = new TextEncoder();
+    const mid = 4; // slice partway through the first line
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode(payload.slice(0, mid)));
+        controller.enqueue(encoder.encode(payload.slice(mid)));
+        controller.close();
+      },
+    });
+    const fetchFn = vi.fn().mockResolvedValue(
+      new Response(stream, {
+        status: 200,
+        headers: { "Content-Type": "application/x-ndjson" },
+      }),
+    );
+    const client = new EngineClient(
+      { baseUrl: "http://127.0.0.1:9000", token: "tok" },
+      fetchFn,
+    );
+
+    const events = [];
+    for await (const ev of client.chatStream({ messages: [{ role: "user", content: "hi" }] })) {
+      events.push(ev);
+    }
+    expect(events.map((e) => e.type)).toEqual(["delta", "delta", "done"]);
+    expect(events.filter((e) => e.type === "delta").map((e) => e.text).join("")).toBe("Hello");
+    const [url, init] = fetchFn.mock.calls[0]!;
+    expect(url).toBe("http://127.0.0.1:9000/api/v1/ai/chat/stream");
+    expect((init!.headers as Record<string, string>)["Authorization"]).toBe("Bearer tok");
+  });
+
+  it("throws EngineApiError when the stream endpoint returns an error envelope", async () => {
+    const fetchFn = vi.fn().mockResolvedValue(
+      jsonResponse(
+        { error: { code: "INVALID_REQUEST", message: "empty", details: {}, retryable: false } },
+        400,
+      ),
+    );
+    const client = new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, fetchFn);
+    const iterate = async () => {
+      for await (const _ev of client.chatStream({ messages: [] })) {
+        // should throw before yielding
+      }
+    };
+    await expect(iterate()).rejects.toMatchObject({ code: "INVALID_REQUEST" });
+  });
 });

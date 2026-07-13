@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -67,6 +68,29 @@ class ChatResponse(BaseModel):
     thinking: str | None = None
     usage: Usage = Field(default_factory=Usage)
     actions: list[ChatAction] = Field(default_factory=list)
+
+
+class ChatStreamEvent(BaseModel):
+    """One event in a streamed chat turn (serialized as NDJSON on the wire).
+
+    * ``delta``  — an incremental chunk of assistant text (``text``);
+    * ``action`` — a tool the AI just invoked (``action``), so the UI can react
+      as it happens rather than only at the end;
+    * ``done``   — the turn finished; ``response`` carries the authoritative
+      final :class:`ChatResponse` (content, actions, usage, provider, model);
+    * ``error``  — the turn failed; ``error``/``code``/``retryable`` mirror the
+      REST error envelope so the client can queue-and-retry identically.
+    """
+
+    type: Literal["delta", "action", "done", "error"]
+    text: str | None = None
+    action: ChatAction | None = None
+    response: ChatResponse | None = None
+    error: str | None = None
+    code: str | None = None
+    retryable: bool = False
+
+    model_config = {"populate_by_name": True}
 
 
 class ProviderHealth(BaseModel):

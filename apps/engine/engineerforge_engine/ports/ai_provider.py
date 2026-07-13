@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING
 
-from ..domain.ai import ChatRequest, ChatResponse, ProviderHealth
+from ..domain.ai import ChatRequest, ChatResponse, ChatStreamEvent, ProviderHealth
+from ..domain.errors import EngineError
 
 if TYPE_CHECKING:
     from ..application.ai_tools import AiToolbox
@@ -30,6 +32,30 @@ class AIProvider(ABC):
         (part creation/editing); every invocation is reported in
         ``ChatResponse.actions`` so the UI can react.
         """
+
+    async def stream(
+        self, request: ChatRequest, toolbox: AiToolbox | None = None
+    ) -> AsyncIterator[ChatStreamEvent]:
+        """Stream an assistant turn as :class:`ChatStreamEvent`s.
+
+        The default implementation adapts the non-streaming :meth:`chat` into a
+        single-chunk stream, so every provider streams out of the box; providers
+        that can emit incremental tokens (Claude, Stub) override this. Errors are
+        surfaced as a terminal ``error`` event rather than raised, so a partially
+        consumed HTTP stream still closes cleanly with the failure reported.
+        """
+        try:
+            response = await self.chat(request, toolbox)
+        except EngineError as exc:
+            yield ChatStreamEvent(
+                type="error", error=exc.message, code=exc.code, retryable=exc.retryable
+            )
+            return
+        if response.content:
+            yield ChatStreamEvent(type="delta", text=response.content)
+        for action in response.actions:
+            yield ChatStreamEvent(type="action", action=action)
+        yield ChatStreamEvent(type="done", response=response)
 
     @abstractmethod
     async def health(self) -> ProviderHealth:

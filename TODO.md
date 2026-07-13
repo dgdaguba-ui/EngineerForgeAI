@@ -104,7 +104,8 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 
 ### M2.2 — AI & UX depth
 - [x] **Reviewable IR diffs for AI edits before apply**: `update_part_parameters` now *proposes* a validated `ParamDiffEntry[]` (old→new per parameter) instead of mutating the part. The engine never recompiles on a proposal; the chat UI shows an Apply/Discard diff card, and only Apply triggers the real PATCH + geometry swap + project-doc persist. 15 new tests (engine preview/tool-loop + renderer store/component). No-op values are dropped from the diff.
-- [ ] WS streaming for chat + rebuild progress
+- [x] **Streaming chat responses**: `POST /api/v1/ai/chat/stream` streams `ChatStreamEvent`s as newline-delimited JSON over chunked HTTP (chosen over a raw WebSocket — reuses the bearer-token header, CORS, error envelope, and the mockable `fetch` transport; no bidirectional need for request-scoped chat). `AIProvider.stream` has a default single-chunk wrapper; Stub streams word-by-word, Claude streams real token deltas through the manual tool loop (emitting `action` events as tools run). Renderer `chatStream` async-generator parses NDJSON; the chat store accumulates deltas into a live assistant bubble and finalizes on `done`, preserving the offline queue on pre-first-chunk failures. 12 new tests (engine provider/endpoint + renderer client/store).
+- [ ] Rebuild progress streaming — **deferred, honestly**: a rebuild is one ~160 ms `kernel.compile()` call with no real intermediate progress; a progress bar would be fabricated (violates the no-placeholder rule). Revisit only if/when rebuilds get slow enough to instrument real kernel stages.
 
 ### M2.3 — Data plane (blocked on Docker — user action)
 - [ ] Prisma migrations + Supabase sync

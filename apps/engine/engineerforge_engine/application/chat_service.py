@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from ..domain.ai import ChatRequest, ChatResponse, ProviderHealth
+from collections.abc import AsyncIterator
+
+from ..domain.ai import ChatRequest, ChatResponse, ChatStreamEvent, ProviderHealth
 from ..domain.errors import InvalidRequestError
 from ..ports.ai_provider import AIProvider
 from .ai_tools import AiToolbox
@@ -21,6 +23,13 @@ class ChatService:
         if not request.messages:
             raise InvalidRequestError("messages must not be empty")
         return await self._provider.chat(request, self._toolbox)
+
+    def stream(self, request: ChatRequest) -> AsyncIterator[ChatStreamEvent]:
+        """Stream an assistant turn. Validation errors raise synchronously (before
+        the HTTP stream opens); mid-stream failures arrive as ``error`` events."""
+        if not request.messages:
+            raise InvalidRequestError("messages must not be empty")
+        return self._provider.stream(request, self._toolbox)
 
     async def provider_health(self) -> ProviderHealth:
         return await self._provider.health()
