@@ -5,7 +5,7 @@
  */
 import { create } from "zustand";
 
-import type { IrParameter, PartDetail } from "../../engine/types";
+import type { IrFeature, IrParameter, PartDetail } from "../../engine/types";
 import { useEngineStore } from "../../state/engineStore";
 import { useProjectStore } from "../../state/projectStore";
 import { useViewportStore } from "../../state/viewportStore";
@@ -21,6 +21,7 @@ export interface ActivePart {
   templateId: string | null;
   name: string;
   parameters: IrParameter[];
+  features: IrFeature[];
   massProps: PartDetail["compiled"]["massProps"];
   warnings: string[];
 }
@@ -75,6 +76,7 @@ export const useParametricStore = create<ParametricState>((set, get) => {
         templateId: detail.templateId,
         name: detail.name,
         parameters: detail.program.parameters,
+        features: detail.program.features,
         massProps: detail.compiled.massProps,
         warnings: detail.compiled.warnings,
       },
@@ -183,6 +185,7 @@ export const useParametricStore = create<ParametricState>((set, get) => {
           templateId: detail.templateId,
           name: detail.name,
           parameters: detail.program.parameters,
+          features: detail.program.features,
           massProps: detail.compiled.massProps,
           warnings: detail.compiled.warnings,
         },

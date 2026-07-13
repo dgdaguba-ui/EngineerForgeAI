@@ -57,11 +57,17 @@ afterEach(() => {
 
 describe("parametricStore.createFromTemplate", () => {
   it("creates a part and adds a linked viewport object", async () => {
-    installClient(() => makePartDetail({ partId: "eng-1" }));
+    installClient(() =>
+      makePartDetail({
+        partId: "eng-1",
+        features: [{ op: "sketch", id: "s" }, { op: "extrude", id: "e", distance: "H" }],
+      }),
+    );
     await useParametricStore.getState().createFromTemplate("bracket-l");
 
     const active = useParametricStore.getState().active;
     expect(active?.partId).toBe("eng-1");
+    expect(active?.features.map((f) => f.op)).toEqual(["sketch", "extrude"]);
     const objects = useViewportStore.getState().objects;
     expect(objects).toHaveLength(1);
     expect(objects[0]!.parametricPartId).toBe("eng-1");

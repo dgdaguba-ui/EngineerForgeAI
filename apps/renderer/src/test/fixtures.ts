@@ -41,7 +41,7 @@ export function stlBase64(triangles: Triangle[] = [UNIT_TRIANGLE]): string {
 
 // ── parametric part fixtures ─────────────────────────────────────────────────
 
-import type { IrParameter, PartDetail, RawMeshPayload } from "../engine/types";
+import type { IrFeature, IrParameter, PartDetail, RawMeshPayload } from "../engine/types";
 
 export function bufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -87,6 +87,7 @@ export function makePartDetail(
     values: Record<string, number>;
     warnings: string[];
     volumeCm3: number;
+    features: IrFeature[];
   }> = {},
 ): PartDetail {
   const values = overrides.values ?? { W: 40, H: 60 };
@@ -101,7 +102,7 @@ export function makePartDetail(
       schema: "efir/1",
       name: "L-Bracket",
       parameters,
-      features: [],
+      features: overrides.features ?? [],
     },
     compiled: {
       mesh: makeRawMeshPayload(),

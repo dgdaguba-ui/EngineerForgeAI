@@ -7,6 +7,7 @@ import { ScenePanel } from "./components/ScenePanel";
 import { StatusBar } from "./components/StatusBar";
 import { ChatPanel } from "./features/chat/ChatPanel";
 import { FlashforgePanel } from "./features/flashforge/FlashforgePanel";
+import { FeatureTimeline } from "./features/parametric/FeatureTimeline";
 import { ParametricPanel } from "./features/parametric/ParametricPanel";
 import { Viewport } from "./features/viewport/Viewport";
 import { useEngineStore } from "./state/engineStore";
@@ -29,7 +30,7 @@ export default function App() {
             EngineerForge <span className="text-accent">AI</span>
           </span>
           <span className="rounded bg-surface-raised px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-zinc-500">
-            Phase 0
+            Phase 2
           </span>
         </div>
         <StatusBar
@@ -58,6 +59,7 @@ export default function App() {
         <aside className="flex w-80 shrink-0 flex-col border-l border-surface-border bg-surface-panel">
           <div className="max-h-[55%] shrink-0 overflow-auto border-b border-surface-border">
             <ParametricPanel />
+            <FeatureTimeline />
             <InspectorPanel />
           </div>
           <div className="min-h-0 flex-1">

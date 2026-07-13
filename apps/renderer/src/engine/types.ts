@@ -205,12 +205,21 @@ export interface IrParameter {
   integer: boolean;
 }
 
+/** One IR feature. `op` and `id` are always present; the rest is op-specific
+ * (kept loose — the renderer only reads it for a read-only timeline). */
+export interface IrFeature {
+  op: string;
+  id: string;
+  [key: string]: unknown;
+}
+
 /** The IR document is engine-owned; the renderer treats it as opaque JSON
- * apart from the parameter list it edits. */
+ * apart from the parameter list it edits and the feature list it displays. */
 export interface FeatureProgramDoc {
   schema: string;
   name: string;
   parameters: IrParameter[];
+  features: IrFeature[];
   [key: string]: unknown;
 }
 

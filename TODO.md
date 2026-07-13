@@ -109,7 +109,8 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [ ] Prisma migrations + Supabase sync
 
 ### M2.4 — UI depth
-- [ ] Property inspector depth + feature timeline panel
+- [x] **Feature Timeline panel**: read-only ordered view of the selected parametric part's IR feature list (op glyph + id + per-op summary; sketch/extrude/hole/fillet/shell). Makes the model recipe visible. 11 renderer tests (featureSummary pure logic + component render + store population). Header badge fixed to "Phase 2".
+- [ ] Property inspector depth (per-feature edit, reorder) — later
 
 ## Deferred / needs user action
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`
