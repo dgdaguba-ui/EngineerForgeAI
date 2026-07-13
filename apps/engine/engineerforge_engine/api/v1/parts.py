@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -78,6 +80,24 @@ def patch_params(
     service: PartsService = Depends(get_parts_service),
 ) -> PartDetail:
     return service.patch_params(part_id, request.values, request.material_id)
+
+
+class PatchFeatureRequest(_CamelModel):
+    fields: dict[str, Any] = Field(default_factory=dict)
+
+
+@router.patch(
+    "/parts/{part_id}/features/{feature_id}",
+    response_model=PartDetail,
+    response_model_by_alias=True,
+)
+def patch_feature(
+    part_id: str,
+    feature_id: str,
+    request: PatchFeatureRequest,
+    service: PartsService = Depends(get_parts_service),
+) -> PartDetail:
+    return service.patch_feature(part_id, feature_id, request.fields)
 
 
 class ReorderFeaturesRequest(_CamelModel):

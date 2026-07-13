@@ -281,6 +281,17 @@ export class EngineClient {
     });
   }
 
+  async patchPartFeature(
+    partId: string,
+    featureId: string,
+    fields: Record<string, unknown>,
+  ): Promise<PartDetail> {
+    return await this.request<PartDetail>(
+      `/api/v1/parts/${partId}/features/${featureId}`,
+      { method: "PATCH", body: JSON.stringify({ fields }) },
+    );
+  }
+
   async reorderPartFeatures(partId: string, featureIds: string[]): Promise<PartDetail> {
     return await this.request<PartDetail>(`/api/v1/parts/${partId}/features/reorder`, {
       method: "POST",

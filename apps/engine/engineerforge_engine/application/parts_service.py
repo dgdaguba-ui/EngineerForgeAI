@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import trimesh
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, ValidationError
 from pydantic.alias_generators import to_camel
 
 from ..domain.errors import InvalidRequestError
@@ -187,6 +187,48 @@ class PartsService:
             )
         new_features = [current[fid] for fid in feature_ids]
         new_program = record.program.model_copy(update={"features": new_features})
+        template = self._templates.get(record.template_id) if record.template_id else None
+        compiled, native = self._compile_with_checks(new_program, template)
+        with self._lock:
+            record.program = new_program
+            record.compiled = self._with_mass(compiled, new_program, record.material_id)
+            record.native_solid = native
+        return self._detail(record)
+
+    def patch_feature(
+        self, part_id: str, feature_id: str, fields: dict[str, Any]
+    ) -> PartDetail:
+        """Edit one feature's fields in place and recompile.
+
+        ``fields`` maps camelCase field names to new values (expressions as
+        strings/numbers, enums as their literal). ``op`` and ``id`` are
+        immutable. The edited feature is re-validated and the program compiled
+        before committing — invalid fields or geometry the kernel rejects raise
+        and leave the part unchanged.
+        """
+        if not fields:
+            raise InvalidRequestError("no fields to update")
+        record = self._get_record(part_id)
+        features = list(record.program.features)
+        idx = next((i for i, f in enumerate(features) if f.id == feature_id), None)
+        if idx is None:
+            raise InvalidRequestError(f"unknown feature id: {feature_id}")
+
+        feature = features[idx]
+        dumped = feature.model_dump(by_alias=True)
+        editable = set(dumped) - {"op", "id"}
+        unknown = set(fields) - editable
+        if unknown:
+            raise InvalidRequestError(
+                f"unknown or immutable fields for {feature.op}: {sorted(unknown)}"
+            )
+        try:
+            new_feature = type(feature).model_validate({**dumped, **fields})
+        except ValidationError as exc:
+            raise InvalidRequestError(f"invalid feature fields: {exc}") from exc
+
+        features[idx] = new_feature
+        new_program = record.program.model_copy(update={"features": features})
         template = self._templates.get(record.template_id) if record.template_id else None
         compiled, native = self._compile_with_checks(new_program, template)
         with self._lock:

@@ -90,6 +90,36 @@ describe("FeatureTimeline", () => {
     expect(moveFeature).toHaveBeenCalledWith("cavity", -1);
   });
 
+  it("edits a feature's fields when its row is expanded", () => {
+    const editFeature = vi.fn().mockResolvedValue(undefined);
+    const objectId = useViewportStore.getState().addMesh({
+      name: "Enclosure",
+      sourcePath: null,
+      geometry: new BufferGeometry(),
+      parametricPartId: "eng-1",
+    });
+    useParametricStore.setState({ active: makeActive(objectId, FEATURES), editFeature });
+    useViewportStore.getState().select(objectId);
+
+    render(<FeatureTimeline />);
+
+    // editors are collapsed by default
+    expect(screen.queryByTestId("editor-body")).not.toBeInTheDocument();
+
+    // expand the extrude row and edit its distance expression
+    fireEvent.click(screen.getByRole("button", { name: /extrude body/i }));
+    const editor = screen.getByTestId("editor-body");
+    const input = editor.querySelector("input")!;
+    fireEvent.change(input, { target: { value: "H*2" } });
+    fireEvent.blur(input);
+    expect(editFeature).toHaveBeenCalledWith("body", { distance: "H*2" });
+
+    // an enum change on the fillet commits immediately
+    fireEvent.click(screen.getByRole("button", { name: /fillet corner_fillet/i }));
+    fireEvent.change(screen.getByLabelText("corner_fillet Axis"), { target: { value: "X" } });
+    expect(editFeature).toHaveBeenCalledWith("corner_fillet", { axis: "X" });
+  });
+
   it("hides when a different object is selected", () => {
     const objectId = useViewportStore.getState().addMesh({
       name: "Enclosure",

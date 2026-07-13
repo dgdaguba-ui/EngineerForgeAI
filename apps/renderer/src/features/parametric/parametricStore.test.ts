@@ -322,6 +322,61 @@ describe("parametricStore.moveFeature (reorder)", () => {
   });
 });
 
+describe("parametricStore.editFeature", () => {
+  const feats = [
+    { op: "sketch", id: "s" },
+    { op: "extrude", id: "e", distance: "H" },
+    { op: "hole", id: "h", diameter: "HD", axis: "Z" },
+  ];
+
+  it("PATCHes the feature and syncs the recompiled program", async () => {
+    const mock = installClient((url, init) => {
+      if (url.includes("/features/h") && init?.method === "PATCH") {
+        const body = JSON.parse(init.body as string) as { fields: Record<string, unknown> };
+        const updated = feats.map((f) => (f.id === "h" ? { ...f, ...body.fields } : f));
+        return makePartDetail({ partId: "eng-1", features: updated });
+      }
+      return makePartDetail({ partId: "eng-1", features: feats });
+    });
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await useParametricStore.getState().editFeature("h", { diameter: 8 });
+
+    const patch = mock.fetchMock.mock.calls.find((c) =>
+      String(c[0]).includes("/features/h"),
+    )!;
+    expect(JSON.parse((patch[1] as RequestInit).body as string)).toEqual({
+      fields: { diameter: 8 },
+    });
+    const hole = useParametricStore.getState().active?.features.find((f) => f.id === "h");
+    expect(hole).toMatchObject({ diameter: 8 });
+    expect(useParametricStore.getState().rebuilding).toBe(false);
+  });
+
+  it("surfaces an engine rejection and clears the rebuilding flag", async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (String(url).includes("/features/") && init?.method === "PATCH") {
+        return new Response(
+          JSON.stringify({
+            error: { code: "INVALID_REQUEST", message: "invalid feature fields", details: {}, retryable: false },
+          }),
+          { status: 400 },
+        );
+      }
+      return jsonResponse(makePartDetail({ partId: "eng-1", features: feats }));
+    });
+    useEngineStore.setState({
+      client: new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, fetchMock),
+    });
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await useParametricStore.getState().editFeature("e", { distance: "-5" });
+
+    expect(useParametricStore.getState().error).toContain("invalid feature fields");
+    expect(useParametricStore.getState().rebuilding).toBe(false);
+  });
+});
+
 describe("undo/redo", () => {
   it("restores previous values and triggers a rebuild", async () => {
     vi.useFakeTimers();

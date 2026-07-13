@@ -115,6 +115,86 @@ def test_reorder_features(client: TestClient) -> None:
     assert abs(body["compiled"]["massProps"]["volumeMm3"] - volume) < 0.01
 
 
+def test_patch_feature_edits_a_field_and_recompiles(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l", "values": {"R": 0}}
+    ).json()
+    part_id = created["partId"]
+
+    # widen the hole diameter by editing the feature directly (expression → number)
+    resp = client.patch(
+        f"/api/v1/parts/{part_id}/features/holes_vertical", json={"fields": {"diameter": 8}}
+    )
+    assert resp.status_code == 200
+    features = {f["id"]: f for f in resp.json()["program"]["features"]}
+    assert features["holes_vertical"]["diameter"] == 8
+
+
+def test_patch_feature_edits_an_enum_field(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l"}
+    ).json()
+    part_id = created["partId"]
+    resp = client.patch(
+        f"/api/v1/parts/{part_id}/features/corner_fillet", json={"fields": {"axis": "Y"}}
+    )
+    assert resp.status_code == 200
+    features = {f["id"]: f for f in resp.json()["program"]["features"]}
+    assert features["corner_fillet"]["axis"] == "Y"
+
+
+def test_patch_feature_rejects_unknown_field(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l"}
+    ).json()
+    part_id = created["partId"]
+    resp = client.patch(
+        f"/api/v1/parts/{part_id}/features/body", json={"fields": {"bogus": 1}}
+    )
+    assert resp.status_code == 400
+    assert resp.json()["error"]["code"] == "INVALID_REQUEST"
+
+
+def test_patch_feature_rejects_immutable_id_and_op(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l"}
+    ).json()
+    part_id = created["partId"]
+    for field in ("id", "op"):
+        resp = client.patch(
+            f"/api/v1/parts/{part_id}/features/body", json={"fields": {field: "x"}}
+        )
+        assert resp.status_code == 400, field
+
+
+def test_patch_feature_invalid_value_leaves_part_unchanged(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l", "values": {"R": 0}}
+    ).json()
+    part_id = created["partId"]
+
+    # a hole bigger than the bracket blows up the geometry (or the enum is bad)
+    bad_enum = client.patch(
+        f"/api/v1/parts/{part_id}/features/corner_fillet", json={"fields": {"axis": "Q"}}
+    )
+    assert bad_enum.status_code == 400
+
+    # the stored part still serves its original feature set
+    fetched = client.get(f"/api/v1/parts/{part_id}").json()
+    fillet = next(f for f in fetched["program"]["features"] if f["id"] == "corner_fillet")
+    assert fillet["axis"] == "X"
+
+
+def test_patch_feature_unknown_feature_id(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l"}
+    ).json()
+    resp = client.patch(
+        f"/api/v1/parts/{created['partId']}/features/nope", json={"fields": {"axis": "Y"}}
+    )
+    assert resp.status_code == 400
+
+
 def test_reorder_rejects_bad_id_set(client: TestClient) -> None:
     created = client.post(
         "/api/v1/parts/from-template", json={"templateId": "bracket-l"}

@@ -113,7 +113,7 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 ### M2.4 — UI depth
 - [x] **Feature Timeline panel**: read-only ordered view of the selected parametric part's IR feature list (op glyph + id + per-op summary; sketch/extrude/hole/fillet/shell). Makes the model recipe visible. 11 renderer tests (featureSummary pure logic + component render + store population). Header badge fixed to "Phase 2".
 - [x] **Feature reordering**: the Feature Timeline is now interactive — per-feature move up/down (▲▼) reorders the IR and recompiles through a new `POST /parts/{id}/features/reorder` endpoint. The reordered program is compiled first; orders the kernel rejects (e.g. a fillet/hole before its extrude) leave the part unchanged and surface the geometry error. 7 new tests (engine service/API + renderer client/store/component).
-- [ ] Per-feature field editing (edit a feature's expressions/enums in place) — later
+- [x] **Per-feature field editing**: expanding a feature row reveals an inline editor for its scalar fields — expression/number fields as text (commit on Enter/blur), enum fields as selects — via a new `PATCH /parts/{id}/features/{featureId}` endpoint (`PartsService.patch_feature`). `op`/`id` are immutable; unknown fields and invalid values/geometry are rejected and leave the part unchanged. Complex fields (sketch profiles, polygon points, shell open-faces, hole spread axis, extrude sketch ref) are intentionally omitted from the inline editor rather than faked. 13 new tests (engine service/API + renderer helper/store/component). **M2.4 complete.**
 
 ## Deferred / needs user action
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`

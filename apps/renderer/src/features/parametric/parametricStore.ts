@@ -49,6 +49,9 @@ interface ParametricState {
    * recompiling through the engine. Orders the kernel rejects leave the part
    * unchanged and surface an error. */
   moveFeature: (featureId: string, direction: -1 | 1) => Promise<void>;
+  /** Edit one feature's fields (expressions/enums) in place and recompile.
+   * Invalid values are rejected by the engine and surfaced as an error. */
+  editFeature: (featureId: string, fields: Record<string, unknown>) => Promise<void>;
   /** Adopt an already-compiled part (e.g. loaded from a project). */
   adopt: (detail: PartDetail, objectId: string, projectPartId: string | null) => void;
   setParam: (paramId: string, value: number) => void;
@@ -257,6 +260,22 @@ export const useParametricStore = create<ParametricState>((set, get) => {
         // the engine rejected the new order (e.g. invalid geometry); part is
         // unchanged server-side, so just surface the error
         set({ error: e instanceof Error ? e.message : String(e) });
+      }
+    },
+
+    editFeature: async (featureId: string, fields: Record<string, unknown>) => {
+      const { active } = get();
+      if (!active) return;
+      const client = useEngineStore.getState().client;
+      set({ rebuilding: true, error: null });
+      try {
+        const detail = await client.patchPartFeature(active.partId, featureId, fields);
+        syncDetailToScene(detail, active.objectId);
+      } catch (e) {
+        // invalid value / geometry — part unchanged server-side; surface it
+        set({ error: e instanceof Error ? e.message : String(e) });
+      } finally {
+        set({ rebuilding: false });
       }
     },
 
