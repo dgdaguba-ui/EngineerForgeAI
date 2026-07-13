@@ -53,9 +53,11 @@ def default_registry() -> TemplateRegistry:
     from .bracket_l import BRACKET_L_TEMPLATE
     from .enclosure_box import ENCLOSURE_BOX_TEMPLATE
     from .mounting_plate import MOUNTING_PLATE_TEMPLATE
+    from .standoff import STANDOFF_TEMPLATE
 
     registry = TemplateRegistry()
     registry.register(BRACKET_L_TEMPLATE)
     registry.register(MOUNTING_PLATE_TEMPLATE)
     registry.register(ENCLOSURE_BOX_TEMPLATE)
+    registry.register(STANDOFF_TEMPLATE)
     return registry
