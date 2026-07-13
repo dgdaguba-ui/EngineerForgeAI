@@ -3,18 +3,18 @@
 _Living document. Updated at every milestone._
 
 **Last updated:** 2026-07-12
-**Current phase:** 🟢 Phase 2 in progress — M2.1 template library expansion started (Mounting Plate template landed)
+**Current phase:** 🟢 Phase 2 in progress — 4 part templates (bracket, plate, enclosure, standoff), IR `shell` feature, Feature Timeline panel
 **Build health:** 🟢 all gates green
 
 ## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. real-Blender + CAD golden tests) | 160 | ✅ |
-| Renderer (vitest) | 60 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden tests) | 181 | ✅ |
+| Renderer (vitest) | 71 | ✅ |
 | Desktop (vitest) | 36 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **268** | ✅ |
+| **Total** | **300** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
@@ -43,7 +43,10 @@ _Living document. Updated at every milestone._
 | 1.2 | **Feature Program IR + CadQuery kernel + live parametric rebuild** | `5ec1a6a` |
 | 1.3 | **AI design pipeline: chat creates/edits real parametric parts** | `c06ee7c` |
 | 1.4 | **MVP polish: parametric estimates + mixed 3MF export + CI + checklist** | `59d49b1` |
-| 2.1a | **Mounting Plate template — second part in the library** | HEAD |
+| 2.1a | Mounting Plate template — second part in the library | `bad46e1` |
+| 2.1b | **IR `shell` feature + Enclosure/project-box template** | `8ee0a49` |
+| 2.1c | Standoff / spacer template — fourth part | `3136ac3` |
+| 2.4a | **Feature Timeline panel (read-only IR recipe view)** | HEAD |
 
 ## The MVP story now works — offline
 > *"Design a bracket 50x70, 4 mm thick, with 2 holes, in petg"* typed into the chat
