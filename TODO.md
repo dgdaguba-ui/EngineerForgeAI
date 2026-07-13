@@ -112,7 +112,8 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 
 ### M2.4 — UI depth
 - [x] **Feature Timeline panel**: read-only ordered view of the selected parametric part's IR feature list (op glyph + id + per-op summary; sketch/extrude/hole/fillet/shell). Makes the model recipe visible. 11 renderer tests (featureSummary pure logic + component render + store population). Header badge fixed to "Phase 2".
-- [ ] Property inspector depth (per-feature edit, reorder) — later
+- [x] **Feature reordering**: the Feature Timeline is now interactive — per-feature move up/down (▲▼) reorders the IR and recompiles through a new `POST /parts/{id}/features/reorder` endpoint. The reordered program is compiled first; orders the kernel rejects (e.g. a fillet/hole before its extrude) leave the part unchanged and surface the geometry error. 7 new tests (engine service/API + renderer client/store/component).
+- [ ] Per-feature field editing (edit a feature's expressions/enums in place) — later
 
 ## Deferred / needs user action
 - [ ] Install Docker Desktop → enable local Postgres + `docker-compose.dev.yml`

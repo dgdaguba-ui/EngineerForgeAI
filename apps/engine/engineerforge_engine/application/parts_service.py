@@ -171,6 +171,30 @@ class PartsService:
             )
         return diff
 
+    def reorder_features(self, part_id: str, feature_ids: list[str]) -> PartDetail:
+        """Reorder a part's features and recompile.
+
+        ``feature_ids`` must be a permutation of the part's current feature ids.
+        The reordered program is compiled first; only if it produces valid
+        geometry is the stored record updated — an order the kernel rejects
+        (e.g. an extrude before its sketch) raises and leaves the part unchanged.
+        """
+        record = self._get_record(part_id)
+        current = {f.id: f for f in record.program.features}
+        if len(feature_ids) != len(current) or set(feature_ids) != set(current):
+            raise InvalidRequestError(
+                "featureIds must be a permutation of the part's feature ids"
+            )
+        new_features = [current[fid] for fid in feature_ids]
+        new_program = record.program.model_copy(update={"features": new_features})
+        template = self._templates.get(record.template_id) if record.template_id else None
+        compiled, native = self._compile_with_checks(new_program, template)
+        with self._lock:
+            record.program = new_program
+            record.compiled = self._with_mass(compiled, new_program, record.material_id)
+            record.native_solid = native
+        return self._detail(record)
+
     def get(self, part_id: str) -> PartDetail:
         return self._detail(self._get_record(part_id))
 

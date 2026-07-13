@@ -245,6 +245,83 @@ describe("parametricStore.applyDiff (approved AI edit)", () => {
   });
 });
 
+describe("parametricStore.moveFeature (reorder)", () => {
+  const baseFeatures = [
+    { op: "sketch", id: "s" },
+    { op: "extrude", id: "e", distance: "H" },
+    { op: "hole", id: "h", diameter: "HD" },
+  ];
+
+  function installReorderClient(): ClientMock {
+    return installClient((url, init) => {
+      if (url.endsWith("/features/reorder") && init?.method === "POST") {
+        const body = JSON.parse(init.body as string) as { featureIds: string[] };
+        const byId = new Map(baseFeatures.map((f) => [f.id, f]));
+        const features = body.featureIds.map((id) => byId.get(id)!);
+        return makePartDetail({ partId: "eng-1", features });
+      }
+      return makePartDetail({ partId: "eng-1", features: baseFeatures });
+    });
+  }
+
+  it("moves a feature down and posts the new order", async () => {
+    const mock = installReorderClient();
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await useParametricStore.getState().moveFeature("e", 1); // extrude down past hole
+
+    const posted = mock.fetchMock.mock.calls
+      .filter((c) => String(c[0]).endsWith("/features/reorder"))
+      .map((c) => JSON.parse((c[1] as RequestInit).body as string));
+    expect(posted).toEqual([{ featureIds: ["s", "h", "e"] }]);
+    expect(useParametricStore.getState().active?.features.map((f) => f.id)).toEqual([
+      "s",
+      "h",
+      "e",
+    ]);
+  });
+
+  it("is a no-op at the boundary (first feature up)", async () => {
+    const mock = installReorderClient();
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await useParametricStore.getState().moveFeature("s", -1);
+
+    const reorderCalls = mock.fetchMock.mock.calls.filter((c) =>
+      String(c[0]).endsWith("/features/reorder"),
+    );
+    expect(reorderCalls).toHaveLength(0);
+  });
+
+  it("surfaces an engine rejection without changing local order", async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (String(url).endsWith("/features/reorder") && init?.method === "POST") {
+        return new Response(
+          JSON.stringify({
+            error: { code: "GEOMETRY_ERROR", message: "no solid to fillet yet", details: {}, retryable: false },
+          }),
+          { status: 422 },
+        );
+      }
+      return jsonResponse(makePartDetail({ partId: "eng-1", features: baseFeatures }));
+    });
+    useEngineStore.setState({
+      client: new EngineClient({ baseUrl: "http://127.0.0.1:9000", token: null }, fetchMock),
+    });
+    await useParametricStore.getState().createFromTemplate("bracket-l");
+
+    await useParametricStore.getState().moveFeature("h", -1);
+
+    expect(useParametricStore.getState().error).toContain("no solid to fillet");
+    // local order preserved (server rejected the change)
+    expect(useParametricStore.getState().active?.features.map((f) => f.id)).toEqual([
+      "s",
+      "e",
+      "h",
+    ]);
+  });
+});
+
 describe("undo/redo", () => {
   it("restores previous values and triggers a rebuild", async () => {
     vi.useFakeTimers();

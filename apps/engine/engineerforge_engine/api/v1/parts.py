@@ -80,6 +80,23 @@ def patch_params(
     return service.patch_params(part_id, request.values, request.material_id)
 
 
+class ReorderFeaturesRequest(_CamelModel):
+    feature_ids: list[str]
+
+
+@router.post(
+    "/parts/{part_id}/features/reorder",
+    response_model=PartDetail,
+    response_model_by_alias=True,
+)
+def reorder_features(
+    part_id: str,
+    request: ReorderFeaturesRequest,
+    service: PartsService = Depends(get_parts_service),
+) -> PartDetail:
+    return service.reorder_features(part_id, request.feature_ids)
+
+
 class ExportPartRequest(_CamelModel):
     format: str
     dst_path: str

@@ -92,6 +92,60 @@ def test_geometry_error_maps_to_422(client: TestClient) -> None:
     assert resp.json()["error"]["code"] == "GEOMETRY_ERROR"
 
 
+def test_reorder_features(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l", "values": {"R": 0}}
+    ).json()
+    part_id = created["partId"]
+    ids = [f["id"] for f in created["program"]["features"]]
+    volume = created["compiled"]["massProps"]["volumeMm3"]
+
+    # swap the two hole rows — geometrically valid, volume unchanged
+    v = ids.index("holes_vertical")
+    h = ids.index("holes_horizontal")
+    reordered = ids.copy()
+    reordered[v], reordered[h] = reordered[h], reordered[v]
+
+    resp = client.post(
+        f"/api/v1/parts/{part_id}/features/reorder", json={"featureIds": reordered}
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert [f["id"] for f in body["program"]["features"]] == reordered
+    assert abs(body["compiled"]["massProps"]["volumeMm3"] - volume) < 0.01
+
+
+def test_reorder_rejects_bad_id_set(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l"}
+    ).json()
+    part_id = created["partId"]
+    resp = client.post(
+        f"/api/v1/parts/{part_id}/features/reorder", json={"featureIds": ["nope"]}
+    )
+    assert resp.status_code == 400
+    assert resp.json()["error"]["code"] == "INVALID_REQUEST"
+
+
+def test_reorder_invalid_geometry_leaves_part_unchanged(client: TestClient) -> None:
+    created = client.post(
+        "/api/v1/parts/from-template", json={"templateId": "bracket-l", "values": {"R": 0}}
+    ).json()
+    part_id = created["partId"]
+    ids = [f["id"] for f in created["program"]["features"]]
+
+    # reverse the order → a fillet/hole before the extrude has no solid to act on
+    resp = client.post(
+        f"/api/v1/parts/{part_id}/features/reorder", json={"featureIds": list(reversed(ids))}
+    )
+    assert resp.status_code == 422
+    assert resp.json()["error"]["code"] == "GEOMETRY_ERROR"
+
+    # the stored part is untouched — original order still compiles/serves
+    fetched = client.get(f"/api/v1/parts/{part_id}").json()
+    assert [f["id"] for f in fetched["program"]["features"]] == ids
+
+
 def test_compile_raw_program_round_trip(client: TestClient) -> None:
     created = client.post(
         "/api/v1/parts/from-template", json={"templateId": "bracket-l", "values": {"R": 0}}

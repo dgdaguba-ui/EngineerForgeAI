@@ -45,6 +45,10 @@ interface ParametricState {
   /** Apply an approved AI-proposed parameter diff: PATCH + scene sync. Throws
    * on failure so the caller (chat UI) can show the diff card as failed. */
   applyDiff: (partId: string, values: ParamValues) => Promise<void>;
+  /** Move a feature one slot up (−1) or down (+1) in the active part's program,
+   * recompiling through the engine. Orders the kernel rejects leave the part
+   * unchanged and surface an error. */
+  moveFeature: (featureId: string, direction: -1 | 1) => Promise<void>;
   /** Adopt an already-compiled part (e.g. loaded from a project). */
   adopt: (detail: PartDetail, objectId: string, projectPartId: string | null) => void;
   setParam: (paramId: string, value: number) => void;
@@ -235,6 +239,25 @@ export const useParametricStore = create<ParametricState>((set, get) => {
         .objects.find((o) => o.parametricPartId === partId);
       const detail = await client.patchPartParams(partId, values);
       if (object) syncDetailToScene(detail, object.id);
+    },
+
+    moveFeature: async (featureId: string, direction: -1 | 1) => {
+      const { active } = get();
+      if (!active) return;
+      const order = active.features.map((f) => f.id);
+      const from = order.indexOf(featureId);
+      const to = from + direction;
+      if (from < 0 || to < 0 || to >= order.length) return;
+      [order[from], order[to]] = [order[to]!, order[from]!];
+      const client = useEngineStore.getState().client;
+      try {
+        const detail = await client.reorderPartFeatures(active.partId, order);
+        syncDetailToScene(detail, active.objectId);
+      } catch (e) {
+        // the engine rejected the new order (e.g. invalid geometry); part is
+        // unchanged server-side, so just surface the error
+        set({ error: e instanceof Error ? e.message : String(e) });
+      }
     },
 
     adopt: (detail, objectId, projectPartId) => {

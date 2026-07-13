@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BufferGeometry } from "three";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { IrFeature } from "../../engine/types";
 import { useViewportStore } from "../../state/viewportStore";
@@ -64,6 +64,30 @@ describe("FeatureTimeline", () => {
     }
     expect(screen.getByTestId("feature-cavity")).toHaveTextContent("wall T open +Z");
     expect(screen.getByTestId("feature-timeline")).toHaveTextContent("shell");
+  });
+
+  it("reorders via the move buttons, disabling them at the boundaries", () => {
+    const moveFeature = vi.fn().mockResolvedValue(undefined);
+    const objectId = useViewportStore.getState().addMesh({
+      name: "Enclosure",
+      sourcePath: null,
+      geometry: new BufferGeometry(),
+      parametricPartId: "eng-1",
+    });
+    useParametricStore.setState({ active: makeActive(objectId, FEATURES), moveFeature });
+    useViewportStore.getState().select(objectId);
+
+    render(<FeatureTimeline />);
+
+    // first feature can't move up; last can't move down
+    expect(screen.getByLabelText("Move footprint up")).toBeDisabled();
+    expect(screen.getByLabelText("Move corner_fillet down")).toBeDisabled();
+
+    fireEvent.click(screen.getByLabelText("Move body down"));
+    expect(moveFeature).toHaveBeenCalledWith("body", 1);
+
+    fireEvent.click(screen.getByLabelText("Move cavity up"));
+    expect(moveFeature).toHaveBeenCalledWith("cavity", -1);
   });
 
   it("hides when a different object is selected", () => {

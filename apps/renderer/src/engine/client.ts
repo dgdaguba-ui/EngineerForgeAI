@@ -281,6 +281,13 @@ export class EngineClient {
     });
   }
 
+  async reorderPartFeatures(partId: string, featureIds: string[]): Promise<PartDetail> {
+    return await this.request<PartDetail>(`/api/v1/parts/${partId}/features/reorder`, {
+      method: "POST",
+      body: JSON.stringify({ featureIds }),
+    });
+  }
+
   async exportPart(
     partId: string,
     format: string,
