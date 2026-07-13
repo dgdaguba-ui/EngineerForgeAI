@@ -107,7 +107,25 @@ class PolygonProfile(_CamelModel):
     points: list[tuple[Expr, Expr]] = Field(min_length=3)
 
 
-Profile = Annotated[RectProfile | CircleProfile | PolygonProfile, Field(discriminator="kind")]
+class GearProfile(_CamelModel):
+    """An external spur-gear tooth outline (involute flanks).
+
+    The kernel expands this into a closed involute-gear polygon at compile time
+    from the standard proportions (module, teeth, pressure angle), so the tooth
+    count is a live parameter — a fixed polygon can't express that. Standard
+    full-depth teeth: addendum = module, dedendum = 1.25·module.
+    """
+
+    kind: Literal["gear"] = "gear"
+    module: Expr
+    teeth: Expr
+    pressure_angle: Expr = 20  # degrees
+
+
+Profile = Annotated[
+    RectProfile | CircleProfile | PolygonProfile | GearProfile,
+    Field(discriminator="kind"),
+]
 
 
 # ── features ──────────────────────────────────────────────────────────────────

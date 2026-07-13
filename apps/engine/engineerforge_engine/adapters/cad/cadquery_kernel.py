@@ -22,6 +22,7 @@ from ...domain.feature_program import (
     ExtrudeFeature,
     FeatureProgram,
     FilletFeature,
+    GearProfile,
     HoleFeature,
     MassProps,
     RawMesh,
@@ -31,11 +32,74 @@ from ...domain.feature_program import (
 from ...ports.cad_kernel import CadKernelPort
 
 TESSELLATION_TOLERANCE = 0.1  # mm — good display quality at printer scale
+_GEAR_FLANK_SAMPLES = 12  # involute points per flank
+_GEAR_ROOT_SAMPLES = 4  # arc points along the root land between teeth
 
 
 class GeometryError(EngineError):
     code = "GEOMETRY_ERROR"
     http_status = 422
+
+
+def gear_outline(module: float, teeth: int, pressure_angle_deg: float) -> list[tuple[float, float]]:
+    """Closed involute spur-gear outline as (x, y) points, CCW about the origin.
+
+    Standard full-depth proportions: pitch radius r = m·z/2, base radius
+    rb = r·cos(α), addendum ra = r + m, dedendum (root) rf = r − 1.25·m. Each
+    tooth flank is an involute of the base circle, sized so the tooth thickness
+    at the pitch circle is exactly half the circular pitch. Flanks below the
+    base circle drop radially to the root; adjacent teeth are joined by a root
+    arc, giving one closed wire the kernel can extrude.
+    """
+    if teeth < 4:
+        raise GeometryError(f"gear needs ≥ 4 teeth (got {teeth})")
+    if module <= 0:
+        raise GeometryError(f"gear module must be > 0 (got {module})")
+    alpha = np.radians(pressure_angle_deg)
+    if not 0 < alpha < np.pi / 2:
+        raise GeometryError(f"gear pressure angle must be in (0, 90)° (got {pressure_angle_deg})")
+
+    r = module * teeth / 2.0
+    rb = r * np.cos(alpha)
+    ra = r + module
+    rf = max(r - 1.25 * module, 0.1)
+    inv_a = np.tan(alpha) - alpha  # involute function at the pressure angle
+    half_base = np.pi / (2 * teeth) + inv_a  # half tooth angle at the base circle
+
+    # roll-angle range: from the flank start radius (max of root, base) to tip
+    r_start = max(rf, rb)
+    u_start = float(np.sqrt(max((r_start / rb) ** 2 - 1.0, 0.0)))
+    u_tip = float(np.sqrt((ra / rb) ** 2 - 1.0))
+    us = np.linspace(u_start, u_tip, _GEAR_FLANK_SAMPLES)
+
+    def flank(u: float, sign: float) -> tuple[float, float]:
+        radius = rb * np.sqrt(1.0 + u * u)
+        inv_u = u - np.arctan(u)
+        ang = sign * (half_base - inv_u)
+        return radius * np.cos(ang), radius * np.sin(ang)
+
+    tooth_pitch = 2 * np.pi / teeth
+    points: list[tuple[float, float]] = []
+    for k in range(teeth):
+        # one tooth built in a tooth-local frame (centreline at angle 0), then
+        # rotated into place — avoids a per-iteration closure over the rotation.
+        local: list[tuple[float, float]] = []
+        if rf < rb:  # root below the base circle: drop the flank in radially
+            local.append((rf * np.cos(-half_base), rf * np.sin(-half_base)))
+        local.extend(flank(u, -1.0) for u in us)  # left flank: root → tip
+        local.extend(flank(u, +1.0) for u in reversed(us))  # right flank: tip → root
+        if rf < rb:
+            local.append((rf * np.cos(half_base), rf * np.sin(half_base)))
+        # root land: arc along rf from this tooth's right root to the next left root
+        for j in range(1, _GEAR_ROOT_SAMPLES):
+            a = half_base + (tooth_pitch - 2 * half_base) * j / _GEAR_ROOT_SAMPLES
+            local.append((rf * np.cos(a), rf * np.sin(a)))
+
+        phi = k * tooth_pitch
+        cos_p, sin_p = np.cos(phi), np.sin(phi)
+        for x, y in local:
+            points.append((float(cos_p * x - sin_p * y), float(sin_p * x + cos_p * y)))
+    return points
 
 
 # (u, v) position axes per drill axis; third component is the drill direction.
@@ -126,6 +190,8 @@ class CadQueryKernel(CadKernelPort):
             wp = wp.rect(evaluate(profile.width, values), evaluate(profile.height, values))
         elif profile.kind == "circle":
             wp = wp.circle(evaluate(profile.diameter, values) / 2.0)
+        elif profile.kind == "gear":
+            wp = wp.polyline(self._gear_points(profile, values)).close()
         else:  # polygon
             points = [
                 (evaluate(u, values), evaluate(v, values)) for u, v in profile.points
@@ -136,6 +202,14 @@ class CadQueryKernel(CadKernelPort):
             raise GeometryError(f"extrude {feature.id}: distance must be > 0")
         body = wp.extrude(distance)
         return body if solid is None else solid.union(body)
+
+    def _gear_points(
+        self, profile: GearProfile, values: dict[str, float]
+    ) -> list[tuple[float, float]]:
+        module = evaluate(profile.module, values)
+        teeth = int(round(evaluate(profile.teeth, values)))
+        pressure_angle = evaluate(profile.pressure_angle, values)
+        return gear_outline(module, teeth, pressure_angle)
 
     def _hole(
         self, cq: Any, feature: HoleFeature, values: dict[str, float], solid: Any

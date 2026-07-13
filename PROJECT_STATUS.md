@@ -3,18 +3,18 @@
 _Living document. Updated at every milestone._
 
 **Last updated:** 2026-07-13
-**Current phase:** 🟢 Phase 2 in progress — 4 part templates (bracket, plate, enclosure, standoff), IR `shell` feature, editable Feature Timeline (reorder + per-feature field edit), reviewable AI edit diffs, streaming chat
+**Current phase:** 🟢 Phase 2 in progress — 5 part templates (bracket, plate, enclosure, standoff, gear), IR `shell` + `gear` features, editable Feature Timeline (reorder + per-feature field edit), reviewable AI edit diffs, streaming chat
 **Build health:** 🟢 all gates green — pushed to GitHub (`origin`); CI active
 
 ## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. real-Blender + CAD golden tests) | 198 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden tests) | 211 | ✅ |
 | Renderer (vitest) | 96 | ✅ |
 | Desktop (vitest) | 36 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **342** | ✅ |
+| **Total** | **355** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
@@ -50,7 +50,8 @@ _Living document. Updated at every milestone._
 | 2.2a | **Reviewable diffs: AI proposes parameter edits, user applies/discards** | `53a8845` |
 | 2.2b | **Streaming chat over chunked HTTP (NDJSON `ChatStreamEvent`s)** | `cc77573` |
 | 2.4b | **Reorderable Feature Timeline (move features up/down, recompile)** | `4c22610` |
-| 2.4c | **Per-feature field editing (inline expr/enum edit → recompile)** | HEAD |
+| 2.4c | **Per-feature field editing (inline expr/enum edit → recompile)** | `a857c9d` |
+| 2.1d | **Involute spur-gear template + `GearProfile` IR kind** | HEAD |
 
 ## The MVP story now works — offline
 > *"Design a bracket 50x70, 4 mm thick, with 2 holes, in petg"* typed into the chat

@@ -99,7 +99,7 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] **IR `shell` feature** (hollow a solid to a wall thickness, remove named faces) + kernel executor with a volume-decrease guard (caught CadQuery silently returning the un-hollowed solid for over-thick walls) + **Enclosure/project-box** template (open-top hollow box, floor, rounded corners). 15 golden/API tests incl. closed-form cavity volume.
 - [x] Proved the template registry is a true plugin seam: `AiToolbox.list_part_templates` and the Claude/stub design flows discover new templates with zero AI-layer code change.
 - [x] **Standoff / spacer** template (round tube: cylinder + concentric through-bore) — 6 golden tests vs π/4·(OD²−ID²)·H. Four templates now.
-- [ ] Gear (spur) — needs involute-curve sketch support (new profile kind); scope before starting
+- [x] **Gear (spur)** — added a `GearProfile` IR profile kind; the kernel expands it into a closed involute tooth outline at compile time (`gear_outline`: base/pitch/addendum/root circles, involute flanks sized to the standard tooth thickness, radial drop + root arc between teeth), so the tooth count Z is a live parameter. New **Spur Gear** template (module/teeth/face-width/bore/pressure-angle) with an undercut warning (<17 teeth). Fifth template. 13 golden/API tests (bounded volume, exact key radii, tooth count, degenerate-param guards).
 - [ ] Pipe fitting, clamp — evaluate case by case against the IR feature set
 
 ### M2.2 — AI & UX depth
