@@ -16,6 +16,7 @@ import type {
   Export3mfPart,
   Export3mfResult,
   FeatureProgramDoc,
+  FreeformDetail,
   Material,
   PartDetail,
   PartExportResult,
@@ -290,6 +291,17 @@ export class EngineClient {
       `/api/v1/parts/${partId}/features/${featureId}`,
       { method: "PATCH", body: JSON.stringify({ fields }) },
     );
+  }
+
+  async generateFreeform(code: string, name?: string): Promise<FreeformDetail> {
+    return await this.request<FreeformDetail>("/api/v1/freeform", {
+      method: "POST",
+      body: JSON.stringify({ code, name: name ?? null }),
+    });
+  }
+
+  async getFreeform(partId: string): Promise<FreeformDetail> {
+    return await this.request<FreeformDetail>(`/api/v1/freeform/${partId}`);
   }
 
   async reorderPartFeatures(partId: string, featureIds: string[]): Promise<PartDetail> {

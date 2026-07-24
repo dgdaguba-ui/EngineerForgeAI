@@ -201,6 +201,55 @@ describe("AI design actions", () => {
   });
 });
 
+describe("freeform (text-to-CAD) actions", () => {
+  it("loads a generated freeform part into the viewport as a mesh", async () => {
+    useViewportStore.getState().clear();
+    useParametricStore.getState().clear();
+    const freeform = {
+      partId: "ff-1",
+      name: "Organic Bracket",
+      mesh: makePartDetail().compiled.mesh,
+      massProps: makePartDetail().compiled.massProps,
+      code: "result = cq.Workplane('XY').box(1,1,1)",
+      warnings: [],
+      kind: "freeform",
+    };
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.endsWith("/api/v1/ai/chat/stream")) {
+        return streamResponse([
+          doneEvent("Here's your freeform part.", [
+            {
+              tool: "generate_cad_script",
+              ok: true,
+              summary: "Generated Organic Bracket",
+              partId: "ff-1",
+              diff: [],
+              pending: false,
+            },
+          ]),
+        ]);
+      }
+      if (url.endsWith("/api/v1/freeform/ff-1")) {
+        return new Response(JSON.stringify(freeform), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      throw new Error(`unexpected url ${url}`);
+    });
+    installClient(fetchMock);
+
+    await useChatStore.getState().send("design an organic bracket");
+
+    const objects = useViewportStore.getState().objects;
+    expect(objects).toHaveLength(1);
+    expect(objects[0]!.name).toBe("Organic Bracket");
+    // freeform parts are NOT parametric — no active parametric part registered
+    expect(objects[0]!.parametricPartId).toBeNull();
+    expect(useParametricStore.getState().active).toBeNull();
+  });
+});
+
 describe("AI proposed edits (reviewable diffs)", () => {
   const proposeActions = [
     {

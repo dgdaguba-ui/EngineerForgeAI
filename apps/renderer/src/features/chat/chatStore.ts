@@ -22,9 +22,12 @@ export const CHAT_SYSTEM_PROMPT =
   "your tools: use list_part_templates to discover parameters, " +
   "create_part_from_template for design requests, and update_part_parameters to propose " +
   "changes to existing parts. Proposed changes are validated but NOT applied — the user " +
-  "reviews and approves or discards them in the UI. Every dimension and mass you state " +
-  "must come from tool results — never invent numbers. Created parts stay fully editable " +
-  "in the Parameters panel.";
+  "reviews and approves or discards them in the UI. For shapes no template can express " +
+  "(organic, swept, lofted, complex booleans) use generate_cad_script to write a CadQuery " +
+  "script — but prefer a template whenever one fits, because freeform parts are meshes and " +
+  "are NOT editable in the Parameters panel. Every dimension and mass you state must come " +
+  "from tool results — never invent numbers. Created parts stay fully editable in the " +
+  "Parameters panel.";
 
 export type ChatItemStatus = "sending" | "sent" | "queued" | "error";
 
@@ -79,10 +82,13 @@ async function applyChatActions(actions: ChatToolAction[]): Promise<void> {
   const client = useEngineStore.getState().client;
   const parametric = useParametricStore.getState();
   for (const action of actions) {
-    if (!action.ok || !action.partId || action.tool !== "create_part_from_template") continue;
+    if (!action.ok || !action.partId) continue;
     try {
-      const detail = await client.getPart(action.partId);
-      parametric.registerCompiledPart(detail);
+      if (action.tool === "create_part_from_template") {
+        parametric.registerCompiledPart(await client.getPart(action.partId));
+      } else if (action.tool === "generate_cad_script") {
+        parametric.registerFreeformPart(await client.getFreeform(action.partId));
+      }
     } catch {
       // the part summary is already in the chat text; scene sync is best-effort
     }

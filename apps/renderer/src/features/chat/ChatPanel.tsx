@@ -4,6 +4,7 @@ import { useChatStore, wireChatToEngine, type ChatActionState, type ChatItem } f
 
 function actionLabel(action: ChatActionState): string {
   if (action.tool === "create_part_from_template") return "Part created";
+  if (action.tool === "generate_cad_script") return "Freeform part";
   if (action.tool === "update_part_parameters") {
     if (action.resolved === "applied") return "Edit applied";
     if (action.resolved === "discarded") return "Edit discarded";

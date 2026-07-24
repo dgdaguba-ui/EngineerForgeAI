@@ -5,7 +5,7 @@
  */
 import { create } from "zustand";
 
-import type { IrFeature, IrParameter, PartDetail } from "../../engine/types";
+import type { FreeformDetail, IrFeature, IrParameter, PartDetail } from "../../engine/types";
 import { useEngineStore } from "../../state/engineStore";
 import { useProjectStore } from "../../state/projectStore";
 import { useViewportStore } from "../../state/viewportStore";
@@ -40,6 +40,9 @@ interface ParametricState {
   /** Register a freshly compiled part: project record + viewport mesh + active
    * state. Used by template creation and by AI chat actions. */
   registerCompiledPart: (detail: PartDetail) => string;
+  /** Load a freeform (text-to-CAD) result as a plain, non-parametric mesh in the
+   * viewport. It has no Feature Program, so it is not editable in the panels. */
+  registerFreeformPart: (detail: FreeformDetail) => string;
   /** Re-fetch a part from the engine and refresh its scene object (AI edits). */
   refreshPart: (partId: string) => Promise<void>;
   /** Apply an approved AI-proposed parameter diff: PATCH + scene sync. Throws
@@ -219,6 +222,17 @@ export const useParametricStore = create<ParametricState>((set, get) => {
         error: null,
       });
       return objectId;
+    },
+
+    registerFreeformPart: (detail: FreeformDetail) => {
+      const geometry = rawMeshToGeometry(detail.mesh);
+      return useViewportStore.getState().addMesh({
+        name: detail.name,
+        sourcePath: null,
+        geometry,
+        partId: null,
+        parametricPartId: null,
+      });
     },
 
     refreshPart: async (partId: string) => {

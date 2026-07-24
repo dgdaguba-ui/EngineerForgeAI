@@ -273,6 +273,17 @@ export interface PartDetail {
   materialId: string | null;
 }
 
+/** A non-parametric mesh part produced by the freeform (text-to-CAD) path. */
+export interface FreeformDetail {
+  partId: string;
+  name: string;
+  mesh: RawMeshPayload;
+  massProps: PartMassProps;
+  code: string;
+  warnings: string[];
+  kind: string;
+}
+
 export interface TemplateInfo {
   id: string;
   name: string;

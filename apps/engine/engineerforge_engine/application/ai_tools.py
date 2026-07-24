@@ -13,6 +13,7 @@ from typing import Any
 
 from ..domain.ai import ChatAction
 from ..domain.errors import EngineError
+from .freeform_service import FreeformDetail, FreeformService
 from .parts_service import PartDetail, PartsService
 
 
@@ -32,6 +33,16 @@ def _part_summary(detail: PartDetail) -> str:
     )
 
 
+def _freeform_summary(detail: FreeformDetail) -> str:
+    props = detail.mass_props
+    bbox = props.bbox_mm
+    return (
+        f"{detail.name} (freeform part {detail.part_id}): "
+        f"{bbox['x']}×{bbox['y']}×{bbox['z']} mm, {props.volume_cm3} cm³. "
+        "Loaded as a non-parametric mesh (not editable in the Parameters panel)."
+    )
+
+
 class ToolExecution:
     """Result of one tool invocation, carrying both the model-facing text and
     the UI-facing action record."""
@@ -42,11 +53,12 @@ class ToolExecution:
 
 
 class AiToolbox:
-    def __init__(self, parts: PartsService) -> None:
+    def __init__(self, parts: PartsService, freeform: FreeformService | None = None) -> None:
         self._parts = parts
+        self._freeform = freeform
 
     def definitions(self) -> list[dict[str, Any]]:
-        return [
+        tools: list[dict[str, Any]] = [
             {
                 "name": "list_part_templates",
                 "description": (
@@ -100,6 +112,35 @@ class AiToolbox:
                 },
             },
         ]
+        if self._freeform is not None:
+            tools.append(
+                {
+                    "name": "generate_cad_script",
+                    "description": (
+                        "Generate a one-off part by writing a CadQuery Python script "
+                        "for shapes the parametric templates cannot express (organic, "
+                        "swept, lofted, or complex boolean geometry). Assign the final "
+                        "shape to a variable named `result` (a cadquery Workplane or "
+                        "Shape). Only `cadquery` (as `cq`), `math`, and `numpy` are "
+                        "available; no file, network, or system access. The result is "
+                        "a NON-parametric mesh part — it is NOT editable in the "
+                        "Parameters panel, so prefer create_part_from_template when a "
+                        "template fits. Volume/bbox are measured from the real solid."
+                    ),
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": "CadQuery script assigning `result`",
+                            },
+                            "name": {"type": "string", "description": "optional part name"},
+                        },
+                        "required": ["code"],
+                    },
+                }
+            )
+        return tools
 
     def execute(self, name: str, arguments: dict[str, Any]) -> ToolExecution:
         try:
@@ -152,6 +193,17 @@ class AiToolbox:
                         pending=bool(diff),
                     ),
                     model_output,
+                )
+
+            if name == "generate_cad_script" and self._freeform is not None:
+                ff_detail = self._freeform.generate(
+                    str(arguments.get("code", "")),
+                    _opt_str(arguments.get("name")),
+                )
+                summary = f"Generated {_freeform_summary(ff_detail)}"
+                return ToolExecution(
+                    ChatAction(tool=name, ok=True, summary=summary, part_id=ff_detail.part_id),
+                    summary,
                 )
 
             failure = f"unknown tool: {name}"
