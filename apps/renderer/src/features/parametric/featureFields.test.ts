@@ -4,16 +4,24 @@ import type { IrFeature } from "../../engine/types";
 import { editableFields } from "./featureFields";
 
 describe("editableFields", () => {
-  it("exposes distance + offset for an extrude", () => {
+  it("exposes distance + offset + mode for an extrude", () => {
     const fields = editableFields({
       op: "extrude",
       id: "body",
       distance: "H",
       offset: 0,
+      mode: "union",
     } as IrFeature);
     expect(fields).toEqual([
       { key: "distance", label: "Distance", kind: "expr", value: "H" },
       { key: "offset", label: "Offset", kind: "expr", value: "0" },
+      {
+        key: "mode",
+        label: "Mode",
+        kind: "enum",
+        value: "union",
+        options: ["union", "cut", "intersect"],
+      },
     ]);
   });
 

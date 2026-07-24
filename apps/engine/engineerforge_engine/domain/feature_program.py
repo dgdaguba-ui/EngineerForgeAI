@@ -29,6 +29,7 @@ EFIR_VERSION: Literal["efir/1"] = "efir/1"
 Axis = Literal["X", "Y", "Z"]
 PlaneName = Literal["XY", "YZ", "XZ"]
 FaceRef = Literal["+X", "-X", "+Y", "-Y", "+Z", "-Z"]
+BooleanMode = Literal["union", "cut", "intersect"]
 
 _ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 
@@ -152,6 +153,9 @@ class ExtrudeFeature(_CamelModel):
     of: str  # sketch feature id
     distance: Expr
     offset: Expr = 0
+    #: how this body combines with the solid so far: union (add), cut (subtract),
+    #: or intersect (keep the overlap). The first extrude must be a union.
+    mode: BooleanMode = "union"
 
 
 class HoleFeature(_CamelModel):

@@ -211,7 +211,25 @@ class CadQueryKernel(CadKernelPort):
         if distance <= 0:
             raise GeometryError(f"extrude {feature.id}: distance must be > 0")
         body = wp.extrude(distance)
-        return body if solid is None else solid.union(body)
+        if solid is None:
+            if feature.mode != "union":
+                raise GeometryError(
+                    f"extrude {feature.id}: the first extrude must be a union "
+                    f"(nothing to {feature.mode} against yet)"
+                )
+            return body
+        if feature.mode == "cut":
+            result = solid.cut(body)
+        elif feature.mode == "intersect":
+            result = solid.intersect(body)
+        else:
+            result = solid.union(body)
+        if float(result.val().Volume()) <= 0:
+            raise GeometryError(
+                f"extrude {feature.id}: {feature.mode} produced an empty solid "
+                "(the tool body does not overlap the part as positioned)"
+            )
+        return result
 
     def _gear_points(
         self, profile: GearProfile, values: dict[str, float]

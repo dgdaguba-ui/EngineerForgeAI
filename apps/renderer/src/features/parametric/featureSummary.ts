@@ -45,7 +45,9 @@ export function featureDetail(feature: IrFeature): string {
     case "extrude": {
       const dist = `distance ${str(feature, "distance") ?? "?"}`;
       const offset = str(feature, "offset");
-      return offset && offset !== "0" ? `${dist} @ +${offset}` : dist;
+      const withOffset = offset && offset !== "0" ? `${dist} @ +${offset}` : dist;
+      const mode = str(feature, "mode");
+      return mode && mode !== "union" ? `${mode} · ${withOffset}` : withOffset;
     }
     case "hole": {
       const dia = str(feature, "diameter") ?? "?";
