@@ -19,6 +19,7 @@ const GLYPHS: Record<string, string> = {
   extrude: "⤒",
   hole: "◎",
   fillet: "◜",
+  chamfer: "◺",
   shell: "▣",
 };
 
@@ -53,6 +54,8 @@ export function featureDetail(feature: IrFeature): string {
     }
     case "fillet":
       return `r ${str(feature, "radius") ?? "?"} ∥${str(feature, "axis") ?? "?"}`;
+    case "chamfer":
+      return `c ${str(feature, "length") ?? "?"} ∥${str(feature, "axis") ?? "?"}`;
     case "shell": {
       const wall = str(feature, "thickness") ?? "?";
       const open = feature["openFaces"] ?? feature["open_faces"];

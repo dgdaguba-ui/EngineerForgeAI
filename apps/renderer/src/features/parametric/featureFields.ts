@@ -64,6 +64,11 @@ export function editableFields(feature: IrFeature): FeatureField[] {
         expr(feature, "radius", "Radius"),
         enumField(feature, "axis", "Axis", AXES),
       ];
+    case "chamfer":
+      return [
+        expr(feature, "length", "Length"),
+        enumField(feature, "axis", "Axis", AXES),
+      ];
     case "shell":
       return [expr(feature, "thickness", "Thickness")];
     default:

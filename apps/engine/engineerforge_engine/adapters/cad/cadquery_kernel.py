@@ -18,6 +18,7 @@ import numpy as np
 from ...domain.errors import EngineError
 from ...domain.expressions import evaluate
 from ...domain.feature_program import (
+    ChamferFeature,
     CompiledPart,
     ExtrudeFeature,
     FeatureProgram,
@@ -135,6 +136,10 @@ class CadQueryKernel(CadKernelPort):
                     solid = self._hole(cq, feature, values, solid)
                 elif isinstance(feature, FilletFeature):
                     solid, skip_note = self._fillet(cq, feature, values, solid)
+                    if skip_note:
+                        warnings.append(skip_note)
+                elif isinstance(feature, ChamferFeature):
+                    solid, skip_note = self._chamfer(cq, feature, values, solid)
                     if skip_note:
                         warnings.append(skip_note)
                 elif isinstance(feature, ShellFeature):
@@ -264,6 +269,23 @@ class CadQueryKernel(CadKernelPort):
                 f"fillet {feature.id} failed at radius {radius}: the radius is too "
                 "large for an adjacent wall — opposing edges on a face of thickness t "
                 f"allow r < t/2. Reduce the fillet radius. ({exc})"
+            ) from exc
+
+    def _chamfer(
+        self, cq: Any, feature: ChamferFeature, values: dict[str, float], solid: Any
+    ) -> tuple[Any, str | None]:
+        if solid is None:
+            raise GeometryError(f"chamfer {feature.id}: no solid to chamfer yet")
+        length = evaluate(feature.length, values)
+        if length <= 0:
+            return solid, f"chamfer {feature.id} skipped (length ≤ 0)"
+        try:
+            return solid.edges(f"|{feature.axis}").chamfer(length), None
+        except Exception as exc:
+            raise GeometryError(
+                f"chamfer {feature.id} failed at length {length}: the chamfer is too "
+                "large for an adjacent wall — opposing edges on a face of thickness t "
+                f"allow length < t/2. Reduce the chamfer length. ({exc})"
             ) from exc
 
     def _shell(

@@ -45,6 +45,18 @@ describe("editableFields", () => {
     ]);
   });
 
+  it("exposes length + axis for a chamfer", () => {
+    const fields = editableFields({
+      op: "chamfer",
+      id: "edges",
+      length: "C",
+      axis: "Z",
+    } as IrFeature);
+    expect(fields.map((f) => f.key)).toEqual(["length", "axis"]);
+    expect(fields[0]).toMatchObject({ kind: "expr", value: "C" });
+    expect(fields[1]).toMatchObject({ kind: "enum", options: ["X", "Y", "Z"] });
+  });
+
   it("returns nothing for an unknown op", () => {
     expect(editableFields({ op: "loft", id: "x" } as unknown as IrFeature)).toEqual([]);
   });

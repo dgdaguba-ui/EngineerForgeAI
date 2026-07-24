@@ -181,6 +181,15 @@ class FilletFeature(_CamelModel):
     radius: Expr
 
 
+class ChamferFeature(_CamelModel):
+    """Chamfer every edge parallel to `axis` by `length`. length ≤ 0 skips (no-op)."""
+
+    op: Literal["chamfer"] = "chamfer"
+    id: str
+    axis: Axis
+    length: Expr
+
+
 class ShellFeature(_CamelModel):
     """Hollow the current solid, leaving walls of `thickness`.
 
@@ -196,7 +205,12 @@ class ShellFeature(_CamelModel):
 
 
 Feature = Annotated[
-    SketchFeature | ExtrudeFeature | HoleFeature | FilletFeature | ShellFeature,
+    SketchFeature
+    | ExtrudeFeature
+    | HoleFeature
+    | FilletFeature
+    | ChamferFeature
+    | ShellFeature,
     Field(discriminator="op"),
 ]
 
