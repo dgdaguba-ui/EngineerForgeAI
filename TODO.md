@@ -107,8 +107,11 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] **Streaming chat responses**: `POST /api/v1/ai/chat/stream` streams `ChatStreamEvent`s as newline-delimited JSON over chunked HTTP (chosen over a raw WebSocket — reuses the bearer-token header, CORS, error envelope, and the mockable `fetch` transport; no bidirectional need for request-scoped chat). `AIProvider.stream` has a default single-chunk wrapper; Stub streams word-by-word, Claude streams real token deltas through the manual tool loop (emitting `action` events as tools run). Renderer `chatStream` async-generator parses NDJSON; the chat store accumulates deltas into a live assistant bubble and finalizes on `done`, preserving the offline queue on pre-first-chunk failures. 12 new tests (engine provider/endpoint + renderer client/store).
 - [ ] Rebuild progress streaming — **deferred, honestly**: a rebuild is one ~160 ms `kernel.compile()` call with no real intermediate progress; a progress bar would be fabricated (violates the no-placeholder rule). Revisit only if/when rebuilds get slow enough to instrument real kernel stages.
 
-### M2.3 — Data plane (blocked on Docker — user action)
-- [ ] Prisma migrations + Supabase sync
+### M2.3 — Data plane (offline-safe parts done; Postgres/Supabase round-trip needs user actions)
+- [x] **Prisma initial migration** generated offline from the canonical schema (`prisma/migrations/0001_init/migration.sql`, 483 lines — all tables/enums/indexes/FKs) + `migration_lock.toml`. Ready to `prisma migrate deploy` the moment a Postgres URL exists. (Applying it still needs Docker/a DB — user action.)
+- [x] **CloudSyncQueue** — offline-first background project backup over the existing `CloudService`: dedupe by project id (latest doc wins), exponential-backoff retry on failure, no-op when local-only, disposed on quit. Wired to new IPC `cloud:queueProject` / `cloud:syncStatus`. 5 desktop tests (no-op local, push+clear, dedupe-while-queued, backoff-then-succeed, dispose). Mirrors the chat delivery-queue policy.
+- [ ] Real Supabase round-trip verification (needs `SUPABASE_URL` + keys — user action) and a renderer sync-status indicator.
+- [ ] Prisma client generation + runtime data-plane wiring for hosted mode (needs Docker Postgres — user action).
 
 ### M2.4 — UI depth
 - [x] **Feature Timeline panel**: read-only ordered view of the selected parametric part's IR feature list (op glyph + id + per-op summary; sketch/extrude/hole/fillet/shell). Makes the model recipe visible. 11 renderer tests (featureSummary pure logic + component render + store population). Header badge fixed to "Phase 2".

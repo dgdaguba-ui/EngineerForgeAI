@@ -110,3 +110,18 @@ export const CloudResultSchema = z.object({
   detail: z.string(),
 });
 export type CloudResult = z.infer<typeof CloudResultSchema>;
+
+/** Background cloud-sync queue state (offline-first project backup). */
+export const SyncStatusSchema = z.object({
+  /** Provider is active (a cloud backend is configured). */
+  active: z.boolean(),
+  /** Projects awaiting a successful push. */
+  pending: z.number().int().nonnegative(),
+  /** A push is currently in flight. */
+  inFlight: z.boolean(),
+  /** Epoch ms of the last successful push, or null. */
+  lastSyncedAt: z.number().nullable(),
+  /** Detail of the most recent failure, or null when healthy. */
+  lastError: z.string().nullable(),
+});
+export type SyncStatus = z.infer<typeof SyncStatusSchema>;

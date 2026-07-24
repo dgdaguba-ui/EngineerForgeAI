@@ -11,6 +11,7 @@ import { app, BrowserWindow } from "electron";
 import { events, type EngineStatus } from "@efc/ipc-contracts";
 
 import { buildCloudService } from "./cloud/registry.js";
+import { CloudSyncQueue } from "./cloud/syncQueue.js";
 import { loadDotenvFile } from "./dotenv.js";
 import { resolveEngineDir } from "./engine-locator.js";
 import { registerIpc } from "./ipc.js";
@@ -55,6 +56,7 @@ const cloud = buildCloudService({
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
 });
+const syncQueue = new CloudSyncQueue(cloud);
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -129,6 +131,7 @@ if (!gotLock && !SMOKE_MODE) {
       projects,
       recents,
       cloud,
+      syncQueue,
       getWindow: () => mainWindow,
     });
     createWindow();
@@ -144,6 +147,7 @@ if (!gotLock && !SMOKE_MODE) {
   });
 
   app.on("before-quit", () => {
+    syncQueue.dispose();
     void supervisor.stop();
   });
 }

@@ -12,9 +12,9 @@ _Living document. Updated at every milestone._
 |---|---|---|
 | Engine (pytest, incl. real-Blender + CAD golden tests) | 211 | ✅ |
 | Renderer (vitest) | 96 | ✅ |
-| Desktop (vitest) | 36 | ✅ |
+| Desktop (vitest) | 41 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **355** | ✅ |
+| **Total** | **360** | ✅ |
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |

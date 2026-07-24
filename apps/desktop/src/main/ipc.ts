@@ -9,6 +9,7 @@ import { app, dialog, ipcMain, type BrowserWindow } from "electron";
 import { channels, type ChannelName, type ProjectDoc } from "@efc/ipc-contracts";
 
 import type { CloudService } from "./cloud/service.js";
+import type { CloudSyncQueue } from "./cloud/syncQueue.js";
 import type { LocalProjectStore } from "./projects/local-store.js";
 import type { RecentProjects } from "./projects/recents.js";
 import type { PathAllowlist } from "./security.js";
@@ -20,6 +21,7 @@ interface IpcDeps {
   projects: LocalProjectStore;
   recents: RecentProjects;
   cloud: CloudService;
+  syncQueue: CloudSyncQueue;
   getWindow: () => BrowserWindow | null;
 }
 
@@ -36,7 +38,7 @@ function handle<C extends ChannelName>(
 }
 
 export function registerIpc(deps: IpcDeps): void {
-  const { supervisor, allowlist, projects, recents, cloud, getWindow } = deps;
+  const { supervisor, allowlist, projects, recents, cloud, syncQueue, getWindow } = deps;
 
   // ── app / engine ────────────────────────────────────────────────────────────
 
@@ -189,4 +191,12 @@ export function registerIpc(deps: IpcDeps): void {
     const bundle = await projects.openProject(dirPath);
     return await cloud.pushProject(bundle.info, bundle.doc);
   });
+
+  handle("cloud:queueProject", async (req) => {
+    const { path: dirPath } = req as { path: string };
+    const bundle = await projects.openProject(dirPath);
+    return syncQueue.enqueue(bundle.info, bundle.doc);
+  });
+
+  handle("cloud:syncStatus", () => syncQueue.status());
 }

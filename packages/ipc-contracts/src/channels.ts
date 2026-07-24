@@ -13,6 +13,7 @@ import {
   CloudStatusSchema,
   ProjectDocSchema,
   ProjectInfoSchema,
+  SyncStatusSchema,
 } from "./project.js";
 
 // ── Engine ────────────────────────────────────────────────────────────────────
@@ -121,6 +122,12 @@ export const channels = {
     req: z.object({ path: z.string() }),
     res: CloudResultSchema,
   },
+  // enqueue a project for background backup (offline-first; retries on reconnect)
+  "cloud:queueProject": {
+    req: z.object({ path: z.string() }),
+    res: SyncStatusSchema,
+  },
+  "cloud:syncStatus": { req: z.void(), res: SyncStatusSchema },
 } as const;
 
 export type Channels = typeof channels;
