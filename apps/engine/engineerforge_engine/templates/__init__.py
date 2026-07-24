@@ -52,6 +52,7 @@ class TemplateRegistry:
 def default_registry() -> TemplateRegistry:
     from .bracket_l import BRACKET_L_TEMPLATE
     from .enclosure_box import ENCLOSURE_BOX_TEMPLATE
+    from .flanged_standoff import FLANGED_STANDOFF_TEMPLATE
     from .gear import GEAR_TEMPLATE
     from .mounting_plate import MOUNTING_PLATE_TEMPLATE
     from .standoff import STANDOFF_TEMPLATE
@@ -62,4 +63,5 @@ def default_registry() -> TemplateRegistry:
     registry.register(ENCLOSURE_BOX_TEMPLATE)
     registry.register(STANDOFF_TEMPLATE)
     registry.register(GEAR_TEMPLATE)
+    registry.register(FLANGED_STANDOFF_TEMPLATE)
     return registry
