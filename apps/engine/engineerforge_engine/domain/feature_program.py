@@ -139,12 +139,19 @@ class SketchFeature(_CamelModel):
 
 
 class ExtrudeFeature(_CamelModel):
-    """Extrude a sketch along its plane normal (XY→+Z, YZ→+X, XZ→−Y)."""
+    """Extrude a sketch along its plane normal (XY→+Z, YZ→+X, XZ→−Y).
+
+    ``offset`` shifts the start of the extrusion along the plane normal (0 =
+    start at the sketch plane). A non-zero offset lets a body begin where an
+    earlier one ended, so stacked/flanged parts (a lid, a shouldered standoff)
+    can be built as unioned extrudes without a boolean feature.
+    """
 
     op: Literal["extrude"] = "extrude"
     id: str
     of: str  # sketch feature id
     distance: Expr
+    offset: Expr = 0
 
 
 class HoleFeature(_CamelModel):

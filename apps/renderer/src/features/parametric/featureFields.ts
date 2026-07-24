@@ -49,7 +49,7 @@ export function editableFields(feature: IrFeature): FeatureField[] {
     case "sketch":
       return [enumField(feature, "plane", "Plane", PLANES)];
     case "extrude":
-      return [expr(feature, "distance", "Distance")];
+      return [expr(feature, "distance", "Distance"), expr(feature, "offset", "Offset")];
     case "hole":
       return [
         expr(feature, "diameter", "Diameter"),

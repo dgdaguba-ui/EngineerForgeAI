@@ -190,6 +190,11 @@ class CadQueryKernel(CadKernelPort):
     ) -> Any:
         sketch = sketches[feature.of]
         wp = cq.Workplane(sketch.plane)
+        offset = evaluate(feature.offset, values)
+        if offset:
+            # shift the workplane along its normal so this body starts at `offset`
+            # (enables stacked/flanged multi-body parts unioned onto the solid)
+            wp = wp.workplane(offset=offset)
         profile = sketch.profile
         if profile.kind == "rect":
             wp = wp.rect(evaluate(profile.width, values), evaluate(profile.height, values))
