@@ -17,6 +17,7 @@ export interface FeatureView {
 const GLYPHS: Record<string, string> = {
   sketch: "✎",
   extrude: "⤒",
+  revolve: "⟳",
   hole: "◎",
   fillet: "◜",
   chamfer: "◺",
@@ -57,6 +58,8 @@ export function featureDetail(feature: IrFeature): string {
         ? `⌀${dia} ×${count} along ${axis}`
         : `⌀${dia} through ${axis}`;
     }
+    case "revolve":
+      return `${str(feature, "angle") ?? "360"}° ⟳${str(feature, "axis") ?? "u"}`;
     case "fillet":
       return `r ${str(feature, "radius") ?? "?"} ∥${str(feature, "axis") ?? "?"}`;
     case "chamfer":

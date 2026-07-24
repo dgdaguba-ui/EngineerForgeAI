@@ -158,6 +158,23 @@ class ExtrudeFeature(_CamelModel):
     mode: BooleanMode = "union"
 
 
+class RevolveFeature(_CamelModel):
+    """Revolve a sketch profile around an in-plane axis to make a solid of revolution.
+
+    ``axis`` is the sketch plane's local axis to spin around — ``"u"`` (the first
+    in-plane axis) or ``"v"`` (the second); for an XY sketch, u→X and v→Y. The
+    profile must lie entirely on one side of that axis (it may touch it) or the
+    revolve self-intersects. ``angle`` in degrees, 0 < angle ≤ 360. Enables
+    pulleys, rings, knobs, and other turned parts.
+    """
+
+    op: Literal["revolve"] = "revolve"
+    id: str
+    of: str  # sketch feature id
+    angle: Expr = 360
+    axis: Literal["u", "v"] = "u"
+
+
 class HoleFeature(_CamelModel):
     """Axis-aligned through-hole(s).
 
@@ -218,6 +235,7 @@ class ShellFeature(_CamelModel):
 Feature = Annotated[
     SketchFeature
     | ExtrudeFeature
+    | RevolveFeature
     | HoleFeature
     | FilletFeature
     | ChamferFeature
@@ -244,8 +262,8 @@ class FeatureProgram(_CamelModel):
             raise ValueError("duplicate feature ids")
         sketch_ids = {f.id for f in self.features if isinstance(f, SketchFeature)}
         for f in self.features:
-            if isinstance(f, ExtrudeFeature) and f.of not in sketch_ids:
-                raise ValueError(f"extrude {f.id} references unknown sketch {f.of!r}")
+            if isinstance(f, ExtrudeFeature | RevolveFeature) and f.of not in sketch_ids:
+                raise ValueError(f"{f.op} {f.id} references unknown sketch {f.of!r}")
         return self
 
     def parameter_values(self) -> dict[str, float]:

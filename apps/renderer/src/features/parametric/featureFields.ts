@@ -24,6 +24,7 @@ export interface FeatureField {
 const AXES = ["X", "Y", "Z"];
 const PLANES = ["XY", "YZ", "XZ"];
 const BOOLEAN_MODES = ["union", "cut", "intersect"];
+const REVOLVE_AXES = ["u", "v"];
 
 function raw(feature: IrFeature, key: string): string {
   const v = feature[key];
@@ -54,6 +55,11 @@ export function editableFields(feature: IrFeature): FeatureField[] {
         expr(feature, "distance", "Distance"),
         expr(feature, "offset", "Offset"),
         enumField(feature, "mode", "Mode", BOOLEAN_MODES),
+      ];
+    case "revolve":
+      return [
+        expr(feature, "angle", "Angle"),
+        enumField(feature, "axis", "Axis", REVOLVE_AXES),
       ];
     case "hole":
       return [

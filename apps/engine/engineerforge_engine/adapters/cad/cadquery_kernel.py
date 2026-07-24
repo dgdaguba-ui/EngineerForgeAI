@@ -27,6 +27,7 @@ from ...domain.feature_program import (
     HoleFeature,
     MassProps,
     RawMesh,
+    RevolveFeature,
     ShellFeature,
     SketchFeature,
 )
@@ -132,6 +133,8 @@ class CadQueryKernel(CadKernelPort):
                     sketches[feature.id] = feature
                 elif isinstance(feature, ExtrudeFeature):
                     solid = self._extrude(cq, sketches, feature, values, solid)
+                elif isinstance(feature, RevolveFeature):
+                    solid = self._revolve(cq, sketches, feature, values, solid)
                 elif isinstance(feature, HoleFeature):
                     solid = self._hole(cq, feature, values, solid)
                 elif isinstance(feature, FilletFeature):
@@ -195,18 +198,7 @@ class CadQueryKernel(CadKernelPort):
             # shift the workplane along its normal so this body starts at `offset`
             # (enables stacked/flanged multi-body parts unioned onto the solid)
             wp = wp.workplane(offset=offset)
-        profile = sketch.profile
-        if profile.kind == "rect":
-            wp = wp.rect(evaluate(profile.width, values), evaluate(profile.height, values))
-        elif profile.kind == "circle":
-            wp = wp.circle(evaluate(profile.diameter, values) / 2.0)
-        elif profile.kind == "gear":
-            wp = wp.polyline(self._gear_points(profile, values)).close()
-        else:  # polygon
-            points = [
-                (evaluate(u, values), evaluate(v, values)) for u, v in profile.points
-            ]
-            wp = wp.polyline(points).close()
+        wp = self._apply_profile(wp, sketch.profile, values)
         distance = evaluate(feature.distance, values)
         if distance <= 0:
             raise GeometryError(f"extrude {feature.id}: distance must be > 0")
@@ -230,6 +222,44 @@ class CadQueryKernel(CadKernelPort):
                 "(the tool body does not overlap the part as positioned)"
             )
         return result
+
+    def _apply_profile(self, wp: Any, profile: Any, values: dict[str, float]) -> Any:
+        """Draw a sketch profile onto a workplane, returning the closed-wire wp.
+        Shared by extrude and revolve so both accept every profile kind."""
+        if profile.kind == "rect":
+            return wp.rect(evaluate(profile.width, values), evaluate(profile.height, values))
+        if profile.kind == "circle":
+            return wp.circle(evaluate(profile.diameter, values) / 2.0)
+        if profile.kind == "gear":
+            return wp.polyline(self._gear_points(profile, values)).close()
+        # polygon
+        points = [(evaluate(u, values), evaluate(v, values)) for u, v in profile.points]
+        return wp.polyline(points).close()
+
+    def _revolve(
+        self,
+        cq: Any,
+        sketches: dict[str, SketchFeature],
+        feature: RevolveFeature,
+        values: dict[str, float],
+        solid: Any,
+    ) -> Any:
+        sketch = sketches[feature.of]
+        wp = self._apply_profile(cq.Workplane(sketch.plane), sketch.profile, values)
+        angle = evaluate(feature.angle, values)
+        if not 0 < angle <= 360:
+            raise GeometryError(f"revolve {feature.id}: angle must be in (0, 360]°")
+        # revolve around the sketch plane's local u (X) or v (Y) axis
+        axis_end = (1.0, 0.0) if feature.axis == "u" else (0.0, 1.0)
+        try:
+            body = wp.revolve(angle, (0.0, 0.0), axis_end)
+        except Exception as exc:
+            raise GeometryError(
+                f"revolve {feature.id} failed: the profile must lie entirely on one "
+                f"side of the {feature.axis}-axis (it may touch it) — a profile that "
+                f"crosses the axis self-intersects. ({exc})"
+            ) from exc
+        return body if solid is None else solid.union(body)
 
     def _gear_points(
         self, profile: GearProfile, values: dict[str, float]

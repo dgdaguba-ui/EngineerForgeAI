@@ -52,6 +52,18 @@ describe("editableFields", () => {
     expect(axis.value).toBe("Z");
   });
 
+  it("exposes angle + axis for a revolve", () => {
+    const fields = editableFields({
+      op: "revolve",
+      id: "rev",
+      angle: 360,
+      axis: "u",
+    } as IrFeature);
+    expect(fields.map((f) => f.key)).toEqual(["angle", "axis"]);
+    expect(fields[0]).toMatchObject({ kind: "expr", value: "360" });
+    expect(fields[1]).toMatchObject({ kind: "enum", options: ["u", "v"], value: "u" });
+  });
+
   it("exposes plane for a sketch and thickness for a shell", () => {
     expect(editableFields({ op: "sketch", id: "s", plane: "XY" } as IrFeature)).toEqual([
       { key: "plane", label: "Plane", kind: "enum", value: "XY", options: ["XY", "YZ", "XZ"] },
