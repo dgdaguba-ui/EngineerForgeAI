@@ -100,7 +100,14 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] Proved the template registry is a true plugin seam: `AiToolbox.list_part_templates` and the Claude/stub design flows discover new templates with zero AI-layer code change.
 - [x] **Standoff / spacer** template (round tube: cylinder + concentric through-bore) — 6 golden tests vs π/4·(OD²−ID²)·H. Four templates now.
 - [x] **Gear (spur)** — added a `GearProfile` IR profile kind; the kernel expands it into a closed involute tooth outline at compile time (`gear_outline`: base/pitch/addendum/root circles, involute flanks sized to the standard tooth thickness, radial drop + root arc between teeth), so the tooth count Z is a live parameter. New **Spur Gear** template (module/teeth/face-width/bore/pressure-angle) with an undercut warning (<17 teeth). Fifth template. 13 golden/API tests (bounded volume, exact key radii, tooth count, degenerate-param guards).
+- [x] **Flanged Standoff** (offset-extrude stacking) and **Counterbored Boss** (offset + boolean-cut recess) templates — 6th and 7th templates.
 - [ ] Pipe fitting, clamp — evaluate case by case against the IR feature set
+
+### M2.6 — IR feature expansion
+- [x] **`chamfer`** feature (edge chamfer parallel to an axis) — mirrors fillet.
+- [x] **Plane-offset extrude** (`ExtrudeFeature.offset`) — stacked/flanged multi-body parts without a boolean feature.
+- [x] **Boolean extrude modes** (`ExtrudeFeature.mode` = union/cut/intersect) — arbitrary pockets/slots/trims against the running solid.
+- [ ] Revolve feature (for pulleys/grooves) — needs a new feature kind; scope before starting.
 
 ### M2.5 — Freeform (text-to-CAD) generation
 - [x] **Sandboxed freeform CAD** (integrating the approach of earthtojake/text-to-cad): the AI writes a CadQuery script, executed through a static AST guard (`script_guard`: import allow-list, no dunder access, no dangerous builtins, requires a `result` assignment) + a **separate-process sandbox** (restricted builtins, audit hook blocking process/network, hard timeout). Produces a **non-parametric mesh part** that loads in the viewport alongside IR parts (not editable in the Parameters panel). Volume/bbox still measured from the real B-rep (ADR-0003 preserved). New `POST /api/v1/freeform` (+ get/export STEP/STL), AI tool `generate_cad_script`, renderer `registerFreeformPart`. Implemented on the existing CadQuery kernel (build123d resolves but swaps the OCP variant + destabilises the proven setup). 33 new tests (guard + real-subprocess service/API/tool + renderer). Attribution in `NOTICE.md`. **Security caveat: best-effort, not a hardened boundary — true isolation needs a container (gated on Docker).**

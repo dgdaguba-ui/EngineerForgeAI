@@ -3,18 +3,21 @@
 _Living document. Updated at every milestone._
 
 **Last updated:** 2026-07-13
-**Current phase:** 🟢 Phase 2 in progress — 5 part templates, IR `shell` + `gear`, editable Feature Timeline (reorder + field edit), reviewable AI edit diffs, streaming chat, **sandboxed freeform (text-to-CAD) generation**
+**Current phase:** 🟢 Phase 2 in progress — 7 part templates, IR now has chamfer + plane-offset & boolean (cut/intersect) extrude + shell + gear-profile, editable Feature Timeline (reorder + field edit), reviewable AI edit diffs, streaming chat, **sandboxed freeform (text-to-CAD) generation**
 **Build health:** 🟢 all gates green — pushed to GitHub (`origin`); CI active
 
 ## Test & quality gates (current)
 
 | Suite | Count | Status |
 |---|---|---|
-| Engine (pytest, incl. real-Blender + CAD golden + freeform-sandbox tests) | 243 | ✅ |
-| Renderer (vitest) | 97 | ✅ |
+| Engine (pytest, incl. real-Blender + CAD golden + freeform-sandbox tests) | 266 | ✅ |
+| Renderer (vitest) | 98 | ✅ |
 | Desktop (vitest) | 41 | ✅ |
 | IPC contracts (vitest) | 12 | ✅ |
-| **Total** | **393** | ✅ |
+| **Total** | **417** | ✅ |
+
+**Templates (7):** L-bracket, mounting plate, enclosure box, standoff, spur gear, flanged standoff, counterbored boss.
+**IR feature set (`efir/1`):** sketch (rect/circle/polygon/gear) · extrude (+ plane offset, + boolean union/cut/intersect) · hole (linear rows) · fillet · chamfer · shell.
 | ruff + mypy --strict (engine) | — | ✅ clean |
 | tsc strict (all TS packages) | — | ✅ clean |
 | Electron `--smoke` e2e (spawns real engine) | — | ✅ state=running |
@@ -53,7 +56,9 @@ _Living document. Updated at every milestone._
 | 2.4c | **Per-feature field editing (inline expr/enum edit → recompile)** | `a857c9d` |
 | 2.1d | **Involute spur-gear template + `GearProfile` IR kind** | `b6eaf8c` |
 | 2.3a | **Offline-first cloud sync queue + initial Prisma migration** | `6ee3492` |
-| 2.5a | **Sandboxed freeform (text-to-CAD) generation** | HEAD |
+| 2.5a | **Sandboxed freeform (text-to-CAD) generation** | `9cb3d25` |
+| 2.6a | **IR chamfer + plane-offset & boolean-mode extrude** | `2aa1aa0`→`b2a889d` |
+| 2.6b | **Flanged Standoff + Counterbored Boss templates (6th, 7th)** | HEAD |
 
 ## The MVP story now works — offline
 > *"Design a bracket 50x70, 4 mm thick, with 2 holes, in petg"* typed into the chat
