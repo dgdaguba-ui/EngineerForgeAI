@@ -1,0 +1,35 @@
+# Local development Postgres for the EngineerForge AI data plane (M2.3).
+#
+# The app is OFFLINE-FIRST — it runs fully without this. Postgres is only needed
+# for the optional hosted / data-plane mode (the Prisma schema in prisma/).
+#
+# Credentials match .env's DATABASE_URL:
+#   postgresql://postgres:postgres@localhost:5432/efc
+#
+# Usage (from the repo root, with Docker Desktop running):
+#   pnpm db:up            # start Postgres in the background
+#   npx prisma migrate deploy   # apply prisma/migrations to it
+#   pnpm db:down          # stop it (keeps data)
+#   pnpm db:down -- -v    # stop and delete the data volume
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: efc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: efc
+    ports:
+      - "5432:5432"
+    volumes:
+      - efc-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d efc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  efc-pgdata:

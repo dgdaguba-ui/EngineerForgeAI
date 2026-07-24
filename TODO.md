@@ -121,8 +121,9 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 ### M2.3 — Data plane (offline-safe parts done; Postgres/Supabase round-trip needs user actions)
 - [x] **Prisma initial migration** generated offline from the canonical schema (`prisma/migrations/0001_init/migration.sql`, 483 lines — all tables/enums/indexes/FKs) + `migration_lock.toml`. Ready to `prisma migrate deploy` the moment a Postgres URL exists. (Applying it still needs Docker/a DB — user action.)
 - [x] **CloudSyncQueue** — offline-first background project backup over the existing `CloudService`: dedupe by project id (latest doc wins), exponential-backoff retry on failure, no-op when local-only, disposed on quit. Wired to new IPC `cloud:queueProject` / `cloud:syncStatus`. 5 desktop tests (no-op local, push+clear, dedupe-while-queued, backoff-then-succeed, dispose). Mirrors the chat delivery-queue policy.
+- [x] **Local Postgres data plane verified end-to-end**: `infra/docker/docker-compose.dev.yml` (Postgres 16, creds matched to `.env`), `pnpm db:up`/`db:down`/`db:migrate`/`db:studio` scripts, `infra/docker/README.md`. `prisma migrate deploy` applied `0001_init` against the live container — 22 tables created and verified.
 - [ ] Real Supabase round-trip verification (needs `SUPABASE_URL` + keys — user action) and a renderer sync-status indicator.
-- [ ] Prisma client generation + runtime data-plane wiring for hosted mode (needs Docker Postgres — user action).
+- [ ] Prisma client generation + runtime data-plane wiring in the engine/desktop for hosted mode (schema + DB now in place; wiring is the remaining work).
 
 ### M2.4 — UI depth
 - [x] **Feature Timeline panel**: read-only ordered view of the selected parametric part's IR feature list (op glyph + id + per-op summary; sketch/extrude/hole/fillet/shell). Makes the model recipe visible. 11 renderer tests (featureSummary pure logic + component render + store population). Header badge fixed to "Phase 2".

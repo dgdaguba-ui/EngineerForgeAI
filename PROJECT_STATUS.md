@@ -30,7 +30,7 @@ _Living document. Updated at every milestone._
 | pnpm | 9.12.0 ✅ | installed via npm (corepack signature bug on this Node build) |
 | Python (engine) | 3.12.11 ✅ | uv-managed; **NOT** system Python 3.14 |
 | Blender | 5.0 ✅ | auto-detected; integration tests run against it |
-| Docker | ❌ deferred | not required offline-first; needed for local Postgres/hosted mode |
+| Docker | ✅ | Docker Desktop (v29, WSL2) running; local Postgres 16 up via `infra/docker/docker-compose.dev.yml`, `0001_init` migration applied (22 tables verified) |
 
 ## Milestones
 | # | Milestone | Commit |
