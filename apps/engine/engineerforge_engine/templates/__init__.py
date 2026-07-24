@@ -57,6 +57,7 @@ def default_registry() -> TemplateRegistry:
     from .gear import GEAR_TEMPLATE
     from .mounting_plate import MOUNTING_PLATE_TEMPLATE
     from .standoff import STANDOFF_TEMPLATE
+    from .tapered_spacer import TAPERED_SPACER_TEMPLATE
 
     registry = TemplateRegistry()
     registry.register(BRACKET_L_TEMPLATE)
@@ -66,4 +67,5 @@ def default_registry() -> TemplateRegistry:
     registry.register(GEAR_TEMPLATE)
     registry.register(FLANGED_STANDOFF_TEMPLATE)
     registry.register(COUNTERBORED_BOSS_TEMPLATE)
+    registry.register(TAPERED_SPACER_TEMPLATE)
     return registry
