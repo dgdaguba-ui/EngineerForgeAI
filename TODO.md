@@ -101,6 +101,7 @@ Active worklist. Checked items are done + committed. See `docs/05-roadmap.md` fo
 - [x] **Standoff / spacer** template (round tube: cylinder + concentric through-bore) — 6 golden tests vs π/4·(OD²−ID²)·H. Four templates now.
 - [x] **Gear (spur)** — added a `GearProfile` IR profile kind; the kernel expands it into a closed involute tooth outline at compile time (`gear_outline`: base/pitch/addendum/root circles, involute flanks sized to the standard tooth thickness, radial drop + root arc between teeth), so the tooth count Z is a live parameter. New **Spur Gear** template (module/teeth/face-width/bore/pressure-angle) with an undercut warning (<17 teeth). Fifth template. 13 golden/API tests (bounded volume, exact key radii, tooth count, degenerate-param guards).
 - [x] **Flanged Standoff** (offset-extrude stacking) and **Counterbored Boss** (offset + boolean-cut recess) templates — 6th and 7th templates.
+- [x] **V-Belt Pulley** template (revolve + V-notch section, 9th) — Pappus-theorem golden test.
 - [ ] Pipe fitting, clamp — evaluate case by case against the IR feature set
 
 ### M2.6 — IR feature expansion
