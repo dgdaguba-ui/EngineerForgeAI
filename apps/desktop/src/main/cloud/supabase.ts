@@ -7,8 +7,9 @@
  *    a dead network must never break local work;
  *  - only the anon key is used here; service-role keys never ship in the app.
  *
- * Project backups land in the `efproj` storage bucket at
- * `<userId>/<projectId>/project.json` (RLS scopes access per user).
+ * Project backups land in a storage bucket (default `efproject`, overridable
+ * via SUPABASE_BUCKET) at `<userId>/<projectId>/project.json` — RLS scopes
+ * access per user.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
@@ -17,7 +18,7 @@ import type { CloudResult, CloudStatus, ProjectDoc, ProjectInfo } from "@efc/ipc
 
 import type { CloudService } from "./service.js";
 
-const BUCKET = "efproj";
+export const DEFAULT_BUCKET = "efproject";
 
 export class SupabaseCloud implements CloudService {
   readonly name = "supabase";
@@ -26,6 +27,7 @@ export class SupabaseCloud implements CloudService {
   constructor(
     private readonly url: string,
     private readonly anonKey: string,
+    private readonly bucket: string = DEFAULT_BUCKET,
   ) {}
 
   private getClient(): SupabaseClient {
@@ -106,7 +108,7 @@ export class SupabaseCloud implements CloudService {
       const key = `${userId}/${doc.id}/project.json`;
       const body = JSON.stringify(doc, null, 2);
       const { error } = await client.storage
-        .from(BUCKET)
+        .from(this.bucket)
         .upload(key, new Blob([body], { type: "application/json" }), { upsert: true });
       if (error) {
         return { ok: false, detail: `Cloud backup failed: ${error.message}` };

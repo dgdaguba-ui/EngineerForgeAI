@@ -55,6 +55,7 @@ const recents = new RecentProjects(
 const cloud = buildCloudService({
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+  SUPABASE_BUCKET: process.env.SUPABASE_BUCKET,
 });
 const syncQueue = new CloudSyncQueue(cloud);
 
