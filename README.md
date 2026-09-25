@@ -16,6 +16,13 @@ EngineerForge AI combines a conversational engineering assistant, a parametric C
 
 Next: **Phase 1 — the MVP walking skeleton** (Feature Program IR, CadQuery kernel, AI-driven parametric parts) per [`docs/05-roadmap.md`](docs/05-roadmap.md).
 
+## STEM_KIT — modular 3D-printable STEM kits
+
+[`STEM_KIT/`](STEM_KIT/README.md) is a self-contained, parametric OpenSCAD library of
+educational STEM kits (solar car, hand-crank dynamo, wind turbine, pulley and
+linkage labs) built on one mechanical standard, with generated STLs, automated
+geometry/assembly verification, and lesson + experiment sheets.
+
 ## Start here
 
 | I want to… | Read |
