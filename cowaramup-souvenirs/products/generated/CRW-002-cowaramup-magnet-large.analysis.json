@@ -291,6 +291,9 @@
     ],
     "scad": [
       "stl/prototypes/CRW-002-cowaramup-magnet-large/CRW-002-cowaramup-magnet-large.scad"
+    ],
+    "glb": [
+      "glb/CRW-002-cowaramup-magnet-large.glb"
     ]
   },
   "setup_issues": [

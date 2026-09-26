@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 - 2026-09-26
+
+### Added
+- GLB export (`glb/<stem>.glb`): coloured, named parts at true size in display pose, for Blender and web viewers.
+
 ## 0.1.0 - 2026-09-26 - Phase 1: manufacturing system + 5 prototypes
 
 ### Added

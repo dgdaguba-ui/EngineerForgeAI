@@ -284,6 +284,9 @@
     ],
     "scad": [
       "stl/prototypes/CRW-001-cowaramup-keyring-classic-small/CRW-001-cowaramup-keyring-classic-small.scad"
+    ],
+    "glb": [
+      "glb/CRW-001-cowaramup-keyring-classic-small.glb"
     ]
   },
   "setup_issues": [

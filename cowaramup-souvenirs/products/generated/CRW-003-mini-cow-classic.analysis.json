@@ -374,6 +374,9 @@
     ],
     "scad": [
       "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic.scad"
+    ],
+    "glb": [
+      "glb/CRW-003-mini-cow-classic.glb"
     ]
   },
   "setup_issues": [
@@ -419,5 +422,5 @@
     -0.0
   ],
   "name": "Mini Collectible Cow - Resting Cowa",
-  "generated_in_s": 9.9
+  "generated_in_s": 10.4
 }

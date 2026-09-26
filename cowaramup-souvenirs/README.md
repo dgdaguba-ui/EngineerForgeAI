@@ -65,6 +65,8 @@ tests/         pytest: config, geometry, mechanisms, manufacturing
 - `3mf/prototypes/<stem>.3mf` - **production file**: one part per toolhead, colours, tool map metadata.
 - `stl/prototypes/<stem>.stl` (single-colour) and `stl/prototypes/<stem>/<stem>__<part>.stl` (per tool).
 - `stl/prototypes/<stem>/<stem>.scad` - OpenSCAD colour assembly of the per-part STLs.
+- `glb/<stem>.glb` - **for Blender / web viewers**: one named object per toolhead region with its colour
+  material, true size (metres), standing as displayed. Blender: File > Import > glTF 2.0.
 - STEP is **not** produced - see `documentation/assumptions.md`.
 
 Tooling found in the build environment: Python 3.11, manifold3d, trimesh, shapely 2.1 (GEOS 3.13), numpy, matplotlib,

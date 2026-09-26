@@ -490,6 +490,9 @@
     ],
     "scad": [
       "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow.scad"
+    ],
+    "glb": [
+      "glb/CRW-005-articulated-cow.glb"
     ]
   },
   "setup_issues": [],
@@ -529,5 +532,5 @@
     -0.0
   ],
   "name": "Articulated Cow - Walking Cowa",
-  "generated_in_s": 2.4
+  "generated_in_s": 2.8
 }

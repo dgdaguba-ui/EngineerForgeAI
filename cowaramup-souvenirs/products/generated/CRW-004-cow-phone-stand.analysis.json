@@ -634,6 +634,9 @@
     ],
     "scad": [
       "stl/prototypes/CRW-004-cow-phone-stand/CRW-004-cow-phone-stand.scad"
+    ],
+    "glb": [
+      "glb/CRW-004-cow-phone-stand.glb"
     ]
   },
   "setup_issues": [],
@@ -673,5 +676,5 @@
     -0.0
   ],
   "name": "Cow Phone Stand - Resting Cowa",
-  "generated_in_s": 1.5
+  "generated_in_s": 1.7
 }

@@ -7,6 +7,7 @@ For every product/size:
   stl/<stage>/<stem>/<stem>.scad              OpenSCAD colour assembly of the per-part STLs
   3mf/<stage>/<stem>.3mf                      PRODUCTION file: multi-part, colours, tool map
   3mf/<stage>/variants/<stem>--<variant>.3mf  colour variants (same geometry)
+  glb/<stem>.glb                              coloured, named parts for Blender / web (metres, display pose)
   products/generated/<stem>.analysis.json     material / tool-change / QC analysis
 
 Usage:
@@ -22,6 +23,10 @@ import time
 import _common as C
 from cad.core import analysis, config, export, geom
 from cad.core.tools import effective_tools
+
+
+# products printed on their side are stood up in the GLB (as displayed, not as printed)
+DISPLAY_ROT = {"CRW-004": [90, 0, 0], "CRW-005": [90, 0, 0]}
 
 
 def layer_strings(M):
@@ -62,6 +67,10 @@ def generate(pid: str, size: str, variants: list[str], deep: bool = True) -> dic
             path = C.ROOT / "3mf" / C.STAGE / "variants" / f"{stem}--{v}.3mf"
         export.write_3mf(product, path, vt, offset, variant=v, bed_xy=(printer["bed_x_mm"], printer["bed_y_mm"]))
         files["3mf"].append(C.rel(path))
+
+    glb = C.ROOT / "glb" / f"{stem}.glb"
+    export.write_glb(product, glb, tools, offset, rot=DISPLAY_ROT.get(pid))
+    files["glb"] = [C.rel(glb)]
 
     a = analysis.analyse(product, deep=deep, tools=tools)
     a["layer_tools"] = layer_strings(a.pop("layer_presence"))

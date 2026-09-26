@@ -172,3 +172,27 @@ def write_scad(product: Product, path: Path, part_files: dict, tools: dict):
         lines.append(f"// T{n} {tools[part.tool]['material']} {tools[part.tool]['colour_name']}: {part.feature}")
         lines.append(f'if (SHOW_TOOL == 0 || SHOW_TOOL == {n}) color([{rgb}]) import("{rel}", convexity = 10);')
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_glb(product: Product, path: Path, tools: dict, offset, rot=None):
+    """glTF binary for Blender / web viewers: one named node per part, PBR colour per tool.
+    glTF is metre-based, so millimetres are scaled by 0.001 (true size in Blender).
+    `rot` (degrees, xyz) optionally stands the model in its display orientation."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    scene = trimesh.Scene()
+    for part in product.parts:
+        solid = part.solid.translate(list(offset))
+        if rot:
+            solid = solid.rotate(rot)
+        tm = to_trimesh(solid)
+        tm.apply_scale(0.001)
+        # model is Z-up; glTF is Y-up (Blender's importer converts back to Z-up)
+        tm.apply_transform(trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0]))
+        hx = tools[part.tool]["hex"].lstrip("#")
+        rgba = [int(hx[i:i + 2], 16) for i in (0, 2, 4)] + [255]
+        mat = trimesh.visual.material.PBRMaterial(
+            name=f"T{TOOLS.index(part.tool) + 1}_{tools[part.tool]['material']}_{tools[part.tool]['colour']}",
+            baseColorFactor=rgba, metallicFactor=0.0, roughnessFactor=0.6)
+        tm.visual = trimesh.visual.TextureVisuals(material=mat)
+        scene.add_geometry(tm, node_name=part_label(part, tools)[:60], geom_name=f"{part.object_group}_{part.name}")
+    scene.export(path, file_type="glb")
