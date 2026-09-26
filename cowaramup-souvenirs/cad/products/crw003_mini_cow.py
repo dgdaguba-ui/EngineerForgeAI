@@ -1,92 +1,88 @@
-"""CRW-003 - Mini Collectible Cow, 'Resting Cowa' (Prototype 3).
+"""CRW-003 v2 - 'Cowa' Mini Collectible (Cowaramup Cow Collection No. 01 - Classic).
 
-Strategy A (one multi-colour model), true 3D colour volumes.
-  * Lying pose: no belly overhang, no thin standing legs -> support-free and
-    suitcase-proof at 50 mm.
-  * Vertical colour ZONING to limit tool changes:
-      - plinth layers  : tool 4 (+ hooves, tail tuft on the same layers)
-      - body layers    : tool 1 + hip patch
-      - top layers     : saddle patch, head patch, eyes, horns
-  * Nostrils are dimples (geometry) not colour; eye highlights omitted at this
-    scale (sub-1 mm islands are unreliable).
-  * Provenance text debossed into the underside (single colour, no tool change).
+Redesign (see DESIGN_AUDIT.md): the sculpted Cowa character in a sitting,
+head-turned pose - replaces the ellipsoid lying cow.
+
+Editions
+  STANDARD  3 colours (T1 body, T2 markings, T3 muzzle/ears); no base.
+            ~60 mm; looks complete on its own.
+  DELUXE    4 colours + story: collar, bell and ear tag in the tool-4 accent,
+            standing on the 'Cowaramup Paddock' base (grass tufts, whitewashed
+            fence, COWARAMUP inlaid in the front, COW TOWN WA on the back,
+            series number under the base).
+
+Support-free: the SDF model is passed through a 45-degree closure, so every
+overhang (chin, ears, bell) gets a moulded fillet instead of needing supports.
 """
 from __future__ import annotations
 
-from ..accessories.accessories import cow_base
-from ..core import config, geom
-from ..core.model import Painter3D, Part, Product
-from ..cows import solid
+import numpy as np
+
+from ..accessories.bases import paddock_base
+from ..core import config, geom, sdf
+from ..core.model import Product
+from ..core.sculpt import sculpt_parts
+from ..cows.character import CowaParams, fields
 
 ID, SLUG = "CRW-003", "mini-cow-classic"
+H = 0.33   # voxel size (mm) - 0.4 mm nozzle resolves ~0.4 mm, so this is enough
 
 
 def build(size: str = "STANDARD") -> Product:
     d = config.dims(ID, size)
-    k = d["scale"]
-    zb = d["plinth_height"] * k
-    plinth, text_cut = cow_base(d["plinth_length"] * k, d["plinth_width"] * k, zb,
-                                d["underside_text"], d["underside_text_height"] * max(k, 1.0),
-                                d["underside_text_depth"])
-
-    body = solid.cow_body(k, zb)
-    legs = solid.cow_leg(k, zb)
-    hooves = solid.cow_hooves(k, zb)
-    head = solid.cow_head(k, zb)
-    muzzle, dimples = solid.cow_nose(k, zb)
-    ears = solid.cow_ear(k, zb)
-    horns = solid.cow_horn(k, zb)
-    eyes, eye_ring = solid.cow_eye(k, zb)
-    spots = solid.cow_spot(k, zb)
-    tail, tuft = solid.cow_tail(k, zb)
-
-    envelope = geom.union([plinth, body, legs, hooves, head, muzzle, ears, horns, tail, tuft]) - dimples - text_cut
-
-    # Painter order = priority. The plinth is painted LAST so it owns its own volume:
-    # body parts end exactly on the plinth top (a clean part interface) instead of
-    # carving pockets into it.
-    p = Painter3D()
-    p.paint("tool_1", geom.union([body, legs, head, ears, tail, tuft]), "body, legs, head, ears, tail + tuft")
-    p.paint("tool_2", spots, "patches")
-    p.paint("tool_1", eye_ring, "eye ring")
-    p.paint("tool_2", eyes, "eyes")
-    p.paint("tool_3", muzzle, "muzzle")
-    # (tail tuft is white: a black tuft on the plinth was low-contrast AND cost tool changes)
-    p.paint("tool_4", hooves, "hooves")
-    p.paint("tool_4", horns, "horns")
-    p.paint("tool_4", plinth, "plinth")
-    regions = p.resolve(envelope)
-    parts = [Part(t, t, regions[t]["solid"], ", ".join(regions[t]["features"])) for t in sorted(regions)]
-
-    bb = envelope.bounding_box()
+    deluxe = size == "DELUXE"
+    hb = 7.0 if deluxe else 0.0
+    if deluxe:
+        g = sdf.Grid((-41, -29, 0), (41, 29, hb + 64), H)
+    else:
+        g = sdf.Grid((-24, -28, 0), (24, 28, 64), H)
+    P = CowaParams(zb=hb, collar=deluxe, bell=deluxe, ear_tag=deluxe)
+    if deluxe:
+        # sit the cow slightly forward-right so the fence frames it
+        pass
+    F = fields(g, P)
+    env, layers, cuts = F["env"], list(F["layers"]), []
+    if deluxe:
+        B = paddock_base(g, under_lines=("01  CLASSIC", "COWARAMUP  WA", "CRW-003"))
+        env = np.minimum(env, B["env"])
+        env = sdf.smin(env, B["env"], 1.2)
+        plinth_sel = B["plinth"] if B["grass"] is None else np.minimum(B["plinth"], B["grass"])
+        layers = [("tool_4", plinth_sel - 0.4, "paddock base + grass")] + layers
+        layers.append(("tool_1", B["fence"] - 0.5, "timber fence"))
+        layers.append(("tool_1", B["text_inlay"] - 0.05, "COWARAMUP lettering"))
+        cuts = B["cuts"]
+    parts, env_m = sculpt_parts(g, env, layers, post_cut=cuts,
+                                decimate_env=140_000, decimate_layer=45_000)
+    bb = env_m.bounding_box()
+    tools = sorted({p.tool for p in parts})
     return Product(
-        id=ID, slug=SLUG, name="Mini Collectible Cow - Resting Cowa", category="A - Multi-colour impulse",
-        description="50 mm resting mascot cow on an oval plinth. Four colours as true 3D volumes, "
-                    "support-free, underside debossed COWARAMUP WA.",
+        id=ID, slug=SLUG, name="Cowa Mini Collectible - No.01 Classic" + (" (Deluxe)" if deluxe else ""),
+        category="A/B - Mini collectible (Cowaramup Cow Collection)",
+        description=("Sculpted sitting Cowa: head turned to camera, relaxed lids, lopsided smile, split hooves, "
+                     "raised organic patches. " + ("On the Cowaramup Paddock base with fence, grass, collar, bell "
+                                                    "and ear tag; COWARAMUP inlaid in the base front, series number "
+                                                    "underneath." if deluxe else "Stands on its own; 3 colours.")),
         size=size, parts=parts,
-        tool_roles={"tool_1": "body, head, legs, ears, tail + tuft, eye ring",
-                    "tool_2": "saddle/hip/head patches, eyes",
-                    "tool_3": "muzzle",
-                    "tool_4": "plinth, hooves, horns"},
+        tool_roles={"tool_1": "body, horns, eyelids, highlights" + (", fence, base lettering" if deluxe else ""),
+                    "tool_2": "raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft",
+                    "tool_3": "muzzle, inner ears",
+                    **({"tool_4": "paddock base + grass, collar, bell, ear tag"} if deluxe else {})},
         requirements={"tool_4": {"flexible": False, "strict": True, "preferred_material": "PLA",
-                                 "why": "the plinth is structural and must be rigid (PLA/PETG). A TPU "
-                                        "plinth would wobble and TPU horns under 3 mm are unreliable."}},
-        print_orientation="Upright on the plinth (as displayed). No supports.",
-        strategy="A - one multi-colour model (3D colour volumes, vertical zoning)",
-        hardware=[], packaging="small_gift_card_and_bag", tier="SMALL_GIFT",
-        assembly_time_minutes=0.0, post_process_minutes=1.0,
-        checks={"envelope_mm": (bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2]), "target_length": 50.0,
-                "plinth_height": zb},
-        envelope=envelope,
-        notes=["Tool 4 must be RIGID for this product (plinth). With TPU loaded in tool 4 use a 5th "
-               "colour-swap job or move the plinth colour to tool 2 - validate.py flags this."],
+                                 "why": "the base is structural and the bell/tag are small - rigid only"}} if deluxe else {},
+        print_orientation="Upright as displayed. No supports (45-degree closure is built into the model).",
+        strategy="A - one multi-colour model (sculpted 3D colour volumes)",
+        hardware=[], packaging="collectible_box" if deluxe else "small_gift_card_and_bag",
+        tier="COLLECTIBLE" if deluxe else "SMALL_GIFT",
+        assembly_time_minutes=0.0, post_process_minutes=1.5 if deluxe else 1.0,
+        envelope=env_m,
+        checks={"envelope_mm": (bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2]), "target_height": (50.0, 80.0),
+                "edition": "DELUXE" if deluxe else "STANDARD", "tools": tools},
+        notes=["Chin, ear and bell overhangs carry moulded 45-degree fillets from the support-free closure.",
+               "Eye highlights are >= 1 mm radius at every size (3.4 mm^2 islands)."],
         self_critique={
-            "exploits_4_tools": "Yes - a painted-look figurine with no painting. Single-colour would need "
-                                "hand-painting ~10 regions.",
-            "tool_change_reduction": "Nostrils as dimples, no eye highlights, saddle patch on the top layers "
-                                     "only; plinth layers are near single-tool.",
-            "suitcase_durability": "Lying pose; the only protrusions are 2.5 mm horns (thick capsules).",
-            "honest_weakness": "True 3D colour still needs tool changes on most layers - batch printing is "
-                               "essential to amortise purge (see batch report).",
+            "character": "Head turn + roll, relaxed lids, lopsided smile, asymmetric ears -> reads as a personality.",
+            "exploits_4_tools": "Deluxe: 4 colours used for storytelling (paddock/collar/bell/tag) not decoration.",
+            "still_to_improve": "Patch edges are procedural-organic; a hand-drawn patch set per series cow would add "
+                                "more individuality. Back view is simpler than the front.",
         },
     )

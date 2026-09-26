@@ -1,60 +1,59 @@
-# CRW-002 - Cowaramup Cow Head Magnet
+# CRW-002 - Cowa Head Magnet
 
 *A - Multi-colour impulse - STANDARD - tier IMPULSE*
 
-4-colour fridge magnet: mascot head with raised pink muzzle and a COWARAMUP banner whose lettering is knocked out to the white core. Two press-fit 12x3 mm magnets.
+Dimensional bas-relief Cowa head (~64 mm) with sculpted eyes, lids, muzzle, horns and ears; curved scroll ribbon with raised COWARAMUP lettering; two 12x3 mm magnets in the back.
 
 ![four-colour](../../previews/CRW-002-cowaramup-magnet/2-four-colour.png)
 
 ## Manufacturing
 
-- **Strategy:** E - hybrid printed + hardware (magnets)
-- **Print orientation:** Face up, magnet pockets on the bed face.
-- **Plate footprint:** 64.21 x 61.22 x 6.2 mm
-- **Supports:** none (all overhangs <= 45 deg, bridges short)
+- **Strategy:** E - printed + hardware (magnets)
+- **Print orientation:** Face up, flat back on the bed (magnet pockets on the bed face).
+- **Plate footprint:** 67.37 x 55.92 x 11.49 mm
+- **Supports:** required
 - **Hardware:** neodymium_disc_12x3, neodymium_disc_12x3
-- **Recommended batch:** 9 per plate
+- **Recommended batch:** 12 per plate
 
 ## Toolhead utilisation (per unit, estimate)
 
 | Tool | Material / colour | Used for | Grams |
 |---|---|---|---|
-| tool_1 | PLA Cow White | core body, knocked-out banner lettering, eye highlights | 8.42 |
-| tool_2 | PLA Cow Black | patches, eyes, nostril plugs | 0.37 |
-| tool_3 | PLA Cow Pink | raised muzzle, inner ears | 1.04 |
-| tool_4 | TPU Earth Brown | horns, banner | 0.55 |
+| tool_1 | PLA Cow White | head, horns, eyelids, highlights, raised lettering | 4.30 |
+| tool_2 | PLA Cow Black | patches, forelock, pupils, nostrils, smile | 1.45 |
+| tool_3 | PLA Cow Pink | muzzle, inner ears | 1.67 |
+| tool_4 | TPU Earth Brown | scroll ribbon, ear tag | 3.14 |
 
-- Purge (single unit): **0.9 g** from **15** tool changes on 9/31 layers
-- Total material (single unit incl. purge): **11.28 g**
-- Estimated print time (single unit): **33.0 min** (extrusion 25.1, tool changes 2.0, layers 0.8, heat-up 5.0)
+- Purge (single unit): **7.44 g** from **124** tool changes on 52/58 layers
+- Total material (single unit incl. purge): **18.0 g**
+- Estimated print time (single unit): **57.3 min** (extrusion 33.9, tool changes 16.5, layers 1.4, heat-up 5.0)
 
 ![tool layers](../../previews/CRW-002-cowaramup-magnet/tool-layers.png)
 
 ## Economics (NORMAL scenario, recommended batch) - estimate only
 
-- Unit cost **$2.00**; suggested retail **$6-10** (price band / cost floor - not a demand forecast)
+- Unit cost **$2.06**; suggested retail **$6-10** (price band / cost floor - not a demand forecast)
 
 ## Self-critique
 
-- **exploits 4 tools:** Yes - four colours plus 3D relief and knocked-out text in one print.
-- **every colour has purpose:** Tool 4 doubles as horns AND banner so the brand line costs no extra tool.
-- **tool change reduction:** Colour only in the top 9 layers; bottom 22 layers single-tool.
-- **single colour alternative:** A single-colour print would need the banner text embossed and the face hand-painted - far less legible at market distance.
+- **character:** Same face as the collection; the ribbon now frames it instead of a label.
+- **still to improve:** Pockets sit under the muzzle (thickest area); ceiling is measured from the geometry in checks.ceiling_above_pocket.
 
 ## Notes / known risks
 
-- Magnets are pressed in after printing (no mid-print pause needed).
-- Pocket fit (0.15 mm radial clearance) must be confirmed on the real printer; adjust magnet_fit_clearance in config/dimensions.json.
+- Bas-relief compression 45 %: reads as full 3D from the front 3/4, ~14 mm deep.
+- Letters cap 5.8 mm, raised 0.7 mm on the ribbon (top layers only).
 
 ## Toolhead set-up issues
 
-- [WARN] CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp
+- [WARN] CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: ribbon should be rigid and crisp
 - [WARN] colour Earth Brown is not commonly available in TPU
 
 ## Files
 
 - `3mf/prototypes/CRW-002-cowaramup-magnet.3mf`
 - `3mf/prototypes/variants/CRW-002-cowaramup-magnet--aussie.3mf`
+- `3mf/prototypes/variants/CRW-002-cowaramup-magnet--christmas.3mf`
 - `stl/prototypes/CRW-002-cowaramup-magnet.stl`
 - `stl/prototypes/CRW-002-cowaramup-magnet/CRW-002-cowaramup-magnet.scad`
 - STEP: not generated (see documentation/assumptions.md)

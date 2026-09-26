@@ -3,7 +3,8 @@
   "sizes": {
     "SMALL": 0.8,
     "STANDARD": 1.0,
-    "LARGE": 1.25
+    "LARGE": 1.25,
+    "DELUXE": 1.0
   },
   "global": {
     "body_length": 46.0,

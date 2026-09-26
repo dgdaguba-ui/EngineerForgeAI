@@ -20,12 +20,76 @@ import numpy as np
 from shapely.geometry import box
 from shapely.ops import unary_union
 
-from ..core import config, geom
-from ..core.model import FaceRegion, Painter2D, Part, Product, sandwich_parts
+from ..core import config, geom, sdf
+from ..core.sculpt import sculpt_parts
+from ..core.model import FaceRegion, Part, Product
 from ..cows.side import cow_head_side
 from ..mechanisms.joints import hinge, sweep2d
 
 ID, SLUG = "CRW-005", "articulated-cow"
+
+
+def pillow_member(name, outline, T, deco, head=None, h=0.3, under_text=None):
+    """Pillow-rounded, sculpted member (SDF): 3.2 mm rounded top edge, 45-degree bottom
+    chamfer (prints on the bed), raised patches, and on the head a sculpted face on the
+    display side. Colour regions wrap onto the edges (hooves are black all round)."""
+    minx, miny, maxx, maxy = outline.bounds
+    g = sdf.Grid((minx - 2, miny - 2, -0.5), (maxx + 2, maxy + 2, T + 3.0), h)
+    X, Y, Z = g.P
+    xs, ys, _ = g.axes
+    d2 = sdf.polygon_sdf2d(outline, xs, ys)[:, :, None]
+    r, c = 3.2, 1.4
+    q1, q2 = d2 + r, Z - (T - r)
+    env = np.sqrt(np.maximum(q1, 0) ** 2 + np.maximum(q2, 0) ** 2) + np.minimum(np.maximum(q1, q2), 0) - r
+    env = np.maximum(env, -Z)
+    env = np.maximum(env, (d2 + c - Z) * 0.7071)
+    band = lambda f, depth=0.9: np.maximum(f, -(env + depth))
+    layers = []
+    top_half = T * 0.5 - Z
+    for tool, shape, feat in (deco or []):
+        prism = sdf.polygon_sdf2d(shape, xs, ys)[:, :, None]
+        if tool == "tool_2" and "patch" in feat:          # tactile raised patch (display side), never wider
+            env = np.minimum(env, np.maximum(np.maximum(env - 0.4, d2), np.maximum(prism, top_half)))
+        layers.append((tool, band(prism - 0.2 + 0 * Z, 1.2), feat))
+    if head is not None:
+        cen = lambda sh: (sh.centroid.x, sh.centroid.y)
+        mx, my = cen(head["muzzle"])
+        b = head["muzzle"].bounds
+        env = sdf.smin(env, sdf.ellipsoid(X, Y, Z, (mx, my, T - 1.4), ((b[2] - b[0]) * 0.46, (b[3] - b[1]) * 0.46, 3.2)), 1.6)
+        ex, ey = cen(head["eye"])
+        env = sdf.sub(env, sdf.ellipsoid(X, Y, Z, (ex, ey, T + 0.2), (3.4, 4.0, 1.5)), 0.5)
+        pupil = sdf.ellipsoid(X, Y, Z, (ex, ey, T - 0.5), (2.6, 3.2, 1.55))
+        env = np.minimum(env, pupil)
+        lid = sdf.ellipsoid(X, Y, Z, (ex - 0.3, ey + 2.6, T + 0.2), (3.3, 1.5, 1.2))
+        env = sdf.smin(env, lid, 0.8)
+        hl = sdf.sphere(X, Y, Z, (ex + 1.0, ey + 0.1, T + 0.75), 1.05)   # clear of the lid
+        nx, ny = cen(head["nostril"])
+        nos = sdf.ellipsoid(X, Y, Z, (nx, ny, T + 1.9), (1.5, 1.9, 1.7))
+        env = sdf.sub(env, nos, 0.4)
+        patch = sdf.polygon_sdf2d(head["patch"], xs, ys)[:, :, None] if head["patch"] is not None else None
+        if patch is not None:
+            env = np.minimum(env, np.maximum(np.maximum(env - 0.4, d2), np.maximum(patch, np.maximum(top_half, 1.6 - pupil))))
+        prism = lambda sh, grow=0.2: sdf.polygon_sdf2d(sh, xs, ys)[:, :, None] - grow
+        layers += [("tool_3", band(prism(head["inner_ear"]), 1.2), "inner ear")]
+        if patch is not None:
+            layers += [("tool_2", band(patch - 0.2, 1.2), "eye patch"),
+                       ("tool_1", sdf.ellipsoid(X, Y, Z, (ex, ey, T), (4.3, 5.0, 3.0)), "eye ring")]
+        layers += [("tool_3", band(prism(head["muzzle"], 0.3), 1.6), "muzzle"),
+                   ("tool_1", lid - 0.35, "eyelid"),
+                   ("tool_2", pupil - 0.3, "eye"), ("tool_2", nos - 0.35, "nostril"),
+                   ("tool_1", hl - 0.35, "eye highlight")]
+    cuts = []
+    if under_text:   # hidden detail: debossed into the bed-side flank
+        from ..core.text import text_shape
+        txt = geom.mirror_x(text_shape(under_text[0], under_text[1], under_text[2], under_text[3], min_counter=1.2),
+                            under_text[2])
+        t2 = sdf.polygon_sdf2d(txt, xs, ys)[:, :, None]
+        cuts.append(np.maximum(np.maximum(t2, Z - 0.6), -Z - 1.0))
+    parts, _ = sculpt_parts(g, env, layers, closure=True, group=name, decimate_env=70_000, decimate_layer=25_000,
+                            post_cut=cuts)
+    for p in parts:
+        p.name = f"{name}_{p.tool}"
+    return parts
 
 
 def _layout(d):
@@ -33,8 +97,8 @@ def _layout(d):
     torso = unary_union([geom.ellipse(52, 50, 34, 16), geom.ellipse(24, 52, 12, 14),
                          geom.ellipse(58, 36, 8, 5.5),
                          geom.tapered_stroke([(76, 57), (88, 63)], 10, 8, 10)])
-    head = cow_head_side(104, 74, 30, 1, patch=True)
-    head_b = cow_head_side(104, 74, 30, 1, patch=False)
+    head = cow_head_side(106, 75, 34, 1, patch=True)       # v2: bigger, more characterful head
+    head_b = cow_head_side(106, 75, 34, 1, patch=False)
     head_arm = geom.tapered_stroke([(91, 64), (100, 71)], 6.5, 7.5, 8)
     front_leg = unary_union([geom.tapered_stroke([(72, 44), (73, 6)], 6.5, 5.8, 12),
                              geom.rounded_rect(73, 4.5, 13, 9, 3)]).intersection(ground)
@@ -77,48 +141,33 @@ def build(size: str = "STANDARD") -> Product:
     body2d = body2d.buffer(-0.7, quad_segs=8).buffer(0.7, quad_segs=8)
     body2d = geom.clean(unary_union([body2d, necks]))
 
-    def skins(outline, deco, mirror=False):
-        p = Painter2D()
-        p.paint("tool_1", outline, "core")
-        for tool, shape, feat in deco:
-            p.paint(tool, shape, feat)
-        return p.resolve(outline)
-
     body_deco = [("tool_2", geom.blob([(40, 58, 9), (50, 55, 7), (32, 53, 6)], smooth=2), "flank patch"),
                  ("tool_2", geom.blob([(70, 53, 7), (77, 58, 5)], smooth=2), "shoulder patch"),
                  ("tool_3", geom.ellipse(58, 36, 7, 4.6), "udder")]
-
-    def head_deco(h):
-        out = [("tool_3", h["inner_ear"], "inner ear")]
-        if h["patch"] is not None:
-            out += [("tool_2", h["patch"], "eye patch"), ("tool_1", h["eye_ring"], "eye ring")]
-        out += [("tool_3", h["muzzle"], "muzzle"), ("tool_2", h["nostril"], "nostril"),
-                ("tool_2", h["eye"], "eye"), ("tool_1", h["highlight"], "eye highlight")]
-        return out
-
     hoof = box(-50, -1, 250, 8.5)
-    leg_deco = [("tool_2", hoof, "hoof")]
 
     parts: list[Part] = []
-    face_regions: list[FaceRegion] = []
-    specs = {
-        "body": (body2d, body_deco, body_deco),
-        "head": (members2d["head"], head_deco(head), head_deco(head_b)),
-        "front_leg": (members2d["front_leg"], leg_deco, leg_deco),
-        "rear_leg": (members2d["rear_leg"], leg_deco, leg_deco),
-    }
-    for name, (outline, deco_top, deco_bot) in specs.items():
-        top = skins(outline, deco_top)
-        bot = skins(outline, deco_bot)
-        ps, cov_top, _, _ = sandwich_parts(outline, top, T, inlay, bottom_regions=bot, group=name,
-                                           prefix=f"{name}_", return_coverage=True)
+    specs = {"body": (body2d, body_deco), "head": (members2d["head"], None),
+             "front_leg": (members2d["front_leg"], [("tool_2", hoof, "hoof")]),
+             "rear_leg": (members2d["rear_leg"], [("tool_2", hoof, "hoof")])}
+    for name, (outline, deco) in specs.items():
+        ps = pillow_member(name, outline, T, deco, head if name == "head" else None,
+                           under_text=("COWARAMUP  CRW-005", 4.0, 50.0, 47.0) if name == "body" else None)
         if name in J:
             for p in ps:
                 p.solid = p.solid - J[name]["hole"]
         parts += ps
-        face_regions += [FaceRegion(f"{name}_top", t, g) for t, g in cov_top.items()]
+    face_regions: list[FaceRegion] = []
+    # Exact clean-up: sculpting (smoothed outlines, relief) must never eat the joint clearance.
+    for p in parts:
+        if p.object_group in members2d:
+            p.solid = p.solid ^ geom.extrude(members2d[p.object_group].buffer(-0.08), -2, T + 6)  # 0.08 off the wall: no coincident faces
+        elif p.object_group == "body":
+            for k, m in members2d.items():
+                p.solid = p.solid - geom.extrude(sweep2d(m, J[k]["pivot"], J[k]["rom_deg"]).buffer(c + 0.08, quad_segs=6)
+                                                 .difference(J[k]["neck"]), -2, T + 6)
 
-    # Bicone posts join the fixed body core (colour skins keep priority).
+    # Bicone posts join the fixed body core (colour regions keep priority).
     body_core = next(p for p in parts if p.name == "body_tool_1")
     body_colour = geom.union(p.solid for p in parts if p.object_group == "body" and p is not body_core)
     body_core.solid = (body_core.solid + geom.union(j["post"] for j in J.values())) - body_colour

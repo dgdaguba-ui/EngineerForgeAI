@@ -7,45 +7,45 @@
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
-    "check": "merged STL re-load",
+    "check": "merged single-colour STL re-load",
     "status": "PASS",
-    "detail": "1032 faces, watertight=True, volume=6470 mm3"
+    "detail": "107772 faces, watertight=True, volume=14243 mm3"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
+    "status": "WARN",
+    "detail": "5 isolated pinch edges (tool_1:5) - zero-area contacts where colour regions meet; the indexed 3MF keeps exact manifold topology; slicers repair these on STL import"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "parts disjoint (no double-assigned volume)",
     "status": "PASS",
-    "detail": "max overlap 0.0018 mm3"
+    "detail": "max overlap 0.0029 mm3 (tolerance 0.1 mm3: sub-micron edge collapse)"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "fits build volume",
     "status": "PASS",
-    "detail": "plate 59.14 x 48.85 x 4.2 mm vs bed 250 x 250 x 250"
+    "detail": "plate 31.54 x 39.86 x 48.4 mm vs bed 250 x 250 x 250"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "wall thickness [main]",
     "status": "PASS",
-    "detail": "p5 4.2 mm, median 4.2 mm (limit 1.2 mm; p1 2.99 mm is edge/chamfer noise)"
+    "detail": "p5 2.75 mm, median 18.26 mm (limit 1.2 mm; p1 1.05 mm is edge/chamfer noise)"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.01 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "status": "WARN",
+    "detail": "support-required (>60 deg, >2 mm drop) 42.5 mm2; 45-deg-rule area 328.15 mm2 (info); bridges 30.03 mm2, max span 3.29 mm"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "toolhead assignment declared",
     "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=core body, keyring loop, eye highlights; tool_2=signature patch, forehead spot, eyes, nostrils; tool_3=muzzle, inner ears; tool_4=horns"
+    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=body, horns, eyelids, highlights, tail loop; tool_2=raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft; tool_3=muzzle, inner ears; tool_4=ear tag (accent / series colour)"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
@@ -63,7 +63,7 @@
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "fused interface bonding",
     "status": "WARN",
-    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-TPU: fair; tool_2/tool_3 PLA-PLA: good"
+    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-TPU: fair; tool_2/tool_3 PLA-PLA: good; tool_3/tool_4 PLA-TPU: fair"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
@@ -73,15 +73,9 @@
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.007 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic",
     "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
+    "status": "WARN",
+    "detail": "tiny components ['tool_1:1', 'tool_2:3']"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
@@ -92,251 +86,23 @@
   {
     "product": "CRW-001-cowaramup-keyring-classic",
     "check": "tool changes + purge (single unit)",
-    "status": "PASS",
-    "detail": "18 changes on 6/21 layers, purge 1.08 g (14% of material) - batch of 12 -> 0.09 g/unit"
+    "status": "WARN",
+    "detail": "318 changes on 217/243 layers, purge 19.08 g (65% of material) - batch of 30 -> 0.636 g/unit"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
-    "check": "dimension: largest side 45-60 mm (STANDARD-equivalent)",
+    "check": "dimension: largest side 45-60 mm",
     "status": "PASS",
-    "detail": "59.1 x 48.8 x 4.2 mm"
+    "detail": "31.5 x 39.9 x 48.4 mm"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
-    "check": "keyring hole + ring wall",
+    "check": "keyring loop (tail) hole + ring section",
     "status": "PASS",
-    "detail": "hole 5.0 mm, ring wall 3.0 mm (tool_1 only, no colour seam)"
+    "detail": "hole 5.2 mm, ring section 3.9 mm, fused into the rump (tool 1)"
   },
   {
     "product": "CRW-001-cowaramup-keyring-classic",
-    "check": "toolhead clearance / colour-region accessibility",
-    "status": "INFO",
-    "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "mesh + manifold (watertight, winding, volume>0)",
-    "status": "PASS",
-    "detail": "4 parts watertight"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "merged STL re-load",
-    "status": "PASS",
-    "detail": "1028 faces, watertight=True, volume=4233 mm3"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "parts disjoint (no double-assigned volume)",
-    "status": "PASS",
-    "detail": "max overlap 0.0031 mm3"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "fits build volume",
-    "status": "PASS",
-    "detail": "plate 47.31 x 40.8 x 4.2 mm vs bed 250 x 250 x 250"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "wall thickness [main]",
-    "status": "PASS",
-    "detail": "p5 3.02 mm, median 4.2 mm (limit 1.2 mm; p1 2.99 mm is edge/chamfer noise)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.01 mm2, max bridge span 0.0 mm -> supports NOT required"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "toolhead assignment declared",
-    "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=core body, keyring loop, eye highlights; tool_2=signature patch, forehead spot, eyes, nostrils; tool_3=muzzle, inner ears; tool_4=horns"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "3MF parts/colours/tool map round-trip",
-    "status": "PASS",
-    "detail": "4 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "material requirement [tool_4]",
-    "status": "WARN",
-    "detail": "colour Earth Brown is not commonly available in TPU"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "fused interface bonding",
-    "status": "WARN",
-    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-TPU: fair; tool_2/tool_3 PLA-PLA: good"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "thermal compatibility (common bed temperature)",
-    "status": "PASS",
-    "detail": "materials ['PLA', 'TPU']: bed window 50-60 C"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.011 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "adjacent colour contrast (all exported variants)",
-    "status": "WARN",
-    "detail": "low contrast: beach:Cow White/Beach Sand (ratio 1.43, dE 31)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "tool changes + purge (single unit)",
-    "status": "PASS",
-    "detail": "18 changes on 6/21 layers, purge 1.08 g (20% of material) - batch of 20 -> 0.054 g/unit"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "dimension: largest side 45-60 mm (STANDARD-equivalent)",
-    "status": "PASS",
-    "detail": "47.3 x 40.8 x 4.2 mm"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "keyring hole + ring wall",
-    "status": "PASS",
-    "detail": "hole 5.0 mm, ring wall 3.0 mm (tool_1 only, no colour seam)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-small",
-    "check": "toolhead clearance / colour-region accessibility",
-    "status": "INFO",
-    "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "mesh + manifold (watertight, winding, volume>0)",
-    "status": "PASS",
-    "detail": "4 parts watertight"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "merged STL re-load",
-    "status": "PASS",
-    "detail": "1132 faces, watertight=True, volume=9964 mm3"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "parts disjoint (no double-assigned volume)",
-    "status": "PASS",
-    "detail": "max overlap 0.0019 mm3"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "fits build volume",
-    "status": "PASS",
-    "detail": "plate 73.93 x 60.81 x 4.2 mm vs bed 250 x 250 x 250"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "wall thickness [main]",
-    "status": "PASS",
-    "detail": "p5 4.2 mm, median 4.2 mm (limit 1.2 mm; p1 2.99 mm is edge/chamfer noise)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.01 mm2, max bridge span 0.0 mm -> supports NOT required"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "toolhead assignment declared",
-    "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=core body, keyring loop, eye highlights; tool_2=signature patch, forehead spot, eyes, nostrils; tool_3=muzzle, inner ears; tool_4=horns"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "3MF parts/colours/tool map round-trip",
-    "status": "PASS",
-    "detail": "4 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "material requirement [tool_4]",
-    "status": "WARN",
-    "detail": "colour Earth Brown is not commonly available in TPU"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "fused interface bonding",
-    "status": "WARN",
-    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-TPU: fair; tool_2/tool_3 PLA-PLA: good"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "thermal compatibility (common bed temperature)",
-    "status": "PASS",
-    "detail": "materials ['PLA', 'TPU']: bed window 50-60 C"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.004 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "adjacent colour contrast (all exported variants)",
-    "status": "WARN",
-    "detail": "low contrast: beach:Cow White/Beach Sand (ratio 1.43, dE 31)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "tool changes + purge (single unit)",
-    "status": "PASS",
-    "detail": "18 changes on 6/21 layers, purge 1.08 g (10% of material) - batch of 9 -> 0.12 g/unit"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "dimension: largest side 45-60 mm (STANDARD-equivalent)",
-    "status": "PASS",
-    "detail": "73.9 x 60.8 x 4.2 mm"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
-    "check": "keyring hole + ring wall",
-    "status": "PASS",
-    "detail": "hole 5.0 mm, ring wall 3.0 mm (tool_1 only, no colour seam)"
-  },
-  {
-    "product": "CRW-001-cowaramup-keyring-classic-large",
     "check": "toolhead clearance / colour-region accessibility",
     "status": "INFO",
     "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
@@ -349,45 +115,45 @@
   },
   {
     "product": "CRW-002-cowaramup-magnet",
-    "check": "merged STL re-load",
-    "status": "PASS",
-    "detail": "1782 faces, watertight=True, volume=12024 mm3"
+    "check": "merged single-colour STL re-load",
+    "status": "WARN",
+    "detail": "108672 faces, watertight=False, volume=10915 mm3"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
+    "status": "FAIL",
+    "detail": "21 isolated pinch edges (tool_1:21) - zero-area contacts where colour regions meet; the indexed 3MF keeps exact manifold topology; slicers repair these on STL import"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "parts disjoint (no double-assigned volume)",
     "status": "PASS",
-    "detail": "max overlap 0.0051 mm3"
+    "detail": "max overlap 0.005 mm3 (tolerance 0.1 mm3: sub-micron edge collapse)"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "fits build volume",
     "status": "PASS",
-    "detail": "plate 64.21 x 61.22 x 6.2 mm vs bed 250 x 250 x 250"
+    "detail": "plate 67.37 x 55.92 x 11.49 mm vs bed 250 x 250 x 250"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "wall thickness [main]",
-    "status": "PASS",
-    "detail": "p5 1.8 mm, median 5.0 mm (limit 1.2 mm; p1 1.8 mm is edge/chamfer noise)"
+    "status": "WARN",
+    "detail": "p5 0.0 mm, median 5.67 mm (limit 1.2 mm; p1 0.0 mm is edge/chamfer noise)"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 237.27 mm2, max bridge span 12.28 mm -> supports NOT required"
+    "status": "WARN",
+    "detail": "support-required (>60 deg, >2 mm drop) 43.76 mm2; 45-deg-rule area 147.38 mm2 (info); bridges 196.4 mm2, max span 10.1 mm"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "toolhead assignment declared",
     "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=core body, knocked-out banner lettering, eye highlights; tool_2=patches, eyes, nostril plugs; tool_3=raised muzzle, inner ears; tool_4=horns, banner"
+    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=head, horns, eyelids, highlights, raised lettering; tool_2=patches, forelock, pupils, nostrils, smile; tool_3=muzzle, inner ears; tool_4=scroll ribbon, ear tag"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
@@ -399,7 +165,7 @@
     "product": "CRW-002-cowaramup-magnet",
     "check": "material requirement [tool_4]",
     "status": "WARN",
-    "detail": "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp"
+    "detail": "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: ribbon should be rigid and crisp"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
@@ -421,15 +187,9 @@
   },
   {
     "product": "CRW-002-cowaramup-magnet",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.006 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet",
     "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
+    "status": "WARN",
+    "detail": "tiny components ['tool_1:7', 'tool_2:1', 'tool_4:2']"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
@@ -440,14 +200,20 @@
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "tool changes + purge (single unit)",
-    "status": "PASS",
-    "detail": "15 changes on 9/31 layers, purge 0.9 g (8% of material) - batch of 9 -> 0.1 g/unit"
+    "status": "WARN",
+    "detail": "124 changes on 52/58 layers, purge 7.44 g (41% of material) - batch of 12 -> 0.62 g/unit"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
     "check": "magnet pockets",
     "status": "PASS",
-    "detail": "2 x d12.30 x 3.2 mm, 1.20 mm ceiling"
+    "detail": "2 x d12.30 x 3.2 mm, >= 2.7 mm above"
+  },
+  {
+    "product": "CRW-002-cowaramup-magnet",
+    "check": "dimension: 50-70 mm dimensional head",
+    "status": "PASS",
+    "detail": "67.4 x 55.9 x 11.5 mm"
   },
   {
     "product": "CRW-002-cowaramup-magnet",
@@ -456,298 +222,70 @@
     "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "mesh + manifold (watertight, winding, volume>0)",
     "status": "PASS",
-    "detail": "4 parts watertight"
+    "detail": "3 parts watertight"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "merged STL re-load",
+    "product": "CRW-003-mini-cow-classic",
+    "check": "merged single-colour STL re-load",
     "status": "PASS",
-    "detail": "1776 faces, watertight=True, volume=7421 mm3"
+    "detail": "135064 faces, watertight=True, volume=27501 mm3"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
+    "status": "WARN",
+    "detail": "4 isolated pinch edges (tool_1:4) - zero-area contacts where colour regions meet; the indexed 3MF keeps exact manifold topology; slicers repair these on STL import"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "parts disjoint (no double-assigned volume)",
     "status": "PASS",
-    "detail": "max overlap 0.0019 mm3"
+    "detail": "max overlap 0.0037 mm3 (tolerance 0.1 mm3: sub-micron edge collapse)"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "fits build volume",
     "status": "PASS",
-    "detail": "plate 51.37 x 48.98 x 6.2 mm vs bed 250 x 250 x 250"
+    "detail": "plate 41.23 x 42.76 x 61.39 mm vs bed 250 x 250 x 250"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "wall thickness [main]",
     "status": "PASS",
-    "detail": "p5 1.8 mm, median 5.0 mm (limit 1.2 mm; p1 1.8 mm is edge/chamfer noise)"
+    "detail": "p5 3.3 mm, median 22.93 mm (limit 1.2 mm; p1 1.26 mm is edge/chamfer noise)"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 237.27 mm2, max bridge span 12.28 mm -> supports NOT required"
+    "status": "WARN",
+    "detail": "support-required (>60 deg, >2 mm drop) 67.19 mm2; 45-deg-rule area 533.18 mm2 (info); bridges 68.98 mm2, max span 2.46 mm"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "toolhead assignment declared",
     "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=core body, knocked-out banner lettering, eye highlights; tool_2=patches, eyes, nostril plugs; tool_3=raised muzzle, inner ears; tool_4=horns, banner"
+    "detail": "tools used ['tool_1', 'tool_2', 'tool_3']; roles: tool_1=body, horns, eyelids, highlights; tool_2=raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft; tool_3=muzzle, inner ears"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "3MF parts/colours/tool map round-trip",
     "status": "PASS",
-    "detail": "4 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
+    "detail": "3 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "material requirement [tool_4]",
-    "status": "WARN",
-    "detail": "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
+    "product": "CRW-003-mini-cow-classic",
     "check": "material requirement [tool_4]",
     "status": "WARN",
     "detail": "colour Earth Brown is not commonly available in TPU"
   },
   {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "fused interface bonding",
-    "status": "WARN",
-    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-TPU: fair; tool_2/tool_3 PLA-PLA: good; tool_3/tool_4 PLA-TPU: fair"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "thermal compatibility (common bed temperature)",
-    "status": "PASS",
-    "detail": "materials ['PLA', 'TPU']: bed window 50-60 C"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.015 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "adjacent colour contrast (all exported variants)",
-    "status": "PASS",
-    "detail": "all adjacent pairs pass luminance-ratio or dE rule"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "tool changes + purge (single unit)",
-    "status": "PASS",
-    "detail": "15 changes on 9/31 layers, purge 0.9 g (11% of material) - batch of 16 -> 0.056 g/unit"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "magnet pockets",
-    "status": "PASS",
-    "detail": "2 x d12.30 x 3.2 mm, 1.20 mm ceiling"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-small",
-    "check": "toolhead clearance / colour-region accessibility",
-    "status": "INFO",
-    "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "mesh + manifold (watertight, winding, volume>0)",
-    "status": "PASS",
-    "detail": "4 parts watertight"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "merged STL re-load",
-    "status": "PASS",
-    "detail": "1836 faces, watertight=True, volume=19216 mm3"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "parts disjoint (no double-assigned volume)",
-    "status": "PASS",
-    "detail": "max overlap 0.0026 mm3"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "fits build volume",
-    "status": "PASS",
-    "detail": "plate 80.26 x 76.52 x 6.2 mm vs bed 250 x 250 x 250"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "wall thickness [main]",
-    "status": "PASS",
-    "detail": "p5 5.0 mm, median 5.0 mm (limit 1.2 mm; p1 1.8 mm is edge/chamfer noise)"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 237.27 mm2, max bridge span 12.28 mm -> supports NOT required"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "toolhead assignment declared",
-    "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=core body, knocked-out banner lettering, eye highlights; tool_2=patches, eyes, nostril plugs; tool_3=raised muzzle, inner ears; tool_4=horns, banner"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "3MF parts/colours/tool map round-trip",
-    "status": "PASS",
-    "detail": "4 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "material requirement [tool_4]",
-    "status": "WARN",
-    "detail": "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "material requirement [tool_4]",
-    "status": "WARN",
-    "detail": "colour Earth Brown is not commonly available in TPU"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "fused interface bonding",
-    "status": "WARN",
-    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-TPU: fair; tool_2/tool_3 PLA-PLA: good; tool_3/tool_4 PLA-TPU: fair"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "thermal compatibility (common bed temperature)",
-    "status": "PASS",
-    "detail": "materials ['PLA', 'TPU']: bed window 50-60 C"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.003 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "adjacent colour contrast (all exported variants)",
-    "status": "PASS",
-    "detail": "all adjacent pairs pass luminance-ratio or dE rule"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "tool changes + purge (single unit)",
-    "status": "PASS",
-    "detail": "15 changes on 9/31 layers, purge 0.9 g (5% of material) - batch of 6 -> 0.15 g/unit"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "magnet pockets",
-    "status": "PASS",
-    "detail": "2 x d12.30 x 3.2 mm, 1.20 mm ceiling"
-  },
-  {
-    "product": "CRW-002-cowaramup-magnet-large",
-    "check": "toolhead clearance / colour-region accessibility",
-    "status": "INFO",
-    "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "mesh + manifold (watertight, winding, volume>0)",
-    "status": "PASS",
-    "detail": "4 parts watertight"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "merged STL re-load",
-    "status": "PASS",
-    "detail": "26862 faces, watertight=True, volume=18308 mm3"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "4 part STLs watertight"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "parts disjoint (no double-assigned volume)",
-    "status": "PASS",
-    "detail": "max overlap 0.0 mm3"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "fits build volume",
-    "status": "PASS",
-    "detail": "plate 54.4 x 34.0 x 29.15 mm vs bed 250 x 250 x 250"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "wall thickness [main]",
-    "status": "PASS",
-    "detail": "p5 3.22 mm, median 15.08 mm (limit 1.2 mm; p1 2.54 mm is edge/chamfer noise)"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "overhangs/supports [main]",
-    "status": "PASS",
-    "detail": "steep (>45 deg) 1.42 mm2, bridges 72.55 mm2, max bridge span 2.61 mm -> supports NOT required"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "toolhead assignment declared",
-    "status": "PASS",
-    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=body, head, legs, ears, tail + tuft, eye ring; tool_2=saddle/hip/head patches, eyes; tool_3=muzzle; tool_4=plinth, hooves, horns"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "3MF parts/colours/tool map round-trip",
-    "status": "PASS",
-    "detail": "4 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
-  },
-  {
-    "product": "CRW-003-mini-cow-classic",
-    "check": "material requirement [tool_4]",
-    "status": "SETUP",
-    "detail": "CRW-003 needs a rigid material in tool_4 (the plinth is structural and must be rigid (PLA/PETG). A TPU plinth would wobble and TPU horns under 3 mm are unreliable.); TPU is loaded. Load PLA before printing."
-  },
-  {
     "product": "CRW-003-mini-cow-classic",
     "check": "fused interface bonding",
     "status": "PASS",
-    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-PLA: good; tool_2/tool_3 PLA-PLA: good; tool_2/tool_4 PLA-PLA: good"
+    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_2/tool_3 PLA-PLA: good"
   },
   {
     "product": "CRW-003-mini-cow-classic",
@@ -758,29 +296,131 @@
   {
     "product": "CRW-003-mini-cow-classic",
     "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
+    "status": "WARN",
+    "detail": "tiny components ['tool_1:1', 'tool_2:1']"
   },
   {
     "product": "CRW-003-mini-cow-classic",
     "check": "adjacent colour contrast (all exported variants)",
-    "status": "WARN",
-    "detail": "low contrast: classic:Cow Black/Earth Brown (ratio 1.77, dE 26), jersey:Cow Brown/Earth Brown (ratio 1.62, dE 18)"
+    "status": "PASS",
+    "detail": "all adjacent pairs pass luminance-ratio or dE rule"
   },
   {
     "product": "CRW-003-mini-cow-classic",
     "check": "tool changes + purge (single unit)",
     "status": "WARN",
-    "detail": "199 changes on 111/146 layers, purge 11.94 g (50% of material) - batch of 24 -> 0.497 g/unit"
+    "detail": "364 changes on 269/307 layers, purge 21.84 g (56% of material) - batch of 16 -> 1.365 g/unit"
   },
   {
     "product": "CRW-003-mini-cow-classic",
-    "check": "dimension: ~50 mm collectible",
+    "check": "dimension: 50-80 mm collectible",
     "status": "PASS",
-    "detail": "54.4 x 34.0 x 29.2 mm"
+    "detail": "41.2 x 42.8 x 61.4 mm (STANDARD)"
   },
   {
     "product": "CRW-003-mini-cow-classic",
+    "check": "toolhead clearance / colour-region accessibility",
+    "status": "INFO",
+    "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "mesh + manifold (watertight, winding, volume>0)",
+    "status": "PASS",
+    "detail": "4 parts watertight"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "merged single-colour STL re-load",
+    "status": "PASS",
+    "detail": "124948 faces, watertight=True, volume=47256 mm3"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
+    "status": "FAIL",
+    "detail": "34 isolated pinch edges (tool_1:34) - zero-area contacts where colour regions meet; the indexed 3MF keeps exact manifold topology; slicers repair these on STL import"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "parts disjoint (no double-assigned volume)",
+    "status": "PASS",
+    "detail": "max overlap 0.0798 mm3 (tolerance 0.1 mm3: sub-micron edge collapse)"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "fits build volume",
+    "status": "PASS",
+    "detail": "plate 76.5 x 42.76 x 68.38 mm vs bed 250 x 250 x 250"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "wall thickness [main]",
+    "status": "WARN",
+    "detail": "p5 0.0 mm, median 8.09 mm (limit 1.2 mm; p1 0.0 mm is edge/chamfer noise)"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "overhangs/supports [main]",
+    "status": "WARN",
+    "detail": "support-required (>60 deg, >2 mm drop) 180.87 mm2; 45-deg-rule area 636.2 mm2 (info); bridges 81.3 mm2, max span 2.74 mm"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "toolhead assignment declared",
+    "status": "PASS",
+    "detail": "tools used ['tool_1', 'tool_2', 'tool_3', 'tool_4']; roles: tool_1=body, horns, eyelids, highlights, fence, base lettering; tool_2=raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft; tool_3=muzzle, inner ears; tool_4=paddock base + grass, collar, bell, ear tag"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "3MF parts/colours/tool map round-trip",
+    "status": "PASS",
+    "detail": "4 mesh objects, colours ['#F4F1E8FF', '#1E1E1EFF', '#F2A7B5FF', '#5C4030FF'], pindex->tool consistent=True"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "material requirement [tool_4]",
+    "status": "SETUP",
+    "detail": "CRW-003 needs a rigid material in tool_4 (the base is structural and the bell/tag are small - rigid only); TPU is loaded. Load PLA before printing."
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "fused interface bonding",
+    "status": "PASS",
+    "detail": "tool_1/tool_2 PLA-PLA: good; tool_1/tool_3 PLA-PLA: good; tool_1/tool_4 PLA-PLA: good; tool_2/tool_3 PLA-PLA: good; tool_2/tool_4 PLA-PLA: good; tool_3/tool_4 PLA-PLA: good"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "thermal compatibility (common bed temperature)",
+    "status": "PASS",
+    "detail": "materials ['PLA']: bed window 50-65 C"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
+    "status": "WARN",
+    "detail": "tiny components ['tool_1:9', 'tool_2:1']"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "adjacent colour contrast (all exported variants)",
+    "status": "WARN",
+    "detail": "low contrast: classic:Cow Black/Earth Brown (ratio 1.77, dE 26), jersey:Cow Brown/Earth Brown (ratio 1.62, dE 18)"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "tool changes + purge (single unit)",
+    "status": "WARN",
+    "detail": "502 changes on 299/342 layers, purge 30.12 g (47% of material) - batch of 8 -> 3.765 g/unit"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
+    "check": "dimension: 50-80 mm collectible",
+    "status": "PASS",
+    "detail": "76.5 x 42.8 x 68.4 mm (DELUXE)"
+  },
+  {
+    "product": "CRW-003-mini-cow-classic-deluxe",
     "check": "toolhead clearance / colour-region accessibility",
     "status": "INFO",
     "detail": "Assumes inactive tools park off the print (tool-changer). Layer-wise deposition means every region is reachable; verify idle-nozzle ooze/standby temps on the real machine."
@@ -793,7 +433,7 @@
   },
   {
     "product": "CRW-004-cow-phone-stand",
-    "check": "merged STL re-load",
+    "check": "merged single-colour STL re-load",
     "status": "PASS",
     "detail": "6354 faces, watertight=True, volume=250336 mm3"
   },
@@ -801,13 +441,13 @@
     "product": "CRW-004-cow-phone-stand",
     "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
     "status": "PASS",
-    "detail": "7 part STLs watertight"
+    "detail": "7 part STLs watertight after position welding"
   },
   {
     "product": "CRW-004-cow-phone-stand",
     "check": "parts disjoint (no double-assigned volume)",
     "status": "PASS",
-    "detail": "max overlap 0.0015 mm3"
+    "detail": "max overlap 0.0015 mm3 (tolerance 0.1 mm3: sub-micron edge collapse)"
   },
   {
     "product": "CRW-004-cow-phone-stand",
@@ -849,31 +489,31 @@
     "product": "CRW-004-cow-phone-stand",
     "check": "overhangs/supports [stand]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.02 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.0 mm2; 45-deg-rule area 0.0 mm2 (info); bridges 0.02 mm2, max span 0.0 mm -> supports NOT required"
   },
   {
     "product": "CRW-004-cow-phone-stand",
     "check": "overhangs/supports [pad_rear_wall]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.0 mm2; 45-deg-rule area 0.0 mm2 (info); bridges 0.0 mm2, max span 0.0 mm -> supports NOT required"
   },
   {
     "product": "CRW-004-cow-phone-stand",
     "check": "overhangs/supports [pad_front_lip]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.0 mm2; 45-deg-rule area 0.0 mm2 (info); bridges 0.0 mm2, max span 0.0 mm -> supports NOT required"
   },
   {
     "product": "CRW-004-cow-phone-stand",
     "check": "overhangs/supports [pad_foot_rear]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.0 mm2; 45-deg-rule area 0.0 mm2 (info); bridges 0.0 mm2, max span 0.0 mm -> supports NOT required"
   },
   {
     "product": "CRW-004-cow-phone-stand",
     "check": "overhangs/supports [pad_foot_front]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.0 mm2; 45-deg-rule area 0.0 mm2 (info); bridges 0.0 mm2, max span 0.0 mm -> supports NOT required"
   },
   {
     "product": "CRW-004-cow-phone-stand",
@@ -961,75 +601,75 @@
   },
   {
     "product": "CRW-005-articulated-cow",
-    "check": "merged STL re-load",
-    "status": "PASS",
-    "detail": "11204 faces, watertight=True, volume=69233 mm3"
+    "check": "merged single-colour STL re-load",
+    "status": "WARN",
+    "detail": "149982 faces, watertight=False, volume=72232 mm3"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "per-part STL re-load (vertex-welded, as a slicer reads it)",
-    "status": "PASS",
-    "detail": "11 part STLs watertight"
+    "status": "WARN",
+    "detail": "11 isolated pinch edges (body_tool_1:2, head_tool_1:9) - zero-area contacts where colour regions meet; the indexed 3MF keeps exact manifold topology; slicers repair these on STL import"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "parts disjoint (no double-assigned volume)",
     "status": "PASS",
-    "detail": "max overlap 0.0015 mm3"
+    "detail": "max overlap 0.0428 mm3 (tolerance 0.1 mm3: sub-micron edge collapse)"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "fits build volume",
     "status": "PASS",
-    "detail": "plate 122.88 x 94.25 x 18.0 mm vs bed 250 x 250 x 250"
+    "detail": "plate 127.63 x 97.76 x 20.32 mm vs bed 250 x 250 x 250"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "wall thickness [body]",
-    "status": "PASS",
-    "detail": "p5 3.61 mm, median 18.0 mm (limit 1.2 mm; p1 2.74 mm is edge/chamfer noise)"
+    "status": "WARN",
+    "detail": "p5 1.18 mm, median 15.4 mm (limit 1.2 mm; p1 0.0 mm is edge/chamfer noise)"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "wall thickness [head]",
     "status": "PASS",
-    "detail": "p5 2.56 mm, median 18.0 mm (limit 1.2 mm; p1 0.55 mm is edge/chamfer noise)"
+    "detail": "p5 1.6 mm, median 18.49 mm (limit 1.2 mm; p1 0.01 mm is edge/chamfer noise)"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "wall thickness [front_leg]",
     "status": "PASS",
-    "detail": "p5 1.95 mm, median 12.57 mm (limit 1.2 mm; p1 0.48 mm is edge/chamfer noise)"
+    "detail": "p5 1.26 mm, median 12.16 mm (limit 1.2 mm; p1 0.81 mm is edge/chamfer noise)"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "wall thickness [rear_leg]",
-    "status": "PASS",
-    "detail": "p5 2.09 mm, median 13.08 mm (limit 1.2 mm; p1 0.49 mm is edge/chamfer noise)"
+    "status": "WARN",
+    "detail": "p5 1.07 mm, median 12.61 mm (limit 1.2 mm; p1 0.62 mm is edge/chamfer noise)"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "overhangs/supports [body]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.01 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 1.2 mm2; 45-deg-rule area 157.97 mm2 (info); bridges 418.87 mm2, max span 4.92 mm -> supports NOT required"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "overhangs/supports [head]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 2.33 mm2; 45-deg-rule area 65.54 mm2 (info); bridges 232.45 mm2, max span 6.33 mm -> supports NOT required"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "overhangs/supports [front_leg]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.37 mm2; 45-deg-rule area 25.85 mm2 (info); bridges 37.36 mm2, max span 3.56 mm -> supports NOT required"
   },
   {
     "product": "CRW-005-articulated-cow",
     "check": "overhangs/supports [rear_leg]",
     "status": "PASS",
-    "detail": "steep (>45 deg) 0.0 mm2, bridges 0.0 mm2, max bridge span 0.0 mm -> supports NOT required"
+    "detail": "support-required (>60 deg, >2 mm drop) 0.0 mm2; 45-deg-rule area 34.72 mm2 (info); bridges 29.96 mm2, max span 4.52 mm -> supports NOT required"
   },
   {
     "product": "CRW-005-articulated-cow",
@@ -1063,15 +703,9 @@
   },
   {
     "product": "CRW-005-articulated-cow",
-    "check": "colour regions (2D faces): islands >= min area, strokes >= min feature",
-    "status": "PASS",
-    "detail": "tiny islands 0 (< 3.0 mm2), worst thin-area fraction 0.014 (< 0.8 mm strokes)"
-  },
-  {
-    "product": "CRW-005-articulated-cow",
     "check": "colour volumes: no tiny isolated islands (< 2 mm3)",
-    "status": "PASS",
-    "detail": "all colour components >= 2 mm3"
+    "status": "WARN",
+    "detail": "tiny components ['body_tool_1:1', 'head_tool_1:1', 'head_tool_2:1']"
   },
   {
     "product": "CRW-005-articulated-cow",
@@ -1083,7 +717,7 @@
     "product": "CRW-005-articulated-cow",
     "check": "tool changes + purge (single unit)",
     "status": "PASS",
-    "detail": "42 changes on 33/90 layers, purge 2.52 g (7% of material) - batch of 2 -> 1.26 g/unit"
+    "detail": "229 changes on 101/102 layers, purge 13.74 g (24% of material) - batch of 2 -> 6.87 g/unit"
   },
   {
     "product": "CRW-005-articulated-cow",

@@ -29,9 +29,10 @@ def test_batch_amortises_purge(products):
 
 
 def test_strict_material_requirement_is_reported(products):
-    """Mini cow needs a rigid tool 4; with TPU loaded the resolver must flag SETUP and cost it as PLA."""
+    """Deluxe mini needs a rigid tool 4 (base); with TPU loaded the resolver must flag SETUP and cost it as PLA."""
+    import _common as C
     th = config.toolheads()
-    tools, issues = effective_tools(products["CRW-003"])
+    tools, issues = effective_tools(C.build("CRW-003", "DELUXE"))
     if config.materials()[th["tool_4"]["material"]]["flexible"]:
         assert any(i["level"] == "SETUP" for i in issues)
         assert tools["tool_4"]["material"] == "PLA"

@@ -26,7 +26,7 @@ from cad.core.tools import effective_tools
 
 
 # products printed on their side are stood up in the GLB (as displayed, not as printed)
-DISPLAY_ROT = {"CRW-004": [90, 0, 0], "CRW-005": [90, 0, 0]}
+DISPLAY_ROT = {"CRW-002": [90, 0, 0], "CRW-004": [90, 0, 0], "CRW-005": [90, 0, 0]}
 
 
 def layer_strings(M):

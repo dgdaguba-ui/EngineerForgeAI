@@ -1,10 +1,27 @@
 # PROJECT STATUS
 
-**Phase:** 1 - manufacturing system + 5 prototypes (software-validated).
-**Gate:** STOP expanding the collection. Next work is the physical print/test loop.
+**Phase:** 2 - commercial design overhaul (in progress). Mascot + 4 of 5 products redesigned; phone stand next.
+**Gate:** still no physical prints. Do not expand the collection; print-test the redesigned set first.
 **Last updated:** 2026-09-26
 
-## Prototype summary (STANDARD size, Classic colours, single unit unless noted - ESTIMATES)
+## Phase 2 summary (see `DESIGN_AUDIT.md`, `documentation/redesign/BEFORE_AFTER.md`)
+
+| ID | Status | T1 | T2 | T3 | T4 | Purge (1 / at batch) | Tool changes | Batch | Cost @batch | QC |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Mascot "Cowa" v2 | redesigned (SDF character) | - | - | - | - | - | - | - | - | - |
+| CRW-003 mini Standard | redesigned | 10.5 g | 5.1 g | 1.4 g | - | 21.8 / 1.37 g | 364 | 16 | $1.92 | WARN |
+| CRW-003 mini Deluxe | NEW edition | 15.7 g | 5.2 g | 1.4 g | 11.5 g PLA | 30.1 / 3.77 g | 502 | 8 | $4.01 | FAIL (34 pinch edges) + SETUP |
+| CRW-001 keyring | redesigned (3D, tail loop) | 6.3 g | 3.2 g | 0.9 g | 0.02 g | 19.1 / 0.64 g | 318 | 30 | $1.51 | WARN |
+| CRW-002 magnet | redesigned (bas-relief bust) | 4.3 g | 1.5 g | 1.7 g | 3.1 g | 7.4 / 0.62 g | 124 | 12 | $2.06 | FAIL (21 pinch edges) |
+| CRW-005 articulated | redesigned (pillow members) | 33.7 g | 5.9 g | 3.2 g | 1.3 g TPU | 13.7 / 6.9 g | 229 | 2 | $6.99 | WARN |
+| CRW-004 phone stand | **v1, next to redesign** | 79.0 g | 2.3 g | 0.4 g | 4.5 g TPU | 1.7 g | 28 | 3 | $5.94 | WARN |
+
+QC FAIL items are both mesh-export pinch edges (see Known problems #1); the 3MF production files are topologically
+exact. 29/29 tests pass (sculpted products are held to documented regression ceilings).
+
+## Phase 1 record
+
+### Prototype summary (phase 1) (STANDARD size, Classic colours, single unit unless noted - ESTIMATES)
 
 | ID | T1 | T2 | T3 | T4 | Purge | Total | Tool changes | Time | Batch/plate | Purge/unit @batch | Cost @batch (NORMAL) | QC |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -34,7 +51,20 @@ Sizes also generated: CRW-001 and CRW-002 SMALL + LARGE. Full numbers: `document
   packaging card + market display mock-ups, previews (5 views + variants + tool-layer map per product).
 - 28 automated tests (`python3 -m pytest -q tests`) - all pass.
 
-## Open issues / known problems
+## Open issues / known problems (phase 2 first)
+
+1. **Pinch edges on sculpted meshes.** 5-34 isolated zero-area edges per sculpted product, where three colour regions meet
+   tangentially (eye rims, fence feet, bust eye). STL readers weld them and slicers auto-repair them; the 3MF is exact. Fix next:
+   make colour selectors transversal at eye rims, or repair at mesh level.
+2. **Support-required overhang on ear rims.** 40-60 mm^2 per figure (> 60 deg, > 2 mm drop). The Deluxe also has its fence
+   rails (bridges between posts). Fix: shape ear undersides at 45 deg.
+3. **3D colour economics.** 124-502 tool changes per plate. Batch printing is mandatory; the real purge per change decides
+   whether the Deluxe collectible is viable.
+4. **Phone stand** is still the phase-1 extruded design.
+5. **Articulated cow** still reads as a flexi toy: one leg member per pair, no on-product branding.
+
+### Phase 1 issues (still relevant)
+
 
 1. **Nothing has been physically printed.** All mass/time/purge numbers are model estimates; clearances
    (joints 0.5 mm, magnet 0.15 mm, dovetail 0.15 mm) are untested starting values.
@@ -52,6 +82,10 @@ Sizes also generated: CRW-001 and CRW-002 SMALL + LARGE. Full numbers: `document
 11. Mini cow muzzle keel (45-degree support-free wedge) is visible as a "chin" - cosmetic.
 
 ## Next steps (in priority order)
+
+0. Redesign CRW-004 phone stand (sculpted resting Cowa, back cradles the phone, TPU saddle + feet, branded base).
+0. Fix known problems #1 and #2 above, then print-test: mini Standard, mini Deluxe, keyring, magnet, articulated.
+
 
 1. Print the 5 prototypes (single + recommended batch) following `research/test-protocol.md`; fill `research/print-log.csv`.
 2. Measure the real printer: tool-change time, purge per change, bed size -> update `config/toolheads.json`;

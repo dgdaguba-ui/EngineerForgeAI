@@ -7,8 +7,8 @@ Measured sub-scores (print time, material cost, purge fraction, assembly) are re
 
 | Rank | Product | Score | Time/unit | Purge/unit vs part | print_time | material_cost | purge | assembly | durability | visual_appeal | differentiation | packaging_ease |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | CRW-002-cowaramup-magnet | **93.9** | 26.1 min | 1.0% | 4.8 | 4.7 | 4.5 | 4.8 | 5 | 5 | 4 | 5 |
-| 2 | CRW-001-cowaramup-keyring-classic | **90.7** | 15.7 min | 1.4% | 5.0 | 5.0 | 3.9 | 5.0 | 5 | 4 | 4 | 5 |
-| 3 | CRW-003-mini-cow-classic | **74.4** | 29.5 min | 4.1% | 4.7 | 4.7 | 0.0 | 4.5 | 4 | 4 | 5 | 3 |
-| 4 | CRW-005-articulated-cow | **57.4** | 94.3 min | 3.5% | 3.1 | 3.1 | 0.9 | 0.0 | 3 | 4 | 5 | 3 |
-| 5 | CRW-004-cow-phone-stand | **56.3** | 224.0 min | 0.6% | 0.0 | 0.0 | 5.0 | 1.1 | 5 | 3 | 4 | 3 |
+| 1 | CRW-002-cowaramup-magnet | **90.8** | 36.2 min | 5.9% | 4.8 | 4.9 | 3.3 | 5.0 | 5 | 5 | 4 | 5 |
+| 2 | CRW-001-cowaramup-keyring-classic | **88.5** | 26.8 min | 6.1% | 5.0 | 5.0 | 3.2 | 5.0 | 5 | 4 | 4 | 5 |
+| 3 | CRW-003-mini-cow-classic | **82.4** | 43.8 min | 8.1% | 4.6 | 4.6 | 2.5 | 5.0 | 4 | 4 | 5 | 3 |
+| 4 | CRW-004-cow-phone-stand | **56.5** | 224.0 min | 0.6% | 0.0 | 0.0 | 5.0 | 1.2 | 5 | 3 | 4 | 3 |
+| 5 | CRW-005-articulated-cow | **52.1** | 124.9 min | 15.6% | 2.5 | 2.8 | 0.0 | 0.0 | 3 | 4 | 5 | 3 |

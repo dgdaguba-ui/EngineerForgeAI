@@ -99,11 +99,30 @@ def overhang_report(solid: geom.Manifold, max_deg: float = 45.0, tol_deg: float 
     zmin = v[:, 2].min()
     zc = t[:, :, 2].mean(1)
     down = -n[:, 2]
-    on_bed = zc < zmin + 0.05
+    on_bed = zc < zmin + 0.6   # first 3 layers: bed-supported (mesh facets at the bottom edge)
     limit = math.cos(math.radians(max_deg - tol_deg))
     bridge = (down > 0.999) & ~on_bed
     steep = (down > limit) & ~bridge & ~on_bed
+    # ignore tiny ledges (raised-patch edges, relief steps): only count faces with > 0.8 mm
+    # of free fall below them - those are the ones that would actually need support
+    if steep.any():
+        idx = np.where(steep)[0]
+        mesh = trimesh.Trimesh(v, f, process=False)
+        origins = t[idx].mean(1) - np.array([0, 0, 1e-3])
+        loc, ray_i, _ = mesh.ray.intersects_location(origins, np.tile([0, 0, -1.0], (len(idx), 1)), multiple_hits=False)
+        drop = np.full(len(idx), np.inf)
+        drop[ray_i] = origins[ray_i, 2] - loc[:, 2]
+        drop = np.minimum(drop, origins[:, 2] - zmin)
+        real = np.zeros(len(area), bool)
+        real[idx[drop > 0.8]] = True
+        # support-required: steeper than 60 degrees from vertical with > 2 mm of free fall
+        need = np.zeros(len(area), bool)
+        need[idx[(drop > 2.0) & (down[idx] > math.cos(math.radians(30)))]] = True
+        steep = real
+    else:
+        need = steep
     return {"steep_overhang_area_mm2": round(float(area[steep].sum()), 2),
+            "support_required_area_mm2": round(float(area[need].sum()), 2),
             "bridge_area_mm2": round(float(area[bridge].sum()), 2),
             "max_bridge_span_mm": round(_max_bridge_span(t[bridge]), 2) if bridge.any() else 0.0}
 

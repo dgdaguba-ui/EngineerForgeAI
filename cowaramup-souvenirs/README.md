@@ -8,15 +8,16 @@ the layers where it is cheap, and flexible TPU is used only where it does someth
 
 ## Status
 
-Phase 1 (this repo state): manufacturing system + **5 prototypes**, generated and validated in software, **not yet
-physically printed**. See `PROJECT_STATUS.md`. The rest of the collection (48 concepts in
+Phase 2 (this repo state): **commercial design overhaul**. There is a new sculpted mascot, and the mini collectible
+(Standard + Deluxe), keyring, magnet and articulated cow are redesigned; see `DESIGN_AUDIT.md` and
+`documentation/redesign/BEFORE_AFTER.md`. Nothing has been physically printed yet. See `PROJECT_STATUS.md`. The rest of the collection (48 concepts in
 `products/concepts.json`) is intentionally frozen until the physical testing loop is done.
 
 | ID | Prototype | Key idea |
 |---|---|---|
-| CRW-001 | 4-colour keyring | double-sided flush "sandwich" inlays, colour on 6 of 21 layers |
-| CRW-002 | 4-colour head magnet | raised pink muzzle, COWARAMUP lettering knocked out to the core colour (no extra tool) |
-| CRW-003 | 50 mm mini collectible | true 3D colour volumes, support-free "teardrop" shapes, plinth-first vertical zoning |
+| CRW-001 | 3D mini-Cowa keyring | sculpted sitting cow, tail curls into the key loop, 4 colours |
+| CRW-002 | dimensional head magnet | bas-relief bust, scroll ribbon with raised arc lettering, 2 magnets |
+| CRW-003 | mini collectible (Std / Deluxe) | sculpted Cowa; Deluxe on the Cowaramup Paddock base with collar, bell, tag, series No. 01 |
 | CRW-004 | phone stand (PLA + TPU) | printed on its side, 4 slide-in TPU dovetail pads (grip + feet), 4-colour flank art |
 | CRW-005 | articulated cow (flagship) | print-in-place bicone joints, asymmetric leg stops so it stands, fused TPU tail |
 
@@ -38,7 +39,7 @@ python3 scripts/generate.py -p CRW-003 --variant christmas
 
 ```
 config/        toolheads, colors (palette), materials, dimensions (SMALL/STANDARD/LARGE), costs, variants
-cad/core/      geometry kernel helpers, colour painter + edge-matched coverage, analysis, exporters, renderer
+cad/core/      geometry + SDF sculpting engine, colour painters + edge-matched coverage, analysis, exporters, renderers
 cad/cows/      the mascot "Cowa": front (2D), side (2D), solid (3D) component library
 cad/accessories/, cad/mechanisms/   keyring loop, magnet cavity, phone slot, TPU pad, sign, base; hinge, peg, socket, snap
 cad/products/  one module per product: build(size) -> Product(parts per tool)

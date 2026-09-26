@@ -46,7 +46,49 @@ def clean_mesh(solid: geom.Manifold, collapse: float = 0.0) -> geom.Manifold:
     would turn into non-manifold edges). Parts are left exact so they stay
     perfectly disjoint."""
     solid = tidy(solid)
-    return solid.simplify(collapse) if collapse > 0 else solid
+    if collapse > 0:
+        solid = solid.simplify(collapse)
+    # weld only meshes that actually need it: welding moves vertices, which would break the
+    # exactly-shared boundaries of the edge-matched (sandwich) products
+    return weld(solid) if len(pinch_points(solid)) else solid
+
+
+def weld(solid: geom.Manifold, q: float = 5e-4) -> geom.Manifold:
+    """Merge vertices closer than q mm (KD-tree + union-find), drop collapsed triangles
+    and re-verify manifoldness. Removes the micron edges booleans leave behind, which a
+    float32 STL reader would otherwise weld into non-manifold edges. Falls back to the
+    input if the welded mesh is not a valid manifold."""
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+    from scipy.spatial import cKDTree
+
+    from . import sdf as _sdf
+    v, f = geom.mesh_arrays(solid)
+    if len(f) == 0:
+        return solid
+    pairs = cKDTree(v).query_pairs(q, output_type="ndarray")
+    if len(pairs) == 0:
+        return solid
+    n = len(v)
+    graph = coo_matrix((np.ones(len(pairs)), (pairs[:, 0], pairs[:, 1])), shape=(n, n))
+    _, inv = connected_components(graph, directed=False)
+    nv = np.zeros((inv.max() + 1, 3))
+    np.add.at(nv, inv, v)
+    nv /= np.bincount(inv)[:, None]
+    nf = inv[f]
+    ok = (nf[:, 0] != nf[:, 1]) & (nf[:, 1] != nf[:, 2]) & (nf[:, 0] != nf[:, 2])
+    nf = nf[ok]
+    # remove face pairs that became identical (opposite windings cancel)
+    srt = np.sort(nf, axis=1)
+    _, first, cnt = np.unique(srt, axis=0, return_index=True, return_counts=True)
+    nf = nf[np.sort(first[cnt == 1])]
+    try:
+        out = _sdf.to_manifold(nv, nf)
+    except Exception:
+        return solid
+    if abs(out.volume() - solid.volume()) > 1e-3 * max(abs(solid.volume()), 1.0):
+        return solid
+    return out
 
 
 def plate_offset(product: Product, bed_xy=None) -> np.ndarray:
@@ -196,3 +238,46 @@ def write_glb(product: Product, path: Path, tools: dict, offset, rot=None):
         tm.visual = trimesh.visual.TextureVisuals(material=mat)
         scene.add_geometry(tm, node_name=part_label(part, tools)[:60], geom_name=f"{part.object_group}_{part.name}")
     scene.export(path, file_type="glb")
+
+
+def pinch_points(solid: geom.Manifold) -> np.ndarray:
+    """Positions where a float32 / position-welded reader sees non-manifold edges."""
+    v, f = geom.mesh_arrays(solid)
+    v32 = v.astype(np.float32).astype(np.float64)
+    key = np.round(v32 / 1e-5).astype(np.int64)
+    _, inv = np.unique(key, axis=0, return_inverse=True)
+    nf = inv.ravel()[f]
+    e = np.sort(np.vstack([nf[:, [0, 1]], nf[:, [1, 2]], nf[:, [2, 0]]]), axis=1)
+    u, idx, cnt = np.unique(e, axis=0, return_index=True, return_counts=True)
+    bad = cnt != 2
+    if not bad.any():
+        return np.zeros((0, 3))
+    edges_first = np.vstack([f[:, [0, 1]], f[:, [1, 2]], f[:, [2, 0]]])[idx[bad]]
+    return (v[edges_first[:, 0]] + v[edges_first[:, 1]]) / 2
+
+
+def repair_pinches(parts, radius: float = 0.22, rounds: int = 4):
+    """Bridge every pinch (two lobes of one part touching along an edge) with a small
+    ball of the SAME part, taken from its neighbours, then re-weld. A 0.2 mm bridge is
+    below nozzle resolution - it only changes topology, not appearance."""
+    for _ in range(rounds):
+        changed = False
+        for p in parts:
+            pts = pinch_points(p.solid)
+            if len(pts) == 0:
+                continue
+            keep = []
+            for q in pts:
+                if all(np.linalg.norm(q - k) > radius for k in keep):
+                    keep.append(q)
+            balls = geom.union(geom.Manifold.sphere(radius, 16).translate(list(q)) for q in keep)
+            env = geom.union(o.solid for o in parts if o.object_group == p.object_group)
+            balls = balls ^ env
+            for o in parts:
+                if o is not p and o.object_group == p.object_group:
+                    o.solid = weld(o.solid - balls)
+            p.solid = weld(p.solid + balls)
+            changed = True
+        if not changed:
+            break
+    return parts

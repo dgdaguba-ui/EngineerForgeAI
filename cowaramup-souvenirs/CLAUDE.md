@@ -31,6 +31,14 @@ config/*.json  ->  cad/ (python geometry, manifold3d + shapely)  ->  scripts/gen
             stl/ 3mf/ previews/ products/generated/*.json -> validate/cost/reports -> documentation/
 ```
 
+## Design standard (from DESIGN_AUDIT.md, phase 2)
+
+The target is "would this sit on a tourist-shop shelf?", not "is it a valid STL". Every product uses the sculpted
+Cowa character (`cad/cows/character.py`): big head, recessed eyes with lids and highlights, muzzle volume with
+nostrils and a smile, asymmetric ears, raised organic patches, split hooves, and personality through pose. Flat
+extrusions are only acceptable where the function demands it (the phone-stand profile is the last one left).
+Originals of every redesigned product are archived in `stl/archive/before-redesign/` and `cad/archive/before-redesign/`.
+
 ## Rules that keep the system working
 
 - **Products never hard-code materials or colours.** They declare a ROLE per tool (`tool_roles`) and optional
@@ -40,8 +48,16 @@ config/*.json  ->  cad/ (python geometry, manifold3d + shapely)  ->  scripts/gen
 - **Flat products use `sandwich_parts()`** (colour only in the outer 0.6 mm = 3 layers). Colour regions go through
   `coverage()`: de-pinch, snap to a 1 um grid, GEOS coverage simplification. Do not bypass it - independent
   simplification or boolean-subtraction of colours re-introduces non-manifold slivers (see CHANGELOG 0.1.0 notes).
-- **3D figures use `Painter3D`** + `teardrop()` shapes (45-degree keels) so they print without supports.
-  Paint the plinth LAST so body parts end on its top face instead of carving pockets.
+- **Sculpted products use the SDF engine** (`cad/core/sdf.py` -> `cad/core/sculpt.py`): fields -> 40-degree
+  support-free closure -> marching cubes -> Painter3D colour booleans. Rules learned the hard way:
+  * colour selectors must reach >= 0.3 mm past the skin (decimation error) and must NEVER sit within ~0.05 mm of
+    another surface (coincident surfaces -> slivers -> pinch edges);
+  * engravings/debosses/magnet pockets go in `post_cut` (the closure would fill them);
+  * nothing may be coplanar with a base top (sink posts/figures into the base);
+  * the closure assumes distance-like fields; blended fields under-fill, so fix persistent overhangs by
+    design (e.g. the dewlap carries the chin) rather than by normalising the field (that grows icicle cones);
+  * details below ~0.5 mm (wood grain etc.) are fake complexity: do not add them.
+- **3D figures on plinths:** paint the plinth LAST so body parts end on its top face instead of carving pockets.
 - **Exports:** vertices stay near the origin (float32 STL precision); the 3MF places the plate with a build
   transform. Merged single-colour STL uses `Product.envelope` when provided.
 - **Minimum features:** colour strokes >= 0.8 mm, colour islands >= 3 mm^2 (use geometry - dimples, deboss -
@@ -52,7 +68,7 @@ config/*.json  ->  cad/ (python geometry, manifold3d + shapely)  ->  scripts/gen
 ## Commands
 
 ```bash
-python3 scripts/run_all.py                         # everything
+python3 scripts/run_all.py                         # everything (~10 min; products are cached in products/generated/cache)
 python3 scripts/generate.py -p CRW-001 --variant aussie
 python3 scripts/validate.py -p CRW-005
 python3 scripts/cost.py --calibrate                # after real prints

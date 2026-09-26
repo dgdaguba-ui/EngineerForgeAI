@@ -9,118 +9,118 @@
     "LOW-COST": {
       "scenario": "LOW-COST",
       "batch_units": 1,
-      "material": 0.881,
-      "purge": 0.073,
-      "electricity": 0.134,
+      "material": 1.068,
+      "purge": 0.34,
+      "electricity": 0.192,
       "hardware": 0,
       "packaging": 1.32,
       "labour": 0.0,
       "labour_minutes": 9.0,
-      "failure_allowance": 0.054,
-      "total_cost": 2.46,
+      "failure_allowance": 0.08,
+      "total_cost": 3.0,
       "suggested_retail_range": [
         20,
         50
       ],
-      "cost_floor_retail": 7.39,
-      "gross_margin_at_mid_ex_gst": 0.923
+      "cost_floor_retail": 9.0,
+      "gross_margin_at_mid_ex_gst": 0.906
     },
     "NORMAL": {
       "scenario": "NORMAL",
       "batch_units": 1,
-      "material": 1.036,
-      "purge": 0.086,
-      "electricity": 0.134,
+      "material": 1.257,
+      "purge": 0.4,
+      "electricity": 0.192,
       "hardware": 0,
       "packaging": 2.2,
       "labour": 4.5,
       "labour_minutes": 9.0,
-      "failure_allowance": 0.126,
-      "total_cost": 8.08,
+      "failure_allowance": 0.185,
+      "total_cost": 8.73,
       "suggested_retail_range": [
-        21,
+        22,
         50
       ],
-      "cost_floor_retail": 20.2,
-      "gross_margin_at_mid_ex_gst": 0.75
+      "cost_floor_retail": 21.83,
+      "gross_margin_at_mid_ex_gst": 0.733
     },
     "PREMIUM": {
       "scenario": "PREMIUM",
       "batch_units": 1,
-      "material": 1.451,
-      "purge": 0.12,
-      "electricity": 0.134,
+      "material": 1.76,
+      "purge": 0.56,
+      "electricity": 0.192,
       "hardware": 0,
       "packaging": 3.96,
       "labour": 5.4,
       "labour_minutes": 9.0,
-      "failure_allowance": 0.256,
-      "total_cost": 11.32,
+      "failure_allowance": 0.377,
+      "total_cost": 12.25,
       "suggested_retail_range": [
-        29,
+        31,
         50
       ],
-      "cost_floor_retail": 28.3,
-      "gross_margin_at_mid_ex_gst": 0.685
+      "cost_floor_retail": 30.62,
+      "gross_margin_at_mid_ex_gst": 0.667
     }
   },
   "batch": {
     "LOW-COST": {
       "scenario": "LOW-COST",
       "batch_units": 2,
-      "material": 0.881,
-      "purge": 0.036,
-      "electricity": 0.126,
+      "material": 1.068,
+      "purge": 0.17,
+      "electricity": 0.167,
       "hardware": 0,
       "packaging": 1.32,
       "labour": 0.0,
       "labour_minutes": 6.0,
-      "failure_allowance": 0.052,
-      "total_cost": 2.42,
+      "failure_allowance": 0.07,
+      "total_cost": 2.8,
       "suggested_retail_range": [
         20,
         50
       ],
-      "cost_floor_retail": 7.25,
-      "gross_margin_at_mid_ex_gst": 0.924
+      "cost_floor_retail": 8.39,
+      "gross_margin_at_mid_ex_gst": 0.912
     },
     "NORMAL": {
       "scenario": "NORMAL",
       "batch_units": 2,
-      "material": 1.036,
-      "purge": 0.043,
-      "electricity": 0.126,
+      "material": 1.257,
+      "purge": 0.2,
+      "electricity": 0.167,
       "hardware": 0,
       "packaging": 2.2,
       "labour": 3.0,
       "labour_minutes": 6.0,
-      "failure_allowance": 0.12,
-      "total_cost": 6.53,
+      "failure_allowance": 0.162,
+      "total_cost": 6.99,
       "suggested_retail_range": [
         20,
         50
       ],
-      "cost_floor_retail": 16.31,
-      "gross_margin_at_mid_ex_gst": 0.795
+      "cost_floor_retail": 17.46,
+      "gross_margin_at_mid_ex_gst": 0.78
     },
     "PREMIUM": {
       "scenario": "PREMIUM",
       "batch_units": 2,
-      "material": 1.451,
-      "purge": 0.06,
-      "electricity": 0.126,
+      "material": 1.76,
+      "purge": 0.28,
+      "electricity": 0.167,
       "hardware": 0,
       "packaging": 3.96,
       "labour": 3.6,
       "labour_minutes": 6.0,
-      "failure_allowance": 0.245,
-      "total_cost": 9.44,
+      "failure_allowance": 0.331,
+      "total_cost": 10.1,
       "suggested_retail_range": [
-        24,
+        26,
         50
       ],
-      "cost_floor_retail": 23.6,
-      "gross_margin_at_mid_ex_gst": 0.719
+      "cost_floor_retail": 25.24,
+      "gross_margin_at_mid_ex_gst": 0.708
     }
   }
 }

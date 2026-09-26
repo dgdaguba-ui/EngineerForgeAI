@@ -71,26 +71,31 @@
   "overhangs": {
     "stand": {
       "steep_overhang_area_mm2": 0.0,
+      "support_required_area_mm2": 0.0,
       "bridge_area_mm2": 0.02,
       "max_bridge_span_mm": 0.0
     },
     "pad_rear_wall": {
       "steep_overhang_area_mm2": 0.0,
+      "support_required_area_mm2": 0.0,
       "bridge_area_mm2": 0.0,
       "max_bridge_span_mm": 0.0
     },
     "pad_front_lip": {
       "steep_overhang_area_mm2": 0.0,
+      "support_required_area_mm2": 0.0,
       "bridge_area_mm2": 0.0,
       "max_bridge_span_mm": 0.0
     },
     "pad_foot_rear": {
       "steep_overhang_area_mm2": 0.0,
+      "support_required_area_mm2": 0.0,
       "bridge_area_mm2": 0.0,
       "max_bridge_span_mm": 0.0
     },
     "pad_foot_front": {
       "steep_overhang_area_mm2": 0.0,
+      "support_required_area_mm2": 0.0,
       "bridge_area_mm2": 0.0,
       "max_bridge_span_mm": 0.0
     }
@@ -676,5 +681,5 @@
     -0.0
   ],
   "name": "Cow Phone Stand - Resting Cowa",
-  "generated_in_s": 1.7
+  "generated_in_s": 1.8
 }

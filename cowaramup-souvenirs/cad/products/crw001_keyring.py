@@ -1,76 +1,67 @@
-"""CRW-001 - Cowaramup Cow Keyring (Prototype 1).
+"""CRW-001 v2 - Cowa Keyring: a miniature 3D sitting Cowa (~48 mm).
 
-Strategy A (one multi-colour model), 'sandwich inlay':
-  * Flat mascot face, printed flat, identical design on both faces.
-  * Core (all middle layers) = tool 1 only.
-  * Colour lives in the bottom 3 and top 3 layers (0.6 mm) -> tool changes
-    happen on ~6 of 21 layers. Flush inlays cannot snag or chip in a pocket.
-  * Keyring loop: absolute 3 mm ring wall around a 5 mm hole, full thickness,
-    tool 1 (no colour boundary crosses the load path).
+Redesign (see DESIGN_AUDIT.md): replaces the flat face cut-out.
+  * Same sculpted character as the collectible, scaled 0.8, with thicker and
+    shorter horns (keyrings get dropped and sat on).
+  * The TAIL curls up into the key loop: 5.2 mm hole, 3.9 mm solid ring,
+    fused into the rump - no separate tab to snap off.
+  * 4 colours: body, markings (T2), muzzle/ears (T3), ear tag (T4 accent).
+  * Hidden detail: 'COWARAMUP WA' debossed under the base of the figure.
+Absolute feature sizes (grooves, highlights, loop) do not scale down.
 """
 from __future__ import annotations
 
-from shapely.ops import unary_union
+import numpy as np
 
-from ..accessories.accessories import keyring_loop
-from ..core import config, geom
-from ..core.model import FaceRegion, Product, sandwich_parts
-from ..cows import face
+from ..accessories.bases import _text_field
+from ..core import config, sdf
+from ..core.model import Product
+from ..core.sculpt import sculpt_parts
+from ..cows.character import CowaParams, fields
 
 ID, SLUG = "CRW-001", "cowaramup-keyring-classic"
+H = 0.28
 
 
 def build(size: str = "STANDARD") -> Product:
     d = config.dims(ID, size)
-    W = d["head_width"] * d["scale"]
-    T = d["thickness"]
-    inlay = d["inlay_depth"]
-
-    painter = face.face_painter(W)
-    head_top = face.FOREHEAD["c"][1] * W + face.FOREHEAD["r"][1] * W
-    hole_d = d["keyring_hole"]
-    loop_cy = head_top + hole_d / 2 + 0.6
-    loop, hole = keyring_loop(0.0, loop_cy, hole_d, d["keyring_ring_wall"])
-    painter.layers.insert(0, ("tool_1", loop, "keyring loop"))
-
-    silhouette = geom.clean(painter.envelope().difference(hole))
-    top = painter.resolve(silhouette)
-    # Bed face: mirror the whole design so a viewer on either side sees the same cow.
-    bottom = {t: {"shape": geom.mirror_x(r["shape"]), "features": r["features"]} for t, r in top.items()}
-    parts, cov_top, _, sil = sandwich_parts(silhouette, top, T, inlay, bottom_regions=bottom, return_coverage=True)
-
-    minx, miny, maxx, maxy = silhouette.bounds
-    face_regions = [FaceRegion("top", t, g) for t, g in cov_top.items()]   # what is actually printed
-
+    k = 0.8 * d["scale"]
+    g = sdf.Grid((-20 * k / 0.8, -23 * k / 0.8, 0), (20 * k / 0.8, 24 * k / 0.8, 52 * k / 0.8), H)
+    P = CowaParams(scale=k, tail="loop", collar=False, bell=False, ear_tag=True,
+                   horn_len=0.78, horn_r=1.25, head_yaw=-12.0)
+    F = fields(g, P)
+    xs, ys, zs = g.axes
+    under = []
+    for i, (line, cap) in enumerate((("COWARAMUP", 3.2), ("WA", 3.2))):
+        t = _text_field(line, cap, xs, ys, 0.0, 9.0 * k - i * 5.0, mirror=True, max_width=24 * k)[:, :, None]
+        under.append(np.maximum(np.maximum(t, g.z - 0.5), -g.z - 1.0))
+    parts, env_m = sculpt_parts(g, F["env"], F["layers"], post_cut=under,
+                                decimate_env=110_000, decimate_layer=35_000)
+    bb = env_m.bounding_box()
     return Product(
-        id=ID, slug=SLUG, name="Cowaramup Cow Keyring", category="A - Multi-colour impulse",
-        description="Flat 4-colour mascot keyring, identical face on both sides, flush sandwich inlays, "
-                    "reinforced 5 mm keyring hole. No painting, no assembly beyond fitting the split ring.",
+        id=ID, slug=SLUG, name="Cowa Keyring - Classic", category="A - Multi-colour impulse",
+        description="Miniature sculpted sitting Cowa (~48 mm) whose tail curls into a reinforced key loop. "
+                    "4 colours incl. a tool-4 ear tag; COWARAMUP WA debossed underneath.",
         size=size, parts=parts,
-        tool_roles={"tool_1": "core body, keyring loop, eye highlights",
-                    "tool_2": "signature patch, forehead spot, eyes, nostrils",
-                    "tool_3": "muzzle, inner ears",
-                    "tool_4": "horns"},
+        tool_roles={"tool_1": "body, horns, eyelids, highlights, tail loop",
+                    "tool_2": "raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft",
+                    "tool_3": "muzzle, inner ears", "tool_4": "ear tag (accent / series colour)"},
         requirements={"tool_4": {"flexible": None, "strict": False, "preferred_material": "PLA",
-                                 "why": "any material; TPU gives bump-proof soft horns, PLA gives crisper colour"}},
-        print_orientation="Flat, either face on the bed (design is mirrored so both faces match).",
-        strategy="A - one multi-colour model (sandwich inlay)",
+                                 "why": "tag only; TPU tag also works"}},
+        print_orientation="Upright, sitting on its flat base. No supports.",
+        strategy="A - one multi-colour model (sculpted)",
         hardware=["split_ring_25mm", "keyring_chain_link"],
         packaging="impulse_backing_card", tier="IMPULSE",
-        assembly_time_minutes=0.5, post_process_minutes=0.3,
-        face_regions=face_regions, envelope=geom.extrude(sil, 0, T),
-        checks={"keyring_hole_d": hole_d, "keyring_ring_wall": d["keyring_ring_wall"],
-                "hole_centre": (0.0, loop_cy), "thickness": T,
-                "envelope_mm": (maxx - minx, maxy - miny, T), "target_max_dim": (45.0, 60.0)},
-        notes=["Horn tips are the most exposed feature; if drop tests chip them, switch tool_4 to TPU "
-               "(no geometry change needed)."],
+        assembly_time_minutes=0.5, post_process_minutes=0.5,
+        envelope=env_m,
+        checks={"envelope_mm": (bb[3] - bb[0], bb[4] - bb[1], bb[5] - bb[2]), "target_max_dim": (45.0, 60.0),
+                "keyring_hole_d": 5.2, "keyring_ring_wall": 3.9, "thickness": bb[5] - bb[2],
+                "hole_centre": (0.0, 21.0 * k)},
+        notes=["The key loop is the tail: hole 5.2 mm, ring section 3.9 mm, fused into the rump.",
+               "Horns shortened (x0.78) and thickened (x1.25) versus the collectible for pocket durability."],
         self_critique={
-            "exploits_4_tools": "Yes - four colours in one print with zero painting; a single-colour printer "
-                                "would need hand painting of 7 regions per side.",
-            "every_colour_has_purpose": "White = body/structure, black = cow identity (patches/eyes), pink = "
-                                        "muzzle (cuteness/readability), tool 4 = horns (silhouette cue).",
-            "tool_change_reduction": "Colour confined to 6 of 21 layers; middle layers single-tool.",
-            "suitcase_durability": "Flat, no thin cantilevers except horn tips (>= 4 mm wide).",
-            "batch": "Flat and small -> 16-32 per plate; per-unit purge falls with batch size.",
+            "character": "Same face and pose as the collectible -> collection consistency at impulse price.",
+            "durability": "No thin protrusions except horns (>= 2.3 mm tip dia) and ears (>= 3.5 mm thick).",
+            "still_to_improve": "Needs a physical drop test; tag is small (4 x 3.6 mm).",
         },
     )

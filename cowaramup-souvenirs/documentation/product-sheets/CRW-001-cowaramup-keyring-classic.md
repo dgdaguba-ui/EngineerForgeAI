@@ -1,50 +1,49 @@
-# CRW-001 - Cowaramup Cow Keyring
+# CRW-001 - Cowa Keyring - Classic
 
 *A - Multi-colour impulse - STANDARD - tier IMPULSE*
 
-Flat 4-colour mascot keyring, identical face on both sides, flush sandwich inlays, reinforced 5 mm keyring hole. No painting, no assembly beyond fitting the split ring.
+Miniature sculpted sitting Cowa (~48 mm) whose tail curls into a reinforced key loop. 4 colours incl. a tool-4 ear tag; COWARAMUP WA debossed underneath.
 
 ![four-colour](../../previews/CRW-001-cowaramup-keyring-classic/2-four-colour.png)
 
 ## Manufacturing
 
-- **Strategy:** A - one multi-colour model (sandwich inlay)
-- **Print orientation:** Flat, either face on the bed (design is mirrored so both faces match).
-- **Plate footprint:** 59.14 x 48.85 x 4.2 mm
-- **Supports:** none (all overhangs <= 45 deg, bridges short)
+- **Strategy:** A - one multi-colour model (sculpted)
+- **Print orientation:** Upright, sitting on its flat base. No supports.
+- **Plate footprint:** 31.54 x 39.86 x 48.4 mm
+- **Supports:** required
 - **Hardware:** split_ring_25mm, keyring_chain_link
-- **Recommended batch:** 12 per plate
+- **Recommended batch:** 30 per plate
 
 ## Toolhead utilisation (per unit, estimate)
 
 | Tool | Material / colour | Used for | Grams |
 |---|---|---|---|
-| tool_1 | PLA Cow White | core body, keyring loop, eye highlights | 4.95 |
-| tool_2 | PLA Cow Black | signature patch, forehead spot, eyes, nostrils | 0.50 |
-| tool_3 | PLA Cow Pink | muzzle, inner ears | 0.77 |
-| tool_4 | TPU Earth Brown | horns | 0.18 |
+| tool_1 | PLA Cow White | body, horns, eyelids, highlights, tail loop | 6.34 |
+| tool_2 | PLA Cow Black | raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft | 3.18 |
+| tool_3 | PLA Cow Pink | muzzle, inner ears | 0.86 |
+| tool_4 | TPU Earth Brown | ear tag (accent / series colour) | 0.02 |
 
-- Purge (single unit): **1.08 g** from **18** tool changes on 6/21 layers
-- Total material (single unit incl. purge): **7.48 g**
-- Estimated print time (single unit): **23.0 min** (extrusion 14.9, tool changes 2.4, layers 0.5, heat-up 5.0)
+- Purge (single unit): **19.08 g** from **318** tool changes on 217/243 layers
+- Total material (single unit incl. purge): **29.48 g**
+- Estimated print time (single unit): **78.5 min** (extrusion 23.4, tool changes 42.4, layers 6.1, heat-up 5.0)
 
 ![tool layers](../../previews/CRW-001-cowaramup-keyring-classic/tool-layers.png)
 
 ## Economics (NORMAL scenario, recommended batch) - estimate only
 
-- Unit cost **$1.41**; suggested retail **$5-10** (price band / cost floor - not a demand forecast)
+- Unit cost **$1.51**; suggested retail **$5-10** (price band / cost floor - not a demand forecast)
 
 ## Self-critique
 
-- **exploits 4 tools:** Yes - four colours in one print with zero painting; a single-colour printer would need hand painting of 7 regions per side.
-- **every colour has purpose:** White = body/structure, black = cow identity (patches/eyes), pink = muzzle (cuteness/readability), tool 4 = horns (silhouette cue).
-- **tool change reduction:** Colour confined to 6 of 21 layers; middle layers single-tool.
-- **suitcase durability:** Flat, no thin cantilevers except horn tips (>= 4 mm wide).
-- **batch:** Flat and small -> 16-32 per plate; per-unit purge falls with batch size.
+- **character:** Same face and pose as the collectible -> collection consistency at impulse price.
+- **durability:** No thin protrusions except horns (>= 2.3 mm tip dia) and ears (>= 3.5 mm thick).
+- **still to improve:** Needs a physical drop test; tag is small (4 x 3.6 mm).
 
 ## Notes / known risks
 
-- Horn tips are the most exposed feature; if drop tests chip them, switch tool_4 to TPU (no geometry change needed).
+- The key loop is the tail: hole 5.2 mm, ring section 3.9 mm, fused into the rump.
+- Horns shortened (x0.78) and thickened (x1.25) versus the collectible for pocket durability.
 
 ## Toolhead set-up issues
 

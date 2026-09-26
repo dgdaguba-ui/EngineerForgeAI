@@ -11,138 +11,106 @@
   "per_tool": {
     "tool_1": {
       "material": "PLA",
-      "grams": 8.42,
-      "extruded_mm3": 6792.4,
-      "volume_mm3": 10431.3
+      "grams": 4.3,
+      "extruded_mm3": 3467.2,
+      "volume_mm3": 3467.2
     },
     "tool_2": {
       "material": "PLA",
-      "grams": 0.37,
-      "extruded_mm3": 298.1,
-      "volume_mm3": 298.1
+      "grams": 1.45,
+      "extruded_mm3": 1171.4,
+      "volume_mm3": 1171.4
     },
     "tool_3": {
       "material": "PLA",
-      "grams": 1.04,
-      "extruded_mm3": 838.6,
-      "volume_mm3": 838.6
+      "grams": 1.67,
+      "extruded_mm3": 1348.3,
+      "volume_mm3": 2330.4
     },
     "tool_4": {
       "material": "TPU",
-      "grams": 0.55,
-      "extruded_mm3": 456.3,
-      "volume_mm3": 456.3
+      "grams": 3.14,
+      "extruded_mm3": 2591.7,
+      "volume_mm3": 3946.2
     }
   },
-  "total_part_g": 10.38,
+  "total_part_g": 10.56,
   "tool_changes": {
-    "tool_changes": 15,
-    "layers": 31,
-    "layers_with_changes": 9,
+    "tool_changes": 124,
+    "layers": 58,
+    "layers_with_changes": 52,
     "switches_into_tool": {
-      "tool_1": 2,
-      "tool_2": 6,
-      "tool_3": 5,
-      "tool_4": 2
+      "tool_1": 41,
+      "tool_2": 41,
+      "tool_3": 22,
+      "tool_4": 20
     }
   },
-  "purge_g": 0.9,
+  "purge_g": 7.44,
   "prime_tower_g": 0.0,
-  "total_material_g": 11.28,
-  "print_time_min": 33.0,
+  "total_material_g": 18.0,
+  "print_time_min": 57.3,
   "time_breakdown_min": {
-    "extrusion": 25.1,
-    "layer_overhead": 0.8,
-    "tool_changes": 2.0,
+    "extrusion": 33.9,
+    "layer_overhead": 1.4,
+    "tool_changes": 16.5,
     "heatup": 5.0
   },
   "plate_bbox_mm": [
-    64.21,
-    61.22,
-    6.2
+    67.37,
+    55.92,
+    11.49
   ],
   "object_groups": [
     "main"
   ],
   "overhangs": {
     "main": {
-      "steep_overhang_area_mm2": 0.0,
-      "bridge_area_mm2": 237.27,
-      "max_bridge_span_mm": 12.28
+      "steep_overhang_area_mm2": 147.38,
+      "support_required_area_mm2": 43.76,
+      "bridge_area_mm2": 196.4,
+      "max_bridge_span_mm": 10.1
     }
   },
   "wall_thickness": {
     "main": {
-      "p1_mm": 1.8,
-      "p5_mm": 1.8,
-      "median_mm": 5.0
+      "p1_mm": 0.0,
+      "p5_mm": 0.0,
+      "median_mm": 5.67
     }
   },
-  "colour_regions_2d": [
-    {
-      "face": "top",
-      "tool": "tool_1",
-      "islands": 12,
-      "tiny_islands": 0,
-      "min_island_mm2": 4.63,
-      "thin_area_fraction": 0.004
-    },
-    {
-      "face": "top",
-      "tool": "tool_4",
-      "islands": 4,
-      "tiny_islands": 0,
-      "min_island_mm2": 8.41,
-      "thin_area_fraction": 0.005
-    },
-    {
-      "face": "top",
-      "tool": "tool_2",
-      "islands": 6,
-      "tiny_islands": 0,
-      "min_island_mm2": 24.99,
-      "thin_area_fraction": 0.006
-    },
-    {
-      "face": "top",
-      "tool": "tool_3",
-      "islands": 3,
-      "tiny_islands": 0,
-      "min_island_mm2": 38.57,
-      "thin_area_fraction": 0.0
-    }
-  ],
+  "colour_regions_2d": [],
   "colour_volumes": [
     {
       "part": "tool_1",
       "tool": "tool_1",
-      "components": 1,
-      "tiny_components": 0,
-      "min_component_mm3": 10431.3
+      "components": 14,
+      "tiny_components": 7,
+      "min_component_mm3": -0.0
     },
     {
       "part": "tool_2",
       "tool": "tool_2",
-      "components": 6,
-      "tiny_components": 0,
-      "min_component_mm3": 18.93
+      "components": 8,
+      "tiny_components": 1,
+      "min_component_mm3": 0.18
     },
     {
       "part": "tool_3",
       "tool": "tool_3",
       "components": 3,
       "tiny_components": 0,
-      "min_component_mm3": 23.14
+      "min_component_mm3": 11.31
     },
     {
       "part": "tool_4",
       "tool": "tool_4",
       "components": 4,
-      "tiny_components": 0,
-      "min_component_mm3": 5.04
+      "tiny_components": 2,
+      "min_component_mm3": 0.02
     }
   ],
-  "max_part_overlap_mm3": 0.0051,
+  "max_part_overlap_mm3": 0.005,
   "watertight": {
     "tool_1": true,
     "tool_2": true,
@@ -172,103 +140,130 @@
     ]
   ],
   "layer_tools": [
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
+    "12.4",
+    "12.4",
+    "12.4",
+    "12.4",
+    "12.4",
+    "12.4",
+    "12.4",
+    "12.4",
+    "12.4",
     "1234",
     "1234",
     "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "123.",
+    "123.",
+    "123.",
+    "..3.",
+    "..3.",
+    "..3.",
+    "..3.",
+    "..3.",
     ".23.",
     ".23.",
     ".23.",
     ".23.",
     ".23.",
-    ".23."
+    ".23.",
+    ".23.",
+    ".23.",
+    ".23.",
+    ".23.",
+    "...."
   ],
   "batch": {
-    "max_units_on_bed": 9,
+    "max_units_on_bed": 12,
     "rows": [
       {
         "units": 1,
         "fits_bed": true,
-        "batch_time_h": 0.55,
-        "time_per_unit_min": 33.0,
-        "material_per_batch_g": 11.3,
-        "purge_per_batch_g": 0.9,
-        "purge_per_unit_g": 0.9,
-        "waste_fraction": 0.08
+        "batch_time_h": 0.95,
+        "time_per_unit_min": 57.3,
+        "material_per_batch_g": 18.0,
+        "purge_per_batch_g": 7.44,
+        "purge_per_unit_g": 7.44,
+        "waste_fraction": 0.413
       },
       {
         "units": 4,
         "fits_bed": true,
-        "batch_time_h": 1.81,
-        "time_per_unit_min": 27.2,
-        "material_per_batch_g": 42.4,
-        "purge_per_batch_g": 0.9,
-        "purge_per_unit_g": 0.225,
-        "waste_fraction": 0.021
+        "batch_time_h": 2.67,
+        "time_per_unit_min": 40.0,
+        "material_per_batch_g": 49.7,
+        "purge_per_batch_g": 7.44,
+        "purge_per_unit_g": 1.86,
+        "waste_fraction": 0.15
       },
       {
         "units": 8,
         "fits_bed": true,
-        "batch_time_h": 3.5,
-        "time_per_unit_min": 26.2,
-        "material_per_batch_g": 83.9,
-        "purge_per_batch_g": 0.9,
-        "purge_per_unit_g": 0.113,
-        "waste_fraction": 0.011
+        "batch_time_h": 4.96,
+        "time_per_unit_min": 37.2,
+        "material_per_batch_g": 91.9,
+        "purge_per_batch_g": 7.44,
+        "purge_per_unit_g": 0.93,
+        "waste_fraction": 0.081
       },
       {
-        "units": 9,
+        "units": 12,
         "fits_bed": true,
-        "batch_time_h": 3.92,
-        "time_per_unit_min": 26.1,
-        "material_per_batch_g": 94.3,
-        "purge_per_batch_g": 0.9,
-        "purge_per_unit_g": 0.1,
-        "waste_fraction": 0.01
+        "batch_time_h": 7.24,
+        "time_per_unit_min": 36.2,
+        "material_per_batch_g": 134.2,
+        "purge_per_batch_g": 7.44,
+        "purge_per_unit_g": 0.62,
+        "waste_fraction": 0.055
       },
       {
         "units": 16,
         "fits_bed": false,
-        "batch_time_h": 6.87,
-        "time_per_unit_min": 25.8,
-        "material_per_batch_g": 167.0,
-        "purge_per_batch_g": 0.9,
-        "purge_per_unit_g": 0.056,
-        "waste_fraction": 0.005
+        "batch_time_h": 9.53,
+        "time_per_unit_min": 35.7,
+        "material_per_batch_g": 176.4,
+        "purge_per_batch_g": 7.44,
+        "purge_per_unit_g": 0.465,
+        "waste_fraction": 0.042
       },
       {
         "units": 32,
         "fits_bed": false,
-        "batch_time_h": 13.61,
-        "time_per_unit_min": 25.5,
-        "material_per_batch_g": 333.1,
-        "purge_per_batch_g": 0.9,
-        "purge_per_unit_g": 0.028,
-        "waste_fraction": 0.003
+        "batch_time_h": 18.67,
+        "time_per_unit_min": 35.0,
+        "material_per_batch_g": 345.4,
+        "purge_per_batch_g": 7.44,
+        "purge_per_unit_g": 0.233,
+        "waste_fraction": 0.022
       }
     ],
-    "recommended_batch": 9,
+    "recommended_batch": 12,
     "bed_mm": [
       250,
       250
@@ -287,7 +282,8 @@
     ],
     "3mf": [
       "3mf/prototypes/CRW-002-cowaramup-magnet.3mf",
-      "3mf/prototypes/variants/CRW-002-cowaramup-magnet--aussie.3mf"
+      "3mf/prototypes/variants/CRW-002-cowaramup-magnet--aussie.3mf",
+      "3mf/prototypes/variants/CRW-002-cowaramup-magnet--christmas.3mf"
     ],
     "scad": [
       "stl/prototypes/CRW-002-cowaramup-magnet/CRW-002-cowaramup-magnet.scad"
@@ -300,7 +296,7 @@
     {
       "level": "WARN",
       "tool": "tool_4",
-      "msg": "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp"
+      "msg": "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: ribbon should be rigid and crisp"
     },
     {
       "level": "WARN",
@@ -339,10 +335,10 @@
     }
   },
   "plate_offset": [
-    -0.0,
-    0.9699999988079071,
-    -0.0
+    4.57763671875e-05,
+    3.1396093368530273,
+    0.008693665266036987
   ],
-  "name": "Cowaramup Cow Head Magnet",
-  "generated_in_s": 1.1
+  "name": "Cowa Head Magnet",
+  "generated_in_s": 47.8
 }

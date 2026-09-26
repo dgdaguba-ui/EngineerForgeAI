@@ -4,23 +4,23 @@
 // Set SHOW_TOOL = 1..4 to isolate a single toolhead, 0 = all.
 SHOW_TOOL = 0;
 
-// T1 PLA Cow White: core body, core
+// T1 PLA Cow White: body
 if (SHOW_TOOL == 0 || SHOW_TOOL == 1) color([0.957, 0.945, 0.910]) import("CRW-005-articulated-cow__body_tool_1.stl", convexity = 10);
 // T2 PLA Cow Black: shoulder patch, flank patch
 if (SHOW_TOOL == 0 || SHOW_TOOL == 2) color([0.118, 0.118, 0.118]) import("CRW-005-articulated-cow__body_tool_2.stl", convexity = 10);
 // T3 PLA Cow Pink: udder
 if (SHOW_TOOL == 0 || SHOW_TOOL == 3) color([0.949, 0.655, 0.710]) import("CRW-005-articulated-cow__body_tool_3.stl", convexity = 10);
-// T1 PLA Cow White: core body, eye highlight, eye ring, core
+// T1 PLA Cow White: eye highlight, eyelid, eye ring, body
 if (SHOW_TOOL == 0 || SHOW_TOOL == 1) color([0.957, 0.945, 0.910]) import("CRW-005-articulated-cow__head_tool_1.stl", convexity = 10);
-// T2 PLA Cow Black: eye, nostril, eye patch
+// T2 PLA Cow Black: nostril, eye, eye patch
 if (SHOW_TOOL == 0 || SHOW_TOOL == 2) color([0.118, 0.118, 0.118]) import("CRW-005-articulated-cow__head_tool_2.stl", convexity = 10);
 // T3 PLA Cow Pink: muzzle, inner ear
 if (SHOW_TOOL == 0 || SHOW_TOOL == 3) color([0.949, 0.655, 0.710]) import("CRW-005-articulated-cow__head_tool_3.stl", convexity = 10);
-// T1 PLA Cow White: core body, core
+// T1 PLA Cow White: body
 if (SHOW_TOOL == 0 || SHOW_TOOL == 1) color([0.957, 0.945, 0.910]) import("CRW-005-articulated-cow__front_leg_tool_1.stl", convexity = 10);
 // T2 PLA Cow Black: hoof
 if (SHOW_TOOL == 0 || SHOW_TOOL == 2) color([0.118, 0.118, 0.118]) import("CRW-005-articulated-cow__front_leg_tool_2.stl", convexity = 10);
-// T1 PLA Cow White: core body, core
+// T1 PLA Cow White: body
 if (SHOW_TOOL == 0 || SHOW_TOOL == 1) color([0.957, 0.945, 0.910]) import("CRW-005-articulated-cow__rear_leg_tool_1.stl", convexity = 10);
 // T2 PLA Cow Black: hoof
 if (SHOW_TOOL == 0 || SHOW_TOOL == 2) color([0.118, 0.118, 0.118]) import("CRW-005-articulated-cow__rear_leg_tool_2.stl", convexity = 10);

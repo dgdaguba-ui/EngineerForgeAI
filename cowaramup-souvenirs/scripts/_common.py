@@ -14,11 +14,11 @@ warnings.filterwarnings("ignore", category=RuntimeWarning, module="trimesh")
 
 # id -> (module, sizes to generate, colour variants to export as 3MF)
 REGISTRY = {
-    "CRW-001": ("cad.products.crw001_keyring", ["STANDARD", "SMALL", "LARGE"],
+    "CRW-001": ("cad.products.crw001_keyring", ["STANDARD"],
                 ["classic", "aussie", "surf", "wine", "christmas", "jersey", "farmer", "camping", "beach"]),
-    "CRW-002": ("cad.products.crw002_magnet", ["STANDARD", "SMALL", "LARGE"], ["classic", "aussie"]),
-    # LARGE mini: parts validate but the merged single-colour mesh has a tangency at 1.25x - not exported yet
-    "CRW-003": ("cad.products.crw003_mini_cow", ["STANDARD"], ["classic", "aussie", "jersey"]),
+    "CRW-002": ("cad.products.crw002_magnet", ["STANDARD"], ["classic", "aussie", "christmas"]),
+    # v2 editions: STANDARD (3 colours, no base) and DELUXE (4 colours + paddock base)
+    "CRW-003": ("cad.products.crw003_mini_cow", ["STANDARD", "DELUXE"], ["classic", "aussie", "jersey", "christmas"]),
     "CRW-004": ("cad.products.crw004_phone_stand", ["STANDARD"], ["classic"]),
     "CRW-005": ("cad.products.crw005_articulated_cow", ["STANDARD"], ["classic", "jersey"]),
 }
@@ -28,12 +28,48 @@ STAGE = "prototypes"   # stl/<STAGE>, 3mf/<STAGE>
 GEN = ROOT / "products" / "generated"
 
 
-def build(pid: str, size: str = "STANDARD"):
+def _source_stamp() -> float:
+    files = list((ROOT / "cad").rglob("*.py")) + list((ROOT / "config").glob("*.json"))
+    return max(f.stat().st_mtime for f in files if "archive" not in f.parts)
+
+
+def build(pid: str, size: str = "STANDARD", use_cache: bool = True):
+    """Build a product; results are cached (products/generated/cache) until any cad/ or
+    config/ file changes - sculpted products take minutes to evaluate."""
+    import pickle
+
+    import numpy as np
+
+    from cad.core import geom, sdf
     from cad.core.export import clean_mesh
+    cache = GEN / "cache" / f"{pid}-{size}.pkl"
+    if use_cache and cache.exists() and cache.stat().st_mtime > _source_stamp():
+        with open(cache, "rb") as fh:
+            product = pickle.load(fh)
+        for p in product.parts:
+            p.solid = sdf.to_manifold(*p.solid)
+        if product.envelope is not None:
+            product.envelope = sdf.to_manifold(*product.envelope)
+        return product
     mod = importlib.import_module(REGISTRY[pid][0])
     product = mod.build(size)
     for p in product.parts:
         p.solid = clean_mesh(p.solid)
+    if product.envelope is not None:
+        product.envelope = clean_mesh(product.envelope)
+    # serialise solids as mesh arrays
+    solids = [p.solid for p in product.parts]
+    env = product.envelope
+    for p in product.parts:
+        p.solid = geom.mesh_arrays(p.solid)
+    if env is not None:
+        product.envelope = geom.mesh_arrays(env)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    with open(cache, "wb") as fh:
+        pickle.dump(product, fh)
+    for p, s_ in zip(product.parts, solids):
+        p.solid = s_
+    product.envelope = env
     return product
 
 

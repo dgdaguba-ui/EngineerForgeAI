@@ -3,20 +3,20 @@
   "products": [
     {
       "id": "CRW-001",
-      "name": "Cowaramup Cow Keyring",
+      "name": "Cowa Keyring - Classic",
       "category": "A - Multi-colour impulse",
-      "description": "Flat 4-colour mascot keyring, identical face on both sides, flush sandwich inlays, reinforced 5 mm keyring hole. No painting, no assembly beyond fitting the split ring.",
+      "description": "Miniature sculpted sitting Cowa (~48 mm) whose tail curls into a reinforced key loop. 4 colours incl. a tool-4 ear tag; COWARAMUP WA debossed underneath.",
       "size": "STANDARD",
       "dimensions_mm": {
-        "x": 59.14,
-        "y": 48.85,
-        "z": 4.2
+        "x": 31.54,
+        "y": 39.86,
+        "z": 48.4
       },
       "toolheads": {
-        "tool_1": "PLA Cow White - core body, keyring loop, eye highlights",
-        "tool_2": "PLA Cow Black - signature patch, forehead spot, eyes, nostrils",
+        "tool_1": "PLA Cow White - body, horns, eyelids, highlights, tail loop",
+        "tool_2": "PLA Cow Black - raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft",
         "tool_3": "PLA Cow Pink - muzzle, inner ears",
-        "tool_4": "TPU Earth Brown - horns"
+        "tool_4": "TPU Earth Brown - ear tag (accent / series colour)"
       },
       "materials": [
         "PLA",
@@ -32,41 +32,41 @@
         {
           "name": "tool_1",
           "tool": "tool_1",
-          "feature": "core body, eye highlights, eye ring, head, ears, keyring loop",
+          "feature": "eye highlights, eyelids, eye ring (in patch), body",
           "object": "main"
         },
         {
           "name": "tool_2",
           "tool": "tool_2",
-          "feature": "eyes, nostrils, forehead spot, signature patch",
+          "feature": "pupils, nostrils, smile, tail tuft, hooves, raised patches + forelock",
           "object": "main"
         },
         {
           "name": "tool_3",
           "tool": "tool_3",
-          "feature": "muzzle, inner ears",
+          "feature": "inner ears, muzzle",
           "object": "main"
         },
         {
           "name": "tool_4",
           "tool": "tool_4",
-          "feature": "horns",
+          "feature": "ear tag",
           "object": "main"
         }
       ],
-      "estimated_print_time_minutes": 23.0,
+      "estimated_print_time_minutes": 78.5,
       "estimated_filament_g": {
-        "tool_1": 4.95,
-        "tool_2": 0.5,
-        "tool_3": 0.77,
-        "tool_4": 0.18
+        "tool_1": 6.34,
+        "tool_2": 3.18,
+        "tool_3": 0.86,
+        "tool_4": 0.02
       },
-      "estimated_purge_g": 1.08,
-      "tool_changes": 18,
+      "estimated_purge_g": 19.08,
+      "tool_changes": 318,
       "assembly_time_minutes": 0.5,
-      "estimated_cost_aud": 1.41,
+      "estimated_cost_aud": 1.51,
       "recommended_retail_range_aud": "5-10",
-      "supports_required": false,
+      "supports_required": true,
       "status": "prototype - generated, QC WARN, awaiting physical print test",
       "stl_files": [
         "stl/prototypes/CRW-001-cowaramup-keyring-classic.stl",
@@ -90,209 +90,9 @@
         "stl/prototypes/CRW-001-cowaramup-keyring-classic/CRW-001-cowaramup-keyring-classic.scad"
       ],
       "step_files": [],
-      "recommended_batch": 12,
-      "manufacturing_strategy": "A - one multi-colour model (sandwich inlay)",
-      "print_orientation": "Flat, either face on the bed (design is mirrored so both faces match).",
-      "hardware": [
-        "split_ring_25mm",
-        "keyring_chain_link"
-      ],
-      "setup_issues": [
-        "colour Earth Brown is not commonly available in TPU"
-      ]
-    },
-    {
-      "id": "CRW-001",
-      "name": "Cowaramup Cow Keyring",
-      "category": "A - Multi-colour impulse",
-      "description": "Flat 4-colour mascot keyring, identical face on both sides, flush sandwich inlays, reinforced 5 mm keyring hole. No painting, no assembly beyond fitting the split ring.",
-      "size": "SMALL",
-      "dimensions_mm": {
-        "x": 47.31,
-        "y": 40.8,
-        "z": 4.2
-      },
-      "toolheads": {
-        "tool_1": "PLA Cow White - core body, keyring loop, eye highlights",
-        "tool_2": "PLA Cow Black - signature patch, forehead spot, eyes, nostrils",
-        "tool_3": "PLA Cow Pink - muzzle, inner ears",
-        "tool_4": "TPU Earth Brown - horns"
-      },
-      "materials": [
-        "PLA",
-        "TPU"
-      ],
-      "colours": [
-        "Cow White",
-        "Cow Black",
-        "Cow Pink",
-        "Earth Brown"
-      ],
-      "parts": [
-        {
-          "name": "tool_1",
-          "tool": "tool_1",
-          "feature": "core body, eye highlights, eye ring, head, ears, keyring loop",
-          "object": "main"
-        },
-        {
-          "name": "tool_2",
-          "tool": "tool_2",
-          "feature": "eyes, nostrils, forehead spot, signature patch",
-          "object": "main"
-        },
-        {
-          "name": "tool_3",
-          "tool": "tool_3",
-          "feature": "muzzle, inner ears",
-          "object": "main"
-        },
-        {
-          "name": "tool_4",
-          "tool": "tool_4",
-          "feature": "horns",
-          "object": "main"
-        }
-      ],
-      "estimated_print_time_minutes": 18.2,
-      "estimated_filament_g": {
-        "tool_1": 3.43,
-        "tool_2": 0.32,
-        "tool_3": 0.49,
-        "tool_4": 0.11
-      },
-      "estimated_purge_g": 1.08,
-      "tool_changes": 18,
-      "assembly_time_minutes": 0.5,
-      "estimated_cost_aud": 1.23,
-      "recommended_retail_range_aud": "5-10",
-      "supports_required": false,
-      "status": "prototype - generated, QC WARN, awaiting physical print test",
-      "stl_files": [
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-small.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-small/CRW-001-cowaramup-keyring-classic-small__tool_1.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-small/CRW-001-cowaramup-keyring-classic-small__tool_2.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-small/CRW-001-cowaramup-keyring-classic-small__tool_3.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-small/CRW-001-cowaramup-keyring-classic-small__tool_4.stl"
-      ],
-      "three_mf_files": [
-        "3mf/prototypes/CRW-001-cowaramup-keyring-classic-small.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--aussie.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--surf.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--wine.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--christmas.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--jersey.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--farmer.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--camping.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-small--beach.3mf"
-      ],
-      "scad_files": [
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-small/CRW-001-cowaramup-keyring-classic-small.scad"
-      ],
-      "step_files": [],
-      "recommended_batch": 20,
-      "manufacturing_strategy": "A - one multi-colour model (sandwich inlay)",
-      "print_orientation": "Flat, either face on the bed (design is mirrored so both faces match).",
-      "hardware": [
-        "split_ring_25mm",
-        "keyring_chain_link"
-      ],
-      "setup_issues": [
-        "colour Earth Brown is not commonly available in TPU"
-      ]
-    },
-    {
-      "id": "CRW-001",
-      "name": "Cowaramup Cow Keyring",
-      "category": "A - Multi-colour impulse",
-      "description": "Flat 4-colour mascot keyring, identical face on both sides, flush sandwich inlays, reinforced 5 mm keyring hole. No painting, no assembly beyond fitting the split ring.",
-      "size": "LARGE",
-      "dimensions_mm": {
-        "x": 73.93,
-        "y": 60.81,
-        "z": 4.2
-      },
-      "toolheads": {
-        "tool_1": "PLA Cow White - core body, keyring loop, eye highlights",
-        "tool_2": "PLA Cow Black - signature patch, forehead spot, eyes, nostrils",
-        "tool_3": "PLA Cow Pink - muzzle, inner ears",
-        "tool_4": "TPU Earth Brown - horns"
-      },
-      "materials": [
-        "PLA",
-        "TPU"
-      ],
-      "colours": [
-        "Cow White",
-        "Cow Black",
-        "Cow Pink",
-        "Earth Brown"
-      ],
-      "parts": [
-        {
-          "name": "tool_1",
-          "tool": "tool_1",
-          "feature": "core body, eye highlights, eye ring, head, ears, keyring loop",
-          "object": "main"
-        },
-        {
-          "name": "tool_2",
-          "tool": "tool_2",
-          "feature": "eyes, nostrils, forehead spot, signature patch",
-          "object": "main"
-        },
-        {
-          "name": "tool_3",
-          "tool": "tool_3",
-          "feature": "muzzle, inner ears",
-          "object": "main"
-        },
-        {
-          "name": "tool_4",
-          "tool": "tool_4",
-          "feature": "horns",
-          "object": "main"
-        }
-      ],
-      "estimated_print_time_minutes": 30.4,
-      "estimated_filament_g": {
-        "tool_1": 7.29,
-        "tool_2": 0.78,
-        "tool_3": 1.2,
-        "tool_4": 0.28
-      },
-      "estimated_purge_g": 1.08,
-      "tool_changes": 18,
-      "assembly_time_minutes": 0.5,
-      "estimated_cost_aud": 1.6,
-      "recommended_retail_range_aud": "5-10",
-      "supports_required": false,
-      "status": "prototype - generated, QC WARN, awaiting physical print test",
-      "stl_files": [
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-large.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_1.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_2.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_3.stl",
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_4.stl"
-      ],
-      "three_mf_files": [
-        "3mf/prototypes/CRW-001-cowaramup-keyring-classic-large.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--aussie.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--surf.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--wine.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--christmas.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--jersey.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--farmer.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--camping.3mf",
-        "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--beach.3mf"
-      ],
-      "scad_files": [
-        "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large.scad"
-      ],
-      "step_files": [],
-      "recommended_batch": 9,
-      "manufacturing_strategy": "A - one multi-colour model (sandwich inlay)",
-      "print_orientation": "Flat, either face on the bed (design is mirrored so both faces match).",
+      "recommended_batch": 30,
+      "manufacturing_strategy": "A - one multi-colour model (sculpted)",
+      "print_orientation": "Upright, sitting on its flat base. No supports.",
       "hardware": [
         "split_ring_25mm",
         "keyring_chain_link"
@@ -303,20 +103,20 @@
     },
     {
       "id": "CRW-002",
-      "name": "Cowaramup Cow Head Magnet",
+      "name": "Cowa Head Magnet",
       "category": "A - Multi-colour impulse",
-      "description": "4-colour fridge magnet: mascot head with raised pink muzzle and a COWARAMUP banner whose lettering is knocked out to the white core. Two press-fit 12x3 mm magnets.",
+      "description": "Dimensional bas-relief Cowa head (~64 mm) with sculpted eyes, lids, muzzle, horns and ears; curved scroll ribbon with raised COWARAMUP lettering; two 12x3 mm magnets in the back.",
       "size": "STANDARD",
       "dimensions_mm": {
-        "x": 64.21,
-        "y": 61.22,
-        "z": 6.2
+        "x": 67.37,
+        "y": 55.92,
+        "z": 11.49
       },
       "toolheads": {
-        "tool_1": "PLA Cow White - core body, knocked-out banner lettering, eye highlights",
-        "tool_2": "PLA Cow Black - patches, eyes, nostril plugs",
-        "tool_3": "PLA Cow Pink - raised muzzle, inner ears",
-        "tool_4": "TPU Earth Brown - horns, banner"
+        "tool_1": "PLA Cow White - head, horns, eyelids, highlights, raised lettering",
+        "tool_2": "PLA Cow Black - patches, forelock, pupils, nostrils, smile",
+        "tool_3": "PLA Cow Pink - muzzle, inner ears",
+        "tool_4": "TPU Earth Brown - scroll ribbon, ear tag"
       },
       "materials": [
         "PLA",
@@ -332,42 +132,42 @@
         {
           "name": "tool_1",
           "tool": "tool_1",
-          "feature": "core body, banner lettering (knock-out), eye highlights, eye ring, head, ears",
+          "feature": "raised lettering, eye highlights, eyelids, eye ring (in patch), body",
           "object": "main"
         },
         {
           "name": "tool_2",
           "tool": "tool_2",
-          "feature": "eyes, nostrils, forehead spot, signature patch",
+          "feature": "pupils, nostrils, smile, raised patches + forelock",
           "object": "main"
         },
         {
           "name": "tool_3",
           "tool": "tool_3",
-          "feature": "muzzle, inner ears, raised muzzle relief",
+          "feature": "inner ears, muzzle",
           "object": "main"
         },
         {
           "name": "tool_4",
           "tool": "tool_4",
-          "feature": "banner, horns",
+          "feature": "ear tag, COWARAMUP ribbon",
           "object": "main"
         }
       ],
-      "estimated_print_time_minutes": 33.0,
+      "estimated_print_time_minutes": 57.3,
       "estimated_filament_g": {
-        "tool_1": 8.42,
-        "tool_2": 0.37,
-        "tool_3": 1.04,
-        "tool_4": 0.55
+        "tool_1": 4.3,
+        "tool_2": 1.45,
+        "tool_3": 1.67,
+        "tool_4": 3.14
       },
-      "estimated_purge_g": 0.9,
-      "tool_changes": 15,
+      "estimated_purge_g": 7.44,
+      "tool_changes": 124,
       "assembly_time_minutes": 0.6,
-      "estimated_cost_aud": 2.0,
+      "estimated_cost_aud": 2.06,
       "recommended_retail_range_aud": "6-10",
-      "supports_required": false,
-      "status": "prototype - generated, QC WARN, awaiting physical print test",
+      "supports_required": true,
+      "status": "prototype - generated, QC FAIL, awaiting physical print test",
       "stl_files": [
         "stl/prototypes/CRW-002-cowaramup-magnet.stl",
         "stl/prototypes/CRW-002-cowaramup-magnet/CRW-002-cowaramup-magnet__tool_1.stl",
@@ -377,228 +177,124 @@
       ],
       "three_mf_files": [
         "3mf/prototypes/CRW-002-cowaramup-magnet.3mf",
-        "3mf/prototypes/variants/CRW-002-cowaramup-magnet--aussie.3mf"
+        "3mf/prototypes/variants/CRW-002-cowaramup-magnet--aussie.3mf",
+        "3mf/prototypes/variants/CRW-002-cowaramup-magnet--christmas.3mf"
       ],
       "scad_files": [
         "stl/prototypes/CRW-002-cowaramup-magnet/CRW-002-cowaramup-magnet.scad"
       ],
       "step_files": [],
-      "recommended_batch": 9,
-      "manufacturing_strategy": "E - hybrid printed + hardware (magnets)",
-      "print_orientation": "Face up, magnet pockets on the bed face.",
+      "recommended_batch": 12,
+      "manufacturing_strategy": "E - printed + hardware (magnets)",
+      "print_orientation": "Face up, flat back on the bed (magnet pockets on the bed face).",
       "hardware": [
         "neodymium_disc_12x3",
         "neodymium_disc_12x3"
       ],
       "setup_issues": [
-        "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp",
-        "colour Earth Brown is not commonly available in TPU"
-      ]
-    },
-    {
-      "id": "CRW-002",
-      "name": "Cowaramup Cow Head Magnet",
-      "category": "A - Multi-colour impulse",
-      "description": "4-colour fridge magnet: mascot head with raised pink muzzle and a COWARAMUP banner whose lettering is knocked out to the white core. Two press-fit 12x3 mm magnets.",
-      "size": "SMALL",
-      "dimensions_mm": {
-        "x": 51.37,
-        "y": 48.98,
-        "z": 6.2
-      },
-      "toolheads": {
-        "tool_1": "PLA Cow White - core body, knocked-out banner lettering, eye highlights",
-        "tool_2": "PLA Cow Black - patches, eyes, nostril plugs",
-        "tool_3": "PLA Cow Pink - raised muzzle, inner ears",
-        "tool_4": "TPU Earth Brown - horns, banner"
-      },
-      "materials": [
-        "PLA",
-        "TPU"
-      ],
-      "colours": [
-        "Cow White",
-        "Cow Black",
-        "Cow Pink",
-        "Earth Brown"
-      ],
-      "parts": [
-        {
-          "name": "tool_1",
-          "tool": "tool_1",
-          "feature": "core body, banner lettering (knock-out), eye highlights, eye ring, head, ears",
-          "object": "main"
-        },
-        {
-          "name": "tool_2",
-          "tool": "tool_2",
-          "feature": "eyes, nostrils, forehead spot, signature patch",
-          "object": "main"
-        },
-        {
-          "name": "tool_3",
-          "tool": "tool_3",
-          "feature": "muzzle, inner ears, raised muzzle relief",
-          "object": "main"
-        },
-        {
-          "name": "tool_4",
-          "tool": "tool_4",
-          "feature": "banner, horns",
-          "object": "main"
-        }
-      ],
-      "estimated_print_time_minutes": 24.7,
-      "estimated_filament_g": {
-        "tool_1": 5.68,
-        "tool_2": 0.24,
-        "tool_3": 0.67,
-        "tool_4": 0.35
-      },
-      "estimated_purge_g": 0.9,
-      "tool_changes": 15,
-      "assembly_time_minutes": 0.6,
-      "estimated_cost_aud": 1.74,
-      "recommended_retail_range_aud": "5-10",
-      "supports_required": false,
-      "status": "prototype - generated, QC WARN, awaiting physical print test",
-      "stl_files": [
-        "stl/prototypes/CRW-002-cowaramup-magnet-small.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-small/CRW-002-cowaramup-magnet-small__tool_1.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-small/CRW-002-cowaramup-magnet-small__tool_2.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-small/CRW-002-cowaramup-magnet-small__tool_3.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-small/CRW-002-cowaramup-magnet-small__tool_4.stl"
-      ],
-      "three_mf_files": [
-        "3mf/prototypes/CRW-002-cowaramup-magnet-small.3mf",
-        "3mf/prototypes/variants/CRW-002-cowaramup-magnet-small--aussie.3mf"
-      ],
-      "scad_files": [
-        "stl/prototypes/CRW-002-cowaramup-magnet-small/CRW-002-cowaramup-magnet-small.scad"
-      ],
-      "step_files": [],
-      "recommended_batch": 16,
-      "manufacturing_strategy": "E - hybrid printed + hardware (magnets)",
-      "print_orientation": "Face up, magnet pockets on the bed face.",
-      "hardware": [
-        "neodymium_disc_12x3",
-        "neodymium_disc_12x3"
-      ],
-      "setup_issues": [
-        "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp",
-        "colour Earth Brown is not commonly available in TPU"
-      ]
-    },
-    {
-      "id": "CRW-002",
-      "name": "Cowaramup Cow Head Magnet",
-      "category": "A - Multi-colour impulse",
-      "description": "4-colour fridge magnet: mascot head with raised pink muzzle and a COWARAMUP banner whose lettering is knocked out to the white core. Two press-fit 12x3 mm magnets.",
-      "size": "LARGE",
-      "dimensions_mm": {
-        "x": 80.26,
-        "y": 76.52,
-        "z": 6.2
-      },
-      "toolheads": {
-        "tool_1": "PLA Cow White - core body, knocked-out banner lettering, eye highlights",
-        "tool_2": "PLA Cow Black - patches, eyes, nostril plugs",
-        "tool_3": "PLA Cow Pink - raised muzzle, inner ears",
-        "tool_4": "TPU Earth Brown - horns, banner"
-      },
-      "materials": [
-        "PLA",
-        "TPU"
-      ],
-      "colours": [
-        "Cow White",
-        "Cow Black",
-        "Cow Pink",
-        "Earth Brown"
-      ],
-      "parts": [
-        {
-          "name": "tool_1",
-          "tool": "tool_1",
-          "feature": "core body, banner lettering (knock-out), eye highlights, eye ring, head, ears",
-          "object": "main"
-        },
-        {
-          "name": "tool_2",
-          "tool": "tool_2",
-          "feature": "eyes, nostrils, forehead spot, signature patch",
-          "object": "main"
-        },
-        {
-          "name": "tool_3",
-          "tool": "tool_3",
-          "feature": "muzzle, inner ears, raised muzzle relief",
-          "object": "main"
-        },
-        {
-          "name": "tool_4",
-          "tool": "tool_4",
-          "feature": "banner, horns",
-          "object": "main"
-        }
-      ],
-      "estimated_print_time_minutes": 45.9,
-      "estimated_filament_g": {
-        "tool_1": 12.61,
-        "tool_2": 0.58,
-        "tool_3": 1.62,
-        "tool_4": 0.87
-      },
-      "estimated_purge_g": 0.9,
-      "tool_changes": 15,
-      "assembly_time_minutes": 0.6,
-      "estimated_cost_aud": 2.36,
-      "recommended_retail_range_aud": "6-10",
-      "supports_required": false,
-      "status": "prototype - generated, QC WARN, awaiting physical print test",
-      "stl_files": [
-        "stl/prototypes/CRW-002-cowaramup-magnet-large.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-large/CRW-002-cowaramup-magnet-large__tool_1.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-large/CRW-002-cowaramup-magnet-large__tool_2.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-large/CRW-002-cowaramup-magnet-large__tool_3.stl",
-        "stl/prototypes/CRW-002-cowaramup-magnet-large/CRW-002-cowaramup-magnet-large__tool_4.stl"
-      ],
-      "three_mf_files": [
-        "3mf/prototypes/CRW-002-cowaramup-magnet-large.3mf",
-        "3mf/prototypes/variants/CRW-002-cowaramup-magnet-large--aussie.3mf"
-      ],
-      "scad_files": [
-        "stl/prototypes/CRW-002-cowaramup-magnet-large/CRW-002-cowaramup-magnet-large.scad"
-      ],
-      "step_files": [],
-      "recommended_batch": 6,
-      "manufacturing_strategy": "E - hybrid printed + hardware (magnets)",
-      "print_orientation": "Face up, magnet pockets on the bed face.",
-      "hardware": [
-        "neodymium_disc_12x3",
-        "neodymium_disc_12x3"
-      ],
-      "setup_issues": [
-        "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: banner should be rigid; TPU works but reads less crisp",
+        "CRW-002 prefers rigid (PLA) in tool_4; TPU loaded - printable, but: ribbon should be rigid and crisp",
         "colour Earth Brown is not commonly available in TPU"
       ]
     },
     {
       "id": "CRW-003",
-      "name": "Mini Collectible Cow - Resting Cowa",
-      "category": "A - Multi-colour impulse",
-      "description": "50 mm resting mascot cow on an oval plinth. Four colours as true 3D volumes, support-free, underside debossed COWARAMUP WA.",
+      "name": "Cowa Mini Collectible - No.01 Classic",
+      "category": "A/B - Mini collectible (Cowaramup Cow Collection)",
+      "description": "Sculpted sitting Cowa: head turned to camera, relaxed lids, lopsided smile, split hooves, raised organic patches. Stands on its own; 3 colours.",
       "size": "STANDARD",
       "dimensions_mm": {
-        "x": 54.4,
-        "y": 34.0,
-        "z": 29.15
+        "x": 41.23,
+        "y": 42.76,
+        "z": 61.39
       },
       "toolheads": {
-        "tool_1": "PLA Cow White - body, head, legs, ears, tail + tuft, eye ring",
-        "tool_2": "PLA Cow Black - saddle/hip/head patches, eyes",
-        "tool_3": "PLA Cow Pink - muzzle",
-        "tool_4": "PLA Earth Brown - plinth, hooves, horns"
+        "tool_1": "PLA Cow White - body, horns, eyelids, highlights",
+        "tool_2": "PLA Cow Black - raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft",
+        "tool_3": "PLA Cow Pink - muzzle, inner ears",
+        "tool_4": "TPU Earth Brown - unused"
+      },
+      "materials": [
+        "PLA"
+      ],
+      "colours": [
+        "Cow White",
+        "Cow Black",
+        "Cow Pink"
+      ],
+      "parts": [
+        {
+          "name": "tool_1",
+          "tool": "tool_1",
+          "feature": "eye highlights, eyelids, eye ring (in patch), body",
+          "object": "main"
+        },
+        {
+          "name": "tool_2",
+          "tool": "tool_2",
+          "feature": "pupils, nostrils, smile, tail tuft, hooves, raised patches + forelock",
+          "object": "main"
+        },
+        {
+          "name": "tool_3",
+          "tool": "tool_3",
+          "feature": "inner ears, muzzle",
+          "object": "main"
+        }
+      ],
+      "estimated_print_time_minutes": 101.2,
+      "estimated_filament_g": {
+        "tool_1": 10.46,
+        "tool_2": 5.09,
+        "tool_3": 1.38,
+        "tool_4": 0.0
+      },
+      "estimated_purge_g": 21.84,
+      "tool_changes": 364,
+      "assembly_time_minutes": 0.0,
+      "estimated_cost_aud": 1.92,
+      "recommended_retail_range_aud": "10-20",
+      "supports_required": true,
+      "status": "prototype - generated, QC WARN, awaiting physical print test",
+      "stl_files": [
+        "stl/prototypes/CRW-003-mini-cow-classic.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_1.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_2.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_3.stl"
+      ],
+      "three_mf_files": [
+        "3mf/prototypes/CRW-003-mini-cow-classic.3mf",
+        "3mf/prototypes/variants/CRW-003-mini-cow-classic--aussie.3mf",
+        "3mf/prototypes/variants/CRW-003-mini-cow-classic--jersey.3mf",
+        "3mf/prototypes/variants/CRW-003-mini-cow-classic--christmas.3mf"
+      ],
+      "scad_files": [
+        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic.scad"
+      ],
+      "step_files": [],
+      "recommended_batch": 16,
+      "manufacturing_strategy": "A - one multi-colour model (sculpted 3D colour volumes)",
+      "print_orientation": "Upright as displayed. No supports (45-degree closure is built into the model).",
+      "hardware": [],
+      "setup_issues": [
+        "colour Earth Brown is not commonly available in TPU"
+      ]
+    },
+    {
+      "id": "CRW-003",
+      "name": "Cowa Mini Collectible - No.01 Classic (Deluxe)",
+      "category": "A/B - Mini collectible (Cowaramup Cow Collection)",
+      "description": "Sculpted sitting Cowa: head turned to camera, relaxed lids, lopsided smile, split hooves, raised organic patches. On the Cowaramup Paddock base with fence, grass, collar, bell and ear tag; COWARAMUP inlaid in the base front, series number underneath.",
+      "size": "DELUXE",
+      "dimensions_mm": {
+        "x": 76.5,
+        "y": 42.76,
+        "z": 68.38
+      },
+      "toolheads": {
+        "tool_1": "PLA Cow White - body, horns, eyelids, highlights, fence, base lettering",
+        "tool_2": "PLA Cow Black - raised patches, forelock, pupils, nostrils, smile, hooves, tail tuft",
+        "tool_3": "PLA Cow Pink - muzzle, inner ears",
+        "tool_4": "PLA Earth Brown - paddock base + grass, collar, bell, ear tag"
       },
       "materials": [
         "PLA"
@@ -613,64 +309,65 @@
         {
           "name": "tool_1",
           "tool": "tool_1",
-          "feature": "eye ring, body, legs, head, ears, tail + tuft",
+          "feature": "COWARAMUP lettering, timber fence, eye highlights, eyelids, eye ring (in patch), body",
           "object": "main"
         },
         {
           "name": "tool_2",
           "tool": "tool_2",
-          "feature": "eyes, patches",
+          "feature": "pupils, nostrils, smile, tail tuft, hooves, raised patches + forelock",
           "object": "main"
         },
         {
           "name": "tool_3",
           "tool": "tool_3",
-          "feature": "muzzle",
+          "feature": "inner ears, muzzle",
           "object": "main"
         },
         {
           "name": "tool_4",
           "tool": "tool_4",
-          "feature": "plinth, horns, hooves",
+          "feature": "ear tag, bell, collar, paddock base + grass",
           "object": "main"
         }
       ],
-      "estimated_print_time_minutes": 63.3,
+      "estimated_print_time_minutes": 158.6,
       "estimated_filament_g": {
-        "tool_1": 5.75,
-        "tool_2": 1.03,
-        "tool_3": 0.58,
-        "tool_4": 4.73
+        "tool_1": 15.66,
+        "tool_2": 5.23,
+        "tool_3": 1.43,
+        "tool_4": 11.54
       },
-      "estimated_purge_g": 11.94,
-      "tool_changes": 199,
+      "estimated_purge_g": 30.12,
+      "tool_changes": 502,
       "assembly_time_minutes": 0.0,
-      "estimated_cost_aud": 1.66,
-      "recommended_retail_range_aud": "10-20",
-      "supports_required": false,
-      "status": "prototype - generated, QC WARN, awaiting physical print test",
+      "estimated_cost_aud": 4.01,
+      "recommended_retail_range_aud": "15-35",
+      "supports_required": true,
+      "status": "prototype - generated, QC FAIL, awaiting physical print test",
       "stl_files": [
-        "stl/prototypes/CRW-003-mini-cow-classic.stl",
-        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_1.stl",
-        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_2.stl",
-        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_3.stl",
-        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic__tool_4.stl"
+        "stl/prototypes/CRW-003-mini-cow-classic-deluxe.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic-deluxe/CRW-003-mini-cow-classic-deluxe__tool_1.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic-deluxe/CRW-003-mini-cow-classic-deluxe__tool_2.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic-deluxe/CRW-003-mini-cow-classic-deluxe__tool_3.stl",
+        "stl/prototypes/CRW-003-mini-cow-classic-deluxe/CRW-003-mini-cow-classic-deluxe__tool_4.stl"
       ],
       "three_mf_files": [
-        "3mf/prototypes/CRW-003-mini-cow-classic.3mf",
-        "3mf/prototypes/variants/CRW-003-mini-cow-classic--aussie.3mf",
-        "3mf/prototypes/variants/CRW-003-mini-cow-classic--jersey.3mf"
+        "3mf/prototypes/CRW-003-mini-cow-classic-deluxe.3mf",
+        "3mf/prototypes/variants/CRW-003-mini-cow-classic-deluxe--aussie.3mf",
+        "3mf/prototypes/variants/CRW-003-mini-cow-classic-deluxe--jersey.3mf",
+        "3mf/prototypes/variants/CRW-003-mini-cow-classic-deluxe--christmas.3mf"
       ],
       "scad_files": [
-        "stl/prototypes/CRW-003-mini-cow-classic/CRW-003-mini-cow-classic.scad"
+        "stl/prototypes/CRW-003-mini-cow-classic-deluxe/CRW-003-mini-cow-classic-deluxe.scad"
       ],
       "step_files": [],
-      "recommended_batch": 24,
-      "manufacturing_strategy": "A - one multi-colour model (3D colour volumes, vertical zoning)",
-      "print_orientation": "Upright on the plinth (as displayed). No supports.",
+      "recommended_batch": 8,
+      "manufacturing_strategy": "A - one multi-colour model (sculpted 3D colour volumes)",
+      "print_orientation": "Upright as displayed. No supports (45-degree closure is built into the model).",
       "hardware": [],
       "setup_issues": [
-        "CRW-003 needs a rigid material in tool_4 (the plinth is structural and must be rigid (PLA/PETG). A TPU plinth would wobble and TPU horns under 3 mm are unreliable.); TPU is loaded. Load PLA before printing."
+        "CRW-003 needs a rigid material in tool_4 (the base is structural and the bell/tag are small - rigid only); TPU is loaded. Load PLA before printing."
       ]
     },
     {
@@ -788,9 +485,9 @@
       "description": "Print-in-place articulated mascot: nodding head, posable front and rear legs with built-in stops (stands unaided), flexible TPU tail, 4-colour skins on both flanks. No glue, no assembly.",
       "size": "STANDARD",
       "dimensions_mm": {
-        "x": 122.88,
-        "y": 94.25,
-        "z": 18.0
+        "x": 127.63,
+        "y": 97.76,
+        "z": 20.32
       },
       "toolheads": {
         "tool_1": "PLA Cow White - all structural members, joint posts/rings, eye highlights",
@@ -812,7 +509,7 @@
         {
           "name": "body_tool_1",
           "tool": "tool_1",
-          "feature": "core body, core",
+          "feature": "body",
           "object": "body"
         },
         {
@@ -830,13 +527,13 @@
         {
           "name": "head_tool_1",
           "tool": "tool_1",
-          "feature": "core body, eye highlight, eye ring, core",
+          "feature": "eye highlight, eyelid, eye ring, body",
           "object": "head"
         },
         {
           "name": "head_tool_2",
           "tool": "tool_2",
-          "feature": "eye, nostril, eye patch",
+          "feature": "nostril, eye, eye patch",
           "object": "head"
         },
         {
@@ -848,7 +545,7 @@
         {
           "name": "front_leg_tool_1",
           "tool": "tool_1",
-          "feature": "core body, core",
+          "feature": "body",
           "object": "front_leg"
         },
         {
@@ -860,7 +557,7 @@
         {
           "name": "rear_leg_tool_1",
           "tool": "tool_1",
-          "feature": "core body, core",
+          "feature": "body",
           "object": "rear_leg"
         },
         {
@@ -876,20 +573,20 @@
           "object": "body"
         }
       ],
-      "estimated_print_time_minutes": 100.7,
+      "estimated_print_time_minutes": 143.9,
       "estimated_filament_g": {
-        "tool_1": 33.05,
-        "tool_2": 1.28,
-        "tool_3": 0.52,
+        "tool_1": 33.65,
+        "tool_2": 5.94,
+        "tool_3": 3.15,
         "tool_4": 1.34
       },
-      "estimated_purge_g": 2.52,
-      "tool_changes": 42,
+      "estimated_purge_g": 13.74,
+      "tool_changes": 229,
       "assembly_time_minutes": 0.0,
-      "estimated_cost_aud": 6.53,
+      "estimated_cost_aud": 6.99,
       "recommended_retail_range_aud": "20-50",
-      "supports_required": false,
-      "status": "prototype - generated, QC INFO, awaiting physical print test",
+      "supports_required": true,
+      "status": "prototype - generated, QC WARN, awaiting physical print test",
       "stl_files": [
         "stl/prototypes/CRW-005-articulated-cow.stl",
         "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__body_tool_1.stl",

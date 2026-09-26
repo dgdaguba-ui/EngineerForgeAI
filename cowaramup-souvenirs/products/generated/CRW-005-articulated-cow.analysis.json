@@ -11,21 +11,21 @@
   "per_tool": {
     "tool_1": {
       "material": "PLA",
-      "grams": 33.05,
-      "extruded_mm3": 26650.9,
-      "volume_mm3": 66364.6
+      "grams": 33.65,
+      "extruded_mm3": 27139.1,
+      "volume_mm3": 63489.9
     },
     "tool_2": {
       "material": "PLA",
-      "grams": 1.28,
-      "extruded_mm3": 1034.7,
-      "volume_mm3": 1034.7
+      "grams": 5.94,
+      "extruded_mm3": 4790.2,
+      "volume_mm3": 4790.2
     },
     "tool_3": {
       "material": "PLA",
-      "grams": 0.52,
-      "extruded_mm3": 419.4,
-      "volume_mm3": 419.4
+      "grams": 3.15,
+      "extruded_mm3": 2537.4,
+      "volume_mm3": 2537.4
     },
     "tool_4": {
       "material": "TPU",
@@ -34,32 +34,32 @@
       "volume_mm3": 1414.5
     }
   },
-  "total_part_g": 36.19,
+  "total_part_g": 44.08,
   "tool_changes": {
-    "tool_changes": 42,
-    "layers": 90,
-    "layers_with_changes": 33,
+    "tool_changes": 229,
+    "layers": 102,
+    "layers_with_changes": 101,
     "switches_into_tool": {
-      "tool_1": 18,
-      "tool_2": 5,
-      "tool_3": 4,
+      "tool_1": 98,
+      "tool_2": 65,
+      "tool_3": 51,
       "tool_4": 15
     }
   },
-  "purge_g": 2.52,
+  "purge_g": 13.74,
   "prime_tower_g": 0.0,
-  "total_material_g": 38.71,
-  "print_time_min": 100.7,
+  "total_material_g": 57.82,
+  "print_time_min": 143.9,
   "time_breakdown_min": {
-    "extrusion": 85.5,
-    "layer_overhead": 2.2,
-    "tool_changes": 5.6,
+    "extrusion": 103.1,
+    "layer_overhead": 2.5,
+    "tool_changes": 30.5,
     "heatup": 5.0
   },
   "plate_bbox_mm": [
-    122.88,
-    94.25,
-    18.0
+    127.63,
+    97.76,
+    20.32
   ],
   "object_groups": [
     "body",
@@ -69,200 +69,123 @@
   ],
   "overhangs": {
     "body": {
-      "steep_overhang_area_mm2": 0.0,
-      "bridge_area_mm2": 0.01,
-      "max_bridge_span_mm": 0.0
+      "steep_overhang_area_mm2": 157.97,
+      "support_required_area_mm2": 1.2,
+      "bridge_area_mm2": 418.87,
+      "max_bridge_span_mm": 4.92
     },
     "head": {
-      "steep_overhang_area_mm2": 0.0,
-      "bridge_area_mm2": 0.0,
-      "max_bridge_span_mm": 0.0
+      "steep_overhang_area_mm2": 65.54,
+      "support_required_area_mm2": 2.33,
+      "bridge_area_mm2": 232.45,
+      "max_bridge_span_mm": 6.33
     },
     "front_leg": {
-      "steep_overhang_area_mm2": 0.0,
-      "bridge_area_mm2": 0.0,
-      "max_bridge_span_mm": 0.0
+      "steep_overhang_area_mm2": 25.85,
+      "support_required_area_mm2": 0.37,
+      "bridge_area_mm2": 37.36,
+      "max_bridge_span_mm": 3.56
     },
     "rear_leg": {
-      "steep_overhang_area_mm2": 0.0,
-      "bridge_area_mm2": 0.0,
-      "max_bridge_span_mm": 0.0
+      "steep_overhang_area_mm2": 34.72,
+      "support_required_area_mm2": 0.0,
+      "bridge_area_mm2": 29.96,
+      "max_bridge_span_mm": 4.52
     }
   },
   "wall_thickness": {
     "body": {
-      "p1_mm": 2.74,
-      "p5_mm": 3.61,
-      "median_mm": 18.0
+      "p1_mm": 0.0,
+      "p5_mm": 1.18,
+      "median_mm": 15.4
     },
     "head": {
-      "p1_mm": 0.55,
-      "p5_mm": 2.56,
-      "median_mm": 18.0
+      "p1_mm": 0.01,
+      "p5_mm": 1.6,
+      "median_mm": 18.49
     },
     "front_leg": {
-      "p1_mm": 0.48,
-      "p5_mm": 1.95,
-      "median_mm": 12.57
+      "p1_mm": 0.81,
+      "p5_mm": 1.26,
+      "median_mm": 12.16
     },
     "rear_leg": {
-      "p1_mm": 0.49,
-      "p5_mm": 2.09,
-      "median_mm": 13.08
+      "p1_mm": 0.62,
+      "p5_mm": 1.07,
+      "median_mm": 12.61
     }
   },
-  "colour_regions_2d": [
-    {
-      "face": "body_top",
-      "tool": "tool_1",
-      "islands": 4,
-      "tiny_islands": 0,
-      "min_island_mm2": 5.16,
-      "thin_area_fraction": 0.002
-    },
-    {
-      "face": "body_top",
-      "tool": "tool_3",
-      "islands": 1,
-      "tiny_islands": 0,
-      "min_island_mm2": 100.86,
-      "thin_area_fraction": 0.0
-    },
-    {
-      "face": "body_top",
-      "tool": "tool_2",
-      "islands": 2,
-      "tiny_islands": 0,
-      "min_island_mm2": 186.46,
-      "thin_area_fraction": 0.001
-    },
-    {
-      "face": "head_top",
-      "tool": "tool_1",
-      "islands": 3,
-      "tiny_islands": 0,
-      "min_island_mm2": 4.07,
-      "thin_area_fraction": 0.004
-    },
-    {
-      "face": "head_top",
-      "tool": "tool_2",
-      "islands": 3,
-      "tiny_islands": 0,
-      "min_island_mm2": 11.63,
-      "thin_area_fraction": 0.014
-    },
-    {
-      "face": "head_top",
-      "tool": "tool_3",
-      "islands": 2,
-      "tiny_islands": 0,
-      "min_island_mm2": 23.75,
-      "thin_area_fraction": 0.004
-    },
-    {
-      "face": "front_leg_top",
-      "tool": "tool_1",
-      "islands": 1,
-      "tiny_islands": 0,
-      "min_island_mm2": 483.39,
-      "thin_area_fraction": 0.0
-    },
-    {
-      "face": "front_leg_top",
-      "tool": "tool_2",
-      "islands": 1,
-      "tiny_islands": 0,
-      "min_island_mm2": 104.97,
-      "thin_area_fraction": 0.001
-    },
-    {
-      "face": "rear_leg_top",
-      "tool": "tool_1",
-      "islands": 1,
-      "tiny_islands": 0,
-      "min_island_mm2": 530.85,
-      "thin_area_fraction": 0.0
-    },
-    {
-      "face": "rear_leg_top",
-      "tool": "tool_2",
-      "islands": 1,
-      "tiny_islands": 0,
-      "min_island_mm2": 105.6,
-      "thin_area_fraction": 0.001
-    }
-  ],
+  "colour_regions_2d": [],
   "colour_volumes": [
     {
       "part": "body_tool_1",
       "tool": "tool_1",
-      "components": 1,
-      "tiny_components": 0,
-      "min_component_mm3": 32110.27
+      "components": 2,
+      "tiny_components": 1,
+      "min_component_mm3": -0.0
     },
     {
       "part": "body_tool_2",
       "tool": "tool_2",
-      "components": 4,
+      "components": 2,
       "tiny_components": 0,
-      "min_component_mm3": 111.88
+      "min_component_mm3": 952.57
     },
     {
       "part": "body_tool_3",
       "tool": "tool_3",
-      "components": 2,
+      "components": 1,
       "tiny_components": 0,
-      "min_component_mm3": 60.52
+      "min_component_mm3": 467.76
     },
     {
       "part": "head_tool_1",
       "tool": "tool_1",
-      "components": 1,
-      "tiny_components": 0,
-      "min_component_mm3": 13861.68
+      "components": 3,
+      "tiny_components": 1,
+      "min_component_mm3": -0.0
     },
     {
       "part": "head_tool_2",
       "tool": "tool_2",
-      "components": 5,
-      "tiny_components": 0,
-      "min_component_mm3": 6.98
+      "components": 4,
+      "tiny_components": 1,
+      "min_component_mm3": 1.89
     },
     {
       "part": "head_tool_3",
       "tool": "tool_3",
-      "components": 4,
+      "components": 2,
       "tiny_components": 0,
-      "min_component_mm3": 14.25
+      "min_component_mm3": 128.27
     },
     {
       "part": "front_leg_tool_1",
       "tool": "tool_1",
       "components": 1,
       "tiny_components": 0,
-      "min_component_mm3": 9764.0
+      "min_component_mm3": 8817.83
     },
     {
       "part": "front_leg_tool_2",
       "tool": "tool_2",
-      "components": 2,
+      "components": 1,
       "tiny_components": 0,
-      "min_component_mm3": 62.99
+      "min_component_mm3": 703.74
     },
     {
       "part": "rear_leg_tool_1",
       "tool": "tool_1",
       "components": 1,
       "tiny_components": 0,
-      "min_component_mm3": 10628.7
+      "min_component_mm3": 9682.45
     },
     {
       "part": "rear_leg_tool_2",
       "tool": "tool_2",
-      "components": 2,
+      "components": 1,
       "tiny_components": 0,
-      "min_component_mm3": 63.36
+      "min_component_mm3": 708.81
     },
     {
       "part": "tail_tool_4",
@@ -272,7 +195,7 @@
       "min_component_mm3": 1414.49
     }
   ],
-  "max_part_overlap_mm3": 0.0015,
+  "max_part_overlap_mm3": 0.0428,
   "watertight": {
     "body_tool_1": true,
     "body_tool_2": true,
@@ -305,96 +228,108 @@
     ]
   ],
   "layer_tools": [
-    "1234",
-    "1234",
-    "1234",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1..4",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
-    "1...",
     "123.",
     "123.",
-    "123."
+    "123.",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "1234",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "123.",
+    "1.3.",
+    "1.3.",
+    "..3.",
+    "..3."
   ],
   "batch": {
     "max_units_on_bed": 2,
@@ -402,62 +337,62 @@
       {
         "units": 1,
         "fits_bed": true,
-        "batch_time_h": 1.68,
-        "time_per_unit_min": 100.7,
-        "material_per_batch_g": 38.7,
-        "purge_per_batch_g": 2.52,
-        "purge_per_unit_g": 2.52,
-        "waste_fraction": 0.065
+        "batch_time_h": 2.4,
+        "time_per_unit_min": 143.9,
+        "material_per_batch_g": 57.8,
+        "purge_per_batch_g": 13.74,
+        "purge_per_unit_g": 13.74,
+        "waste_fraction": 0.238
       },
       {
         "units": 2,
         "fits_bed": true,
-        "batch_time_h": 3.14,
-        "time_per_unit_min": 94.3,
-        "material_per_batch_g": 74.9,
-        "purge_per_batch_g": 2.52,
-        "purge_per_unit_g": 1.26,
-        "waste_fraction": 0.034
+        "batch_time_h": 4.16,
+        "time_per_unit_min": 124.9,
+        "material_per_batch_g": 101.9,
+        "purge_per_batch_g": 13.74,
+        "purge_per_unit_g": 6.87,
+        "waste_fraction": 0.135
       },
       {
         "units": 4,
         "fits_bed": false,
-        "batch_time_h": 6.07,
-        "time_per_unit_min": 91.1,
-        "material_per_batch_g": 147.3,
-        "purge_per_batch_g": 2.52,
-        "purge_per_unit_g": 0.63,
-        "waste_fraction": 0.017
+        "batch_time_h": 7.69,
+        "time_per_unit_min": 115.4,
+        "material_per_batch_g": 190.1,
+        "purge_per_batch_g": 13.74,
+        "purge_per_unit_g": 3.435,
+        "waste_fraction": 0.072
       },
       {
         "units": 8,
         "fits_bed": false,
-        "batch_time_h": 11.93,
-        "time_per_unit_min": 89.5,
-        "material_per_batch_g": 292.0,
-        "purge_per_batch_g": 2.52,
-        "purge_per_unit_g": 0.315,
-        "waste_fraction": 0.009
+        "batch_time_h": 14.75,
+        "time_per_unit_min": 110.6,
+        "material_per_batch_g": 366.4,
+        "purge_per_batch_g": 13.74,
+        "purge_per_unit_g": 1.718,
+        "waste_fraction": 0.038
       },
       {
         "units": 16,
         "fits_bed": false,
-        "batch_time_h": 23.64,
-        "time_per_unit_min": 88.7,
-        "material_per_batch_g": 581.6,
-        "purge_per_batch_g": 2.52,
-        "purge_per_unit_g": 0.158,
-        "waste_fraction": 0.004
+        "batch_time_h": 28.86,
+        "time_per_unit_min": 108.2,
+        "material_per_batch_g": 719.0,
+        "purge_per_batch_g": 13.74,
+        "purge_per_unit_g": 0.859,
+        "waste_fraction": 0.019
       },
       {
         "units": 32,
         "fits_bed": false,
-        "batch_time_h": 47.07,
-        "time_per_unit_min": 88.3,
-        "material_per_batch_g": 1160.6,
-        "purge_per_batch_g": 2.52,
-        "purge_per_unit_g": 0.079,
-        "waste_fraction": 0.002
+        "batch_time_h": 57.08,
+        "time_per_unit_min": 107.0,
+        "material_per_batch_g": 1424.3,
+        "purge_per_batch_g": 13.74,
+        "purge_per_unit_g": 0.429,
+        "waste_fraction": 0.01
       }
     ],
     "recommended_batch": 2,
@@ -527,10 +462,10 @@
     }
   },
   "plate_offset": [
-    -63.83899999782443,
-    -47.125,
-    -0.0
+    -66.21733398362994,
+    -48.96232894808054,
+    0.5204766392707825
   ],
   "name": "Articulated Cow - Walking Cowa",
-  "generated_in_s": 2.8
+  "generated_in_s": 49.4
 }

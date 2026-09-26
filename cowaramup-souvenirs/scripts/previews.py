@@ -30,8 +30,8 @@ from cad.core.tools import effective_tools  # noqa: E402
 BG = (236, 240, 244)
 INK = (34, 38, 46)
 MUTED = (110, 116, 128)
-DISPLAY_ROT = {"CRW-004": [90, 0, 0], "CRW-005": [90, 0, 0]}   # printed on their side
-VIEW = {"CRW-001": (-25, 35), "CRW-002": (-25, 35), "CRW-003": (50, 20), "CRW-004": (-35, 18), "CRW-005": (-28, 12)}
+DISPLAY_ROT = {"CRW-002": [90, 0, 0], "CRW-004": [90, 0, 0], "CRW-005": [90, 0, 0]}   # printed on their side
+VIEW = {"CRW-001": (-32, 16), "CRW-002": (-22, 12), "CRW-003": (-32, 16), "CRW-004": (-35, 18), "CRW-005": (-30, 12)}
 
 
 def meshes(product, tools, rot=None, groups=None, colour=None, grey_rigid=False):
@@ -50,6 +50,31 @@ def meshes(product, tools, rot=None, groups=None, colour=None, grey_rigid=False)
             rgb = np.array([238, 120, 40.0]) if flexible else np.array([205, 208, 214.0])
         out.append((v, f, rgb))
     return out
+
+
+def _pad(img, size):
+    c = Image.new("RGB", size, (250, 250, 249))
+    c.paste(img, ((size[0] - img.width) // 2, (size[1] - img.height) // 2))
+    return c
+
+
+def before_after(pid, stem):
+    """Side-by-side of the archived phase-1 render and the redesigned product photo."""
+    before = C.ROOT / "previews" / "archive" / "before-redesign" / stem / "2-four-colour.png"
+    after = C.ROOT / "previews" / stem / "photo-3q.png"
+    if not (before.exists() and after.exists()):
+        return
+    a = Image.open(before).convert("RGB")
+    b = Image.open(after).convert("RGB")
+    h = 620
+    a = a.resize((int(a.width * h / a.height), h))
+    b = b.resize((int(b.width * h / b.height), h))
+    sheet = Image.new("RGB", (a.width + b.width + 60, h + 80), (255, 255, 255))
+    sheet.paste(a, (20, 60))
+    sheet.paste(b, (a.width + 40, 60))
+    render.label(sheet, "BEFORE (phase 1)", (24, 16), 26, (150, 60, 60))
+    render.label(sheet, "AFTER (redesign)", (a.width + 44, 16), 26, (30, 110, 60))
+    sheet.save(C.ROOT / "previews" / stem / "before-after.png")
 
 
 def caption(img, title, sub=None):
@@ -76,13 +101,25 @@ def product_previews(pid, size="STANDARD"):
     mg = main_groups(product)
     size_px = (900, 700)
 
-    img = render.render(meshes(product, tools, rot, mg, colour=(214, 214, 210)), az, el, size_px, BG)
+    img = render.render_photo(meshes(product, tools, rot, mg, colour=(214, 214, 210)), az, max(el, 12), (900, 900)).resize(size_px[::-1][::-1] if False else (700, 700))
+    img = _pad(img, size_px)
     caption(img, "1  Single-colour version", "same geometry, one toolhead - no markings")
     img.save(out / "1-single-colour.png")
 
-    img = render.render(meshes(product, tools, rot, mg), az, el, size_px, BG)
-    caption(img, f"{product.id}  {product.name}", "4-colour concept (Classic) - colour printed, not painted")
-    img.save(out / "2-four-colour.png")
+    img = render.render_photo(meshes(product, tools, rot, mg), az, max(el, 12), (1000, 1000))
+    img.save(out / "photo-3q.png")                       # simulated product photo (primary marketing)
+    hero = img.resize(size_px[::-1] if False else (int(1000 * size_px[1] / 1000 * 1.0), size_px[1]))
+    canvas = Image.new("RGB", size_px, (250, 250, 249))
+    canvas.paste(hero, ((size_px[0] - hero.width) // 2, 0))
+    caption(canvas, f"{product.id}  {product.name}", "4-colour (Classic) - colour printed, not painted")
+    canvas.save(out / "2-four-colour.png")
+
+    tiles = []
+    for name, (va, ve) in {"front 3/4": (az, 15), "side": (-90, 4), "back": (155, 18), "top": (0, 89)}.items():
+        t = render.render_photo(meshes(product, tools, rot, mg), va, ve, (560, 560), shadow=name != "top")
+        render.label(t, name, (14, 10), 20, INK)
+        tiles.append(t)
+    render.grid(tiles, 4, bg=(255, 255, 255)).save(out / "views.png")
 
     img = render.render(meshes(product, tools, rot, None if pid == "CRW-004" else mg, grey_rigid=True),
                         az, el, size_px, BG)
@@ -108,7 +145,8 @@ def product_previews(pid, size="STANDARD"):
     render.grid(tiles, min(3, len(tiles)), bg=(255, 255, 255)).save(out / "variants.png")
 
     layer_chart(product, a, tools, out / "tool-layers.png")
-    return out / "2-four-colour.png"
+    before_after(pid, stem)
+    return out / "photo-3q.png"
 
 
 def bed_plate(product):
@@ -190,7 +228,7 @@ def layer_chart(product, a, tools, path):
 def overview(heroes):
     tiles = []
     for pid, path in heroes:
-        im = Image.open(path).resize((450, 350), Image.LANCZOS)
+        im = Image.open(path).resize((440, 440), Image.LANCZOS)
         tiles.append(im)
     sheet = render.grid(tiles, 3, bg=(255, 255, 255))
     canvas = Image.new("RGB", (sheet.width, sheet.height + 70), (255, 255, 255))
@@ -247,8 +285,11 @@ def main():
     args = ap.parse_args()
     heroes = []
     for pid in C.selected(args.product):
-        heroes.append((pid, product_previews(pid)))
-        print("previews:", pid)
+        for size in C.REGISTRY[pid][1]:
+            hero = product_previews(pid, size)
+            if size == "STANDARD" or pid == "CRW-003":
+                heroes.append((pid, hero))
+            print("previews:", pid, size)
     if not args.product:
         overview(heroes)
         packaging_card()
