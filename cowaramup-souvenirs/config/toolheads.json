@@ -1,0 +1,42 @@
+{
+  "_about": "Physical toolhead configuration: what is ACTUALLY loaded in the printer right now. Products never hard-code materials; they declare a ROLE per tool and optional requirements. Change this file to reflect the machine, then run scripts/validate.py to see which products are still printable as designed.",
+  "printer": {
+    "_assumption": "Printer model/bed are NOT known. Values below are placeholders - measure and update. Everything that depends on them (batch layouts, tool-change time, purge) is an estimate until calibrated.",
+    "name": "generic-4-independent-toolhead-FFF",
+    "bed_x_mm": 250,
+    "bed_y_mm": 250,
+    "max_z_mm": 250,
+    "nozzle_mm": 0.4,
+    "layer_height_mm": 0.2,
+    "first_layer_height_mm": 0.2,
+    "object_spacing_mm": 6.0,
+    "toolchange_time_s": 8.0,
+    "purge_per_toolchange_g": 0.06,
+    "prime_tower": false,
+    "prime_tower_g_per_layer_with_change": 0.02
+  },
+  "tool_1": {
+    "role": "primary",
+    "material": "PLA",
+    "colour": "cow_white",
+    "purpose": "Main structural body; core colour that shows through knocked-out text"
+  },
+  "tool_2": {
+    "role": "secondary",
+    "material": "PLA",
+    "colour": "cow_black",
+    "purpose": "Cow patches, eyes, nostrils, hooves, secondary lettering"
+  },
+  "tool_3": {
+    "role": "detail",
+    "material": "PLA",
+    "colour": "cow_pink",
+    "purpose": "Muzzle, inner ears, udder"
+  },
+  "tool_4": {
+    "role": "specialty",
+    "material": "TPU",
+    "colour": "cow_black",
+    "purpose": "Flexible / functional material (non-slip pads, flexible tails) OR a 4th rigid accent colour when a product only needs colour"
+  }
+}

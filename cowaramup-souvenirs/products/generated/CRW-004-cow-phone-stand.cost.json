@@ -1,0 +1,126 @@
+{
+  "stem": "CRW-004-cow-phone-stand",
+  "id": "CRW-004",
+  "name": "Cow Phone Stand - Resting Cowa",
+  "size": "STANDARD",
+  "tier": "SMALL_GIFT",
+  "recommended_batch": 3,
+  "single_unit": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 1,
+      "material": 2.116,
+      "purge": 0.047,
+      "electricity": 0.314,
+      "hardware": 0,
+      "packaging": 0.36,
+      "labour": 0.0,
+      "labour_minutes": 8.5,
+      "failure_allowance": 0.124,
+      "total_cost": 2.96,
+      "suggested_retail_range": [
+        10,
+        20
+      ],
+      "cost_floor_retail": 8.88,
+      "gross_margin_at_mid_ex_gst": 0.783
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 1,
+      "material": 2.49,
+      "purge": 0.055,
+      "electricity": 0.314,
+      "hardware": 0,
+      "packaging": 0.6,
+      "labour": 4.25,
+      "labour_minutes": 8.5,
+      "failure_allowance": 0.286,
+      "total_cost": 7.99,
+      "suggested_retail_range": [
+        20,
+        20
+      ],
+      "cost_floor_retail": 19.99,
+      "gross_margin_at_mid_ex_gst": 0.56
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 1,
+      "material": 3.486,
+      "purge": 0.077,
+      "electricity": 0.314,
+      "hardware": 0,
+      "packaging": 1.08,
+      "labour": 5.1,
+      "labour_minutes": 8.5,
+      "failure_allowance": 0.582,
+      "total_cost": 10.64,
+      "suggested_retail_range": [
+        27,
+        27
+      ],
+      "cost_floor_retail": 26.6,
+      "gross_margin_at_mid_ex_gst": 0.567
+    }
+  },
+  "batch": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 3,
+      "material": 2.116,
+      "purge": 0.016,
+      "electricity": 0.299,
+      "hardware": 0,
+      "packaging": 0.36,
+      "labour": 0.0,
+      "labour_minutes": 4.5,
+      "failure_allowance": 0.122,
+      "total_cost": 2.91,
+      "suggested_retail_range": [
+        10,
+        20
+      ],
+      "cost_floor_retail": 8.74,
+      "gross_margin_at_mid_ex_gst": 0.786
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 3,
+      "material": 2.49,
+      "purge": 0.018,
+      "electricity": 0.299,
+      "hardware": 0,
+      "packaging": 0.6,
+      "labour": 2.25,
+      "labour_minutes": 4.5,
+      "failure_allowance": 0.281,
+      "total_cost": 5.94,
+      "suggested_retail_range": [
+        15,
+        20
+      ],
+      "cost_floor_retail": 14.84,
+      "gross_margin_at_mid_ex_gst": 0.627
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 3,
+      "material": 3.486,
+      "purge": 0.026,
+      "electricity": 0.299,
+      "hardware": 0,
+      "packaging": 1.08,
+      "labour": 2.7,
+      "labour_minutes": 4.5,
+      "failure_allowance": 0.572,
+      "total_cost": 8.16,
+      "suggested_retail_range": [
+        21,
+        21
+      ],
+      "cost_floor_retail": 20.4,
+      "gross_margin_at_mid_ex_gst": 0.572
+    }
+  }
+}

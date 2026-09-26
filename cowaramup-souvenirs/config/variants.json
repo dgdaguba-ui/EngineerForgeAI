@@ -1,0 +1,73 @@
+{
+  "_about": "Colour variant generator. A variant maps each tool ROLE to a palette colour (config/colors.json). Geometry is never rebuilt for a colour change: the same per-tool STLs are re-packed into a new 3MF + preview. A variant may leave a tool as null = 'use whatever toolheads.json says is loaded'. Specialty (tool_4) may be forced by a product's material requirement (e.g. TPU pads) - validation reports conflicts.",
+  "variants": {
+    "classic": {
+      "name": "Classic",
+      "tool_1": "cow_white",
+      "tool_2": "cow_black",
+      "tool_3": "cow_pink",
+      "tool_4": "earth_brown"
+    },
+    "aussie": {
+      "name": "Aussie",
+      "tool_1": "cow_white",
+      "tool_2": "cow_black",
+      "tool_3": "australian_gold",
+      "tool_4": "australian_green",
+      "_note": "Green & gold: gold muzzle/inner ears, green horns/banner/base."
+    },
+    "surf": {
+      "name": "Surf",
+      "tool_1": "cow_white",
+      "tool_2": "cow_black",
+      "tool_3": "cow_pink",
+      "tool_4": "ocean_blue"
+    },
+    "wine": {
+      "name": "Wine Country",
+      "tool_1": "cow_cream",
+      "tool_2": "cow_black",
+      "tool_3": "cow_pink",
+      "tool_4": "margaret_river_red"
+    },
+    "christmas": {
+      "name": "Christmas",
+      "tool_1": "cow_white",
+      "tool_2": "cow_black",
+      "tool_3": "christmas_red",
+      "tool_4": "australian_green",
+      "_note": "Red 'Rudolph' muzzle is intentional."
+    },
+    "jersey": {
+      "name": "Jersey Brown",
+      "tool_1": "cow_cream",
+      "tool_2": "cow_brown",
+      "tool_3": "cow_pink",
+      "tool_4": "earth_brown"
+    },
+    "farmer": {
+      "name": "Farmer",
+      "tool_1": "cow_white",
+      "tool_2": "cow_brown",
+      "tool_3": "cow_pink",
+      "tool_4": "australian_gold",
+      "_note": "Straw-gold accent; hat accessory geometry planned (CRW-B02)."
+    },
+    "camping": {
+      "name": "Camping",
+      "tool_1": "cow_cream",
+      "tool_2": "cow_black",
+      "tool_3": "cow_pink",
+      "tool_4": "vine_green",
+      "_note": "Tent/bush green accent; lantern accessory planned (CRW-B10)."
+    },
+    "beach": {
+      "name": "Beach",
+      "tool_1": "cow_white",
+      "tool_2": "cow_black",
+      "tool_3": "cow_pink",
+      "tool_4": "sand",
+      "_note": "Sand accent; towel/board accessory planned (CRW-B05)."
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "stem": "CRW-003-mini-cow-classic",
+  "id": "CRW-003",
+  "name": "Mini Collectible Cow - Resting Cowa",
+  "size": "STANDARD",
+  "tier": "SMALL_GIFT",
+  "recommended_batch": 24,
+  "single_unit": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 1,
+      "material": 0.288,
+      "purge": 0.284,
+      "electricity": 0.084,
+      "hardware": 0,
+      "packaging": 0.36,
+      "labour": 0.0,
+      "labour_minutes": 7.0,
+      "failure_allowance": 0.033,
+      "total_cost": 1.05,
+      "suggested_retail_range": [
+        10,
+        20
+      ],
+      "cost_floor_retail": 3.15,
+      "gross_margin_at_mid_ex_gst": 0.923
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 1,
+      "material": 0.339,
+      "purge": 0.334,
+      "electricity": 0.084,
+      "hardware": 0,
+      "packaging": 0.6,
+      "labour": 3.5,
+      "labour_minutes": 7.0,
+      "failure_allowance": 0.076,
+      "total_cost": 4.93,
+      "suggested_retail_range": [
+        13,
+        20
+      ],
+      "cost_floor_retail": 12.33,
+      "gross_margin_at_mid_ex_gst": 0.671
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 1,
+      "material": 0.474,
+      "purge": 0.468,
+      "electricity": 0.084,
+      "hardware": 0,
+      "packaging": 1.08,
+      "labour": 4.2,
+      "labour_minutes": 7.0,
+      "failure_allowance": 0.154,
+      "total_cost": 6.46,
+      "suggested_retail_range": [
+        17,
+        20
+      ],
+      "cost_floor_retail": 16.15,
+      "gross_margin_at_mid_ex_gst": 0.616
+    }
+  },
+  "batch": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 24,
+      "material": 0.288,
+      "purge": 0.012,
+      "electricity": 0.039,
+      "hardware": 0,
+      "packaging": 0.36,
+      "labour": 0.0,
+      "labour_minutes": 1.25,
+      "failure_allowance": 0.017,
+      "total_cost": 0.72,
+      "suggested_retail_range": [
+        10,
+        20
+      ],
+      "cost_floor_retail": 2.15,
+      "gross_margin_at_mid_ex_gst": 0.948
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 24,
+      "material": 0.339,
+      "purge": 0.014,
+      "electricity": 0.039,
+      "hardware": 0,
+      "packaging": 0.6,
+      "labour": 0.625,
+      "labour_minutes": 1.25,
+      "failure_allowance": 0.039,
+      "total_cost": 1.66,
+      "suggested_retail_range": [
+        10,
+        20
+      ],
+      "cost_floor_retail": 4.14,
+      "gross_margin_at_mid_ex_gst": 0.879
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 24,
+      "material": 0.474,
+      "purge": 0.019,
+      "electricity": 0.039,
+      "hardware": 0,
+      "packaging": 1.08,
+      "labour": 0.75,
+      "labour_minutes": 1.25,
+      "failure_allowance": 0.08,
+      "total_cost": 2.44,
+      "suggested_retail_range": [
+        10,
+        20
+      ],
+      "cost_floor_retail": 6.11,
+      "gross_margin_at_mid_ex_gst": 0.821
+    }
+  }
+}

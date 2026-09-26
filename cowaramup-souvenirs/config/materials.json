@@ -1,0 +1,76 @@
+{
+  "_about": "Material property table used for mass, time, cost and compatibility estimates. Values are typical published ranges for generic filaments, NOT measured on this printer. Calibrate against research/print-log.csv.",
+  "materials": {
+    "PLA": {
+      "density_g_cm3": 1.24,
+      "flexible": false,
+      "rigid": true,
+      "nozzle_temp_c": [200, 220],
+      "bed_temp_c": [50, 65],
+      "effective_flow_mm3_s": 6.0,
+      "price_key": "PLA",
+      "notes": "Default decorative + structural material. Brittle in thin cantilevers; softens ~55-60 C (do not leave in a hot car)."
+    },
+    "PETG": {
+      "density_g_cm3": 1.27,
+      "flexible": false,
+      "rigid": true,
+      "nozzle_temp_c": [230, 250],
+      "bed_temp_c": [70, 85],
+      "effective_flow_mm3_s": 5.0,
+      "price_key": "PETG",
+      "notes": "Tougher, more heat resistant (~75 C). Poor fusion to PLA - use mechanical interlocks, never rely on a PLA/PETG fused interface."
+    },
+    "TPU": {
+      "density_g_cm3": 1.21,
+      "flexible": true,
+      "rigid": false,
+      "shore_hardness": "95A (assumed)",
+      "nozzle_temp_c": [215, 235],
+      "bed_temp_c": [40, 60],
+      "effective_flow_mm3_s": 2.5,
+      "price_key": "TPU",
+      "min_feature_mm": 1.2,
+      "notes": "Non-slip pads, flexible tails, bump-proof horns. Print slowly. Avoid features thinner than 1.2 mm and long unsupported bridges."
+    },
+    "SILK_PLA": {
+      "density_g_cm3": 1.24,
+      "flexible": false,
+      "rigid": true,
+      "nozzle_temp_c": [205, 225],
+      "bed_temp_c": [50, 65],
+      "effective_flow_mm3_s": 5.0,
+      "price_key": "SPECIALTY",
+      "notes": "Premium sheen (gold/copper) for collector variants. Weaker layer adhesion than plain PLA."
+    },
+    "GLOW_PLA": {
+      "density_g_cm3": 1.30,
+      "flexible": false,
+      "rigid": true,
+      "nozzle_temp_c": [200, 220],
+      "bed_temp_c": [50, 65],
+      "effective_flow_mm3_s": 5.0,
+      "price_key": "SPECIALTY",
+      "abrasive": true,
+      "notes": "Glow-in-the-dark accents. Abrasive: use a hardened nozzle on the tool it is loaded in."
+    }
+  },
+  "bonding": {
+    "_about": "Fused-interface bond quality between two materials printed in contact. good = rely on it; fair = add a mechanical interlock; poor = never fuse, use separate parts or interlocks only.",
+    "PLA|PLA": "good",
+    "PLA|SILK_PLA": "good",
+    "PLA|GLOW_PLA": "good",
+    "PLA|TPU": "fair",
+    "PLA|PETG": "poor",
+    "PETG|PETG": "good",
+    "PETG|TPU": "fair",
+    "TPU|TPU": "good",
+    "SILK_PLA|TPU": "fair",
+    "GLOW_PLA|TPU": "fair",
+    "PETG|SILK_PLA": "poor",
+    "PETG|GLOW_PLA": "poor",
+    "SILK_PLA|SILK_PLA": "good",
+    "GLOW_PLA|GLOW_PLA": "good",
+    "SILK_PLA|GLOW_PLA": "good"
+  }
+}

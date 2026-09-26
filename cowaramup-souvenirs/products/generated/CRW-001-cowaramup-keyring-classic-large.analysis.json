@@ -1,0 +1,333 @@
+{
+  "id": "CRW-001",
+  "stem": "CRW-001-cowaramup-keyring-classic-large",
+  "size": "LARGE",
+  "tools_used": [
+    "tool_1",
+    "tool_2",
+    "tool_3",
+    "tool_4"
+  ],
+  "per_tool": {
+    "tool_1": {
+      "material": "PLA",
+      "grams": 7.29,
+      "extruded_mm3": 5877.3,
+      "volume_mm3": 8131.7
+    },
+    "tool_2": {
+      "material": "PLA",
+      "grams": 0.78,
+      "extruded_mm3": 631.2,
+      "volume_mm3": 631.2
+    },
+    "tool_3": {
+      "material": "PLA",
+      "grams": 1.2,
+      "extruded_mm3": 970.0,
+      "volume_mm3": 970.0
+    },
+    "tool_4": {
+      "material": "TPU",
+      "grams": 0.28,
+      "extruded_mm3": 231.0,
+      "volume_mm3": 231.0
+    }
+  },
+  "total_part_g": 9.55,
+  "tool_changes": {
+    "tool_changes": 18,
+    "layers": 21,
+    "layers_with_changes": 6,
+    "switches_into_tool": {
+      "tool_1": 4,
+      "tool_2": 6,
+      "tool_3": 4,
+      "tool_4": 4
+    }
+  },
+  "purge_g": 1.08,
+  "prime_tower_g": 0.0,
+  "total_material_g": 10.63,
+  "print_time_min": 30.4,
+  "time_breakdown_min": {
+    "extrusion": 22.3,
+    "layer_overhead": 0.5,
+    "tool_changes": 2.4,
+    "heatup": 5.0
+  },
+  "plate_bbox_mm": [
+    73.93,
+    60.81,
+    4.2
+  ],
+  "object_groups": [
+    "main"
+  ],
+  "overhangs": {
+    "main": {
+      "steep_overhang_area_mm2": 0.0,
+      "bridge_area_mm2": 0.01,
+      "max_bridge_span_mm": 0.0
+    }
+  },
+  "wall_thickness": {
+    "main": {
+      "p1_mm": 2.99,
+      "p5_mm": 4.2,
+      "median_mm": 4.2
+    }
+  },
+  "colour_regions_2d": [
+    {
+      "face": "top",
+      "tool": "tool_1",
+      "islands": 3,
+      "tiny_islands": 0,
+      "min_island_mm2": 6.14,
+      "thin_area_fraction": 0.002
+    },
+    {
+      "face": "top",
+      "tool": "tool_2",
+      "islands": 6,
+      "tiny_islands": 0,
+      "min_island_mm2": 33.13,
+      "thin_area_fraction": 0.004
+    },
+    {
+      "face": "top",
+      "tool": "tool_3",
+      "islands": 3,
+      "tiny_islands": 0,
+      "min_island_mm2": 51.13,
+      "thin_area_fraction": 0.0
+    },
+    {
+      "face": "top",
+      "tool": "tool_4",
+      "islands": 2,
+      "tiny_islands": 0,
+      "min_island_mm2": 96.23,
+      "thin_area_fraction": 0.002
+    }
+  ],
+  "colour_volumes": [
+    {
+      "part": "tool_1",
+      "tool": "tool_1",
+      "components": 1,
+      "tiny_components": 0,
+      "min_component_mm3": 8131.73
+    },
+    {
+      "part": "tool_2",
+      "tool": "tool_2",
+      "components": 12,
+      "tiny_components": 0,
+      "min_component_mm3": 19.88
+    },
+    {
+      "part": "tool_3",
+      "tool": "tool_3",
+      "components": 6,
+      "tiny_components": 0,
+      "min_component_mm3": 30.68
+    },
+    {
+      "part": "tool_4",
+      "tool": "tool_4",
+      "components": 4,
+      "tiny_components": 0,
+      "min_component_mm3": 57.74
+    }
+  ],
+  "max_part_overlap_mm3": 0.0019,
+  "watertight": {
+    "tool_1": true,
+    "tool_2": true,
+    "tool_3": true,
+    "tool_4": true
+  },
+  "fused_tool_contacts": [
+    [
+      "tool_1",
+      "tool_2"
+    ],
+    [
+      "tool_1",
+      "tool_3"
+    ],
+    [
+      "tool_1",
+      "tool_4"
+    ],
+    [
+      "tool_2",
+      "tool_3"
+    ]
+  ],
+  "layer_tools": [
+    "1234",
+    "1234",
+    "1234",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1234",
+    "1234",
+    "1234"
+  ],
+  "batch": {
+    "max_units_on_bed": 9,
+    "rows": [
+      {
+        "units": 1,
+        "fits_bed": true,
+        "batch_time_h": 0.51,
+        "time_per_unit_min": 30.4,
+        "material_per_batch_g": 10.6,
+        "purge_per_batch_g": 1.08,
+        "purge_per_unit_g": 1.08,
+        "waste_fraction": 0.102
+      },
+      {
+        "units": 4,
+        "fits_bed": true,
+        "batch_time_h": 1.63,
+        "time_per_unit_min": 24.4,
+        "material_per_batch_g": 39.3,
+        "purge_per_batch_g": 1.08,
+        "purge_per_unit_g": 0.27,
+        "waste_fraction": 0.027
+      },
+      {
+        "units": 8,
+        "fits_bed": true,
+        "batch_time_h": 3.13,
+        "time_per_unit_min": 23.4,
+        "material_per_batch_g": 77.5,
+        "purge_per_batch_g": 1.08,
+        "purge_per_unit_g": 0.135,
+        "waste_fraction": 0.014
+      },
+      {
+        "units": 9,
+        "fits_bed": true,
+        "batch_time_h": 3.5,
+        "time_per_unit_min": 23.3,
+        "material_per_batch_g": 87.0,
+        "purge_per_batch_g": 1.08,
+        "purge_per_unit_g": 0.12,
+        "waste_fraction": 0.012
+      },
+      {
+        "units": 16,
+        "fits_bed": false,
+        "batch_time_h": 6.12,
+        "time_per_unit_min": 22.9,
+        "material_per_batch_g": 153.9,
+        "purge_per_batch_g": 1.08,
+        "purge_per_unit_g": 0.068,
+        "waste_fraction": 0.007
+      },
+      {
+        "units": 32,
+        "fits_bed": false,
+        "batch_time_h": 12.11,
+        "time_per_unit_min": 22.7,
+        "material_per_batch_g": 306.7,
+        "purge_per_batch_g": 1.08,
+        "purge_per_unit_g": 0.034,
+        "waste_fraction": 0.004
+      }
+    ],
+    "recommended_batch": 9,
+    "bed_mm": [
+      250,
+      250
+    ],
+    "spacing_mm": 6.0
+  },
+  "files": {
+    "stl": [
+      "stl/prototypes/CRW-001-cowaramup-keyring-classic-large.stl"
+    ],
+    "stl_parts": [
+      "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_1.stl",
+      "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_2.stl",
+      "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_3.stl",
+      "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large__tool_4.stl"
+    ],
+    "3mf": [
+      "3mf/prototypes/CRW-001-cowaramup-keyring-classic-large.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--aussie.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--surf.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--wine.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--christmas.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--jersey.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--farmer.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--camping.3mf",
+      "3mf/prototypes/variants/CRW-001-cowaramup-keyring-classic-large--beach.3mf"
+    ],
+    "scad": [
+      "stl/prototypes/CRW-001-cowaramup-keyring-classic-large/CRW-001-cowaramup-keyring-classic-large.scad"
+    ]
+  },
+  "setup_issues": [
+    {
+      "level": "WARN",
+      "tool": "tool_4",
+      "msg": "colour Earth Brown is not commonly available in TPU"
+    }
+  ],
+  "effective_tools": {
+    "tool_1": {
+      "material": "PLA",
+      "colour": "cow_white",
+      "colour_name": "Cow White",
+      "hex": "#F4F1E8",
+      "role": "primary"
+    },
+    "tool_2": {
+      "material": "PLA",
+      "colour": "cow_black",
+      "colour_name": "Cow Black",
+      "hex": "#1E1E1E",
+      "role": "secondary"
+    },
+    "tool_3": {
+      "material": "PLA",
+      "colour": "cow_pink",
+      "colour_name": "Cow Pink",
+      "hex": "#F2A7B5",
+      "role": "detail"
+    },
+    "tool_4": {
+      "material": "TPU",
+      "colour": "earth_brown",
+      "colour_name": "Earth Brown",
+      "hex": "#5C4030",
+      "role": "specialty"
+    }
+  },
+  "plate_offset": [
+    -0.0,
+    -3.7190000005066395,
+    -0.0
+  ],
+  "name": "Cowaramup Cow Keyring",
+  "generated_in_s": 1.4
+}

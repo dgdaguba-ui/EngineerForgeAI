@@ -1,0 +1,126 @@
+{
+  "stem": "CRW-005-articulated-cow",
+  "id": "CRW-005",
+  "name": "Articulated Cow - Walking Cowa",
+  "size": "STANDARD",
+  "tier": "PREMIUM",
+  "recommended_batch": 2,
+  "single_unit": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 1,
+      "material": 0.881,
+      "purge": 0.073,
+      "electricity": 0.134,
+      "hardware": 0,
+      "packaging": 1.32,
+      "labour": 0.0,
+      "labour_minutes": 9.0,
+      "failure_allowance": 0.054,
+      "total_cost": 2.46,
+      "suggested_retail_range": [
+        20,
+        50
+      ],
+      "cost_floor_retail": 7.39,
+      "gross_margin_at_mid_ex_gst": 0.923
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 1,
+      "material": 1.036,
+      "purge": 0.086,
+      "electricity": 0.134,
+      "hardware": 0,
+      "packaging": 2.2,
+      "labour": 4.5,
+      "labour_minutes": 9.0,
+      "failure_allowance": 0.126,
+      "total_cost": 8.08,
+      "suggested_retail_range": [
+        21,
+        50
+      ],
+      "cost_floor_retail": 20.2,
+      "gross_margin_at_mid_ex_gst": 0.75
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 1,
+      "material": 1.451,
+      "purge": 0.12,
+      "electricity": 0.134,
+      "hardware": 0,
+      "packaging": 3.96,
+      "labour": 5.4,
+      "labour_minutes": 9.0,
+      "failure_allowance": 0.256,
+      "total_cost": 11.32,
+      "suggested_retail_range": [
+        29,
+        50
+      ],
+      "cost_floor_retail": 28.3,
+      "gross_margin_at_mid_ex_gst": 0.685
+    }
+  },
+  "batch": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 2,
+      "material": 0.881,
+      "purge": 0.036,
+      "electricity": 0.126,
+      "hardware": 0,
+      "packaging": 1.32,
+      "labour": 0.0,
+      "labour_minutes": 6.0,
+      "failure_allowance": 0.052,
+      "total_cost": 2.42,
+      "suggested_retail_range": [
+        20,
+        50
+      ],
+      "cost_floor_retail": 7.25,
+      "gross_margin_at_mid_ex_gst": 0.924
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 2,
+      "material": 1.036,
+      "purge": 0.043,
+      "electricity": 0.126,
+      "hardware": 0,
+      "packaging": 2.2,
+      "labour": 3.0,
+      "labour_minutes": 6.0,
+      "failure_allowance": 0.12,
+      "total_cost": 6.53,
+      "suggested_retail_range": [
+        20,
+        50
+      ],
+      "cost_floor_retail": 16.31,
+      "gross_margin_at_mid_ex_gst": 0.795
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 2,
+      "material": 1.451,
+      "purge": 0.06,
+      "electricity": 0.126,
+      "hardware": 0,
+      "packaging": 3.96,
+      "labour": 3.6,
+      "labour_minutes": 6.0,
+      "failure_allowance": 0.245,
+      "total_cost": 9.44,
+      "suggested_retail_range": [
+        24,
+        50
+      ],
+      "cost_floor_retail": 23.6,
+      "gross_margin_at_mid_ex_gst": 0.719
+    }
+  }
+}

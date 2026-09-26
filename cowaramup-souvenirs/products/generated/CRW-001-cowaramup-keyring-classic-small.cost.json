@@ -1,0 +1,126 @@
+{
+  "stem": "CRW-001-cowaramup-keyring-classic-small",
+  "id": "CRW-001",
+  "name": "Cowaramup Cow Keyring",
+  "size": "SMALL",
+  "tier": "IMPULSE",
+  "recommended_batch": 20,
+  "single_unit": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 1,
+      "material": 0.105,
+      "purge": 0.029,
+      "electricity": 0.024,
+      "hardware": 0.28,
+      "packaging": 0.15,
+      "labour": 0.0,
+      "labour_minutes": 6.8,
+      "failure_allowance": 0.008,
+      "total_cost": 0.6,
+      "suggested_retail_range": [
+        5,
+        10
+      ],
+      "cost_floor_retail": 1.79,
+      "gross_margin_at_mid_ex_gst": 0.913
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 1,
+      "material": 0.124,
+      "purge": 0.034,
+      "electricity": 0.024,
+      "hardware": 0.28,
+      "packaging": 0.25,
+      "labour": 3.4,
+      "labour_minutes": 6.8,
+      "failure_allowance": 0.018,
+      "total_cost": 4.13,
+      "suggested_retail_range": [
+        11,
+        11
+      ],
+      "cost_floor_retail": 10.33,
+      "gross_margin_at_mid_ex_gst": 0.587
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 1,
+      "material": 0.173,
+      "purge": 0.048,
+      "electricity": 0.024,
+      "hardware": 0.28,
+      "packaging": 0.45,
+      "labour": 4.08,
+      "labour_minutes": 6.8,
+      "failure_allowance": 0.037,
+      "total_cost": 5.09,
+      "suggested_retail_range": [
+        13,
+        13
+      ],
+      "cost_floor_retail": 12.73,
+      "gross_margin_at_mid_ex_gst": 0.569
+    }
+  },
+  "batch": {
+    "LOW-COST": {
+      "scenario": "LOW-COST",
+      "batch_units": 20,
+      "material": 0.105,
+      "purge": 0.001,
+      "electricity": 0.014,
+      "hardware": 0.28,
+      "packaging": 0.15,
+      "labour": 0.0,
+      "labour_minutes": 1.1,
+      "failure_allowance": 0.006,
+      "total_cost": 0.56,
+      "suggested_retail_range": [
+        5,
+        10
+      ],
+      "cost_floor_retail": 1.67,
+      "gross_margin_at_mid_ex_gst": 0.918
+    },
+    "NORMAL": {
+      "scenario": "NORMAL",
+      "batch_units": 20,
+      "material": 0.124,
+      "purge": 0.002,
+      "electricity": 0.014,
+      "hardware": 0.28,
+      "packaging": 0.25,
+      "labour": 0.55,
+      "labour_minutes": 1.1,
+      "failure_allowance": 0.014,
+      "total_cost": 1.23,
+      "suggested_retail_range": [
+        5,
+        10
+      ],
+      "cost_floor_retail": 3.08,
+      "gross_margin_at_mid_ex_gst": 0.819
+    },
+    "PREMIUM": {
+      "scenario": "PREMIUM",
+      "batch_units": 20,
+      "material": 0.173,
+      "purge": 0.002,
+      "electricity": 0.014,
+      "hardware": 0.28,
+      "packaging": 0.45,
+      "labour": 0.66,
+      "labour_minutes": 1.1,
+      "failure_allowance": 0.028,
+      "total_cost": 1.61,
+      "suggested_retail_range": [
+        5,
+        10
+      ],
+      "cost_floor_retail": 4.02,
+      "gross_margin_at_mid_ex_gst": 0.764
+    }
+  }
+}

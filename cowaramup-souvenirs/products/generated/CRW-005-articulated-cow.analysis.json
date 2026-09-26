@@ -1,0 +1,533 @@
+{
+  "id": "CRW-005",
+  "stem": "CRW-005-articulated-cow",
+  "size": "STANDARD",
+  "tools_used": [
+    "tool_1",
+    "tool_2",
+    "tool_3",
+    "tool_4"
+  ],
+  "per_tool": {
+    "tool_1": {
+      "material": "PLA",
+      "grams": 33.05,
+      "extruded_mm3": 26650.9,
+      "volume_mm3": 66364.6
+    },
+    "tool_2": {
+      "material": "PLA",
+      "grams": 1.28,
+      "extruded_mm3": 1034.7,
+      "volume_mm3": 1034.7
+    },
+    "tool_3": {
+      "material": "PLA",
+      "grams": 0.52,
+      "extruded_mm3": 419.4,
+      "volume_mm3": 419.4
+    },
+    "tool_4": {
+      "material": "TPU",
+      "grams": 1.34,
+      "extruded_mm3": 1107.2,
+      "volume_mm3": 1414.5
+    }
+  },
+  "total_part_g": 36.19,
+  "tool_changes": {
+    "tool_changes": 42,
+    "layers": 90,
+    "layers_with_changes": 33,
+    "switches_into_tool": {
+      "tool_1": 18,
+      "tool_2": 5,
+      "tool_3": 4,
+      "tool_4": 15
+    }
+  },
+  "purge_g": 2.52,
+  "prime_tower_g": 0.0,
+  "total_material_g": 38.71,
+  "print_time_min": 100.7,
+  "time_breakdown_min": {
+    "extrusion": 85.5,
+    "layer_overhead": 2.2,
+    "tool_changes": 5.6,
+    "heatup": 5.0
+  },
+  "plate_bbox_mm": [
+    122.88,
+    94.25,
+    18.0
+  ],
+  "object_groups": [
+    "body",
+    "head",
+    "front_leg",
+    "rear_leg"
+  ],
+  "overhangs": {
+    "body": {
+      "steep_overhang_area_mm2": 0.0,
+      "bridge_area_mm2": 0.01,
+      "max_bridge_span_mm": 0.0
+    },
+    "head": {
+      "steep_overhang_area_mm2": 0.0,
+      "bridge_area_mm2": 0.0,
+      "max_bridge_span_mm": 0.0
+    },
+    "front_leg": {
+      "steep_overhang_area_mm2": 0.0,
+      "bridge_area_mm2": 0.0,
+      "max_bridge_span_mm": 0.0
+    },
+    "rear_leg": {
+      "steep_overhang_area_mm2": 0.0,
+      "bridge_area_mm2": 0.0,
+      "max_bridge_span_mm": 0.0
+    }
+  },
+  "wall_thickness": {
+    "body": {
+      "p1_mm": 2.74,
+      "p5_mm": 3.61,
+      "median_mm": 18.0
+    },
+    "head": {
+      "p1_mm": 0.55,
+      "p5_mm": 2.56,
+      "median_mm": 18.0
+    },
+    "front_leg": {
+      "p1_mm": 0.48,
+      "p5_mm": 1.95,
+      "median_mm": 12.57
+    },
+    "rear_leg": {
+      "p1_mm": 0.49,
+      "p5_mm": 2.09,
+      "median_mm": 13.08
+    }
+  },
+  "colour_regions_2d": [
+    {
+      "face": "body_top",
+      "tool": "tool_1",
+      "islands": 4,
+      "tiny_islands": 0,
+      "min_island_mm2": 5.16,
+      "thin_area_fraction": 0.002
+    },
+    {
+      "face": "body_top",
+      "tool": "tool_3",
+      "islands": 1,
+      "tiny_islands": 0,
+      "min_island_mm2": 100.86,
+      "thin_area_fraction": 0.0
+    },
+    {
+      "face": "body_top",
+      "tool": "tool_2",
+      "islands": 2,
+      "tiny_islands": 0,
+      "min_island_mm2": 186.46,
+      "thin_area_fraction": 0.001
+    },
+    {
+      "face": "head_top",
+      "tool": "tool_1",
+      "islands": 3,
+      "tiny_islands": 0,
+      "min_island_mm2": 4.07,
+      "thin_area_fraction": 0.004
+    },
+    {
+      "face": "head_top",
+      "tool": "tool_2",
+      "islands": 3,
+      "tiny_islands": 0,
+      "min_island_mm2": 11.63,
+      "thin_area_fraction": 0.014
+    },
+    {
+      "face": "head_top",
+      "tool": "tool_3",
+      "islands": 2,
+      "tiny_islands": 0,
+      "min_island_mm2": 23.75,
+      "thin_area_fraction": 0.004
+    },
+    {
+      "face": "front_leg_top",
+      "tool": "tool_1",
+      "islands": 1,
+      "tiny_islands": 0,
+      "min_island_mm2": 483.39,
+      "thin_area_fraction": 0.0
+    },
+    {
+      "face": "front_leg_top",
+      "tool": "tool_2",
+      "islands": 1,
+      "tiny_islands": 0,
+      "min_island_mm2": 104.97,
+      "thin_area_fraction": 0.001
+    },
+    {
+      "face": "rear_leg_top",
+      "tool": "tool_1",
+      "islands": 1,
+      "tiny_islands": 0,
+      "min_island_mm2": 530.85,
+      "thin_area_fraction": 0.0
+    },
+    {
+      "face": "rear_leg_top",
+      "tool": "tool_2",
+      "islands": 1,
+      "tiny_islands": 0,
+      "min_island_mm2": 105.6,
+      "thin_area_fraction": 0.001
+    }
+  ],
+  "colour_volumes": [
+    {
+      "part": "body_tool_1",
+      "tool": "tool_1",
+      "components": 1,
+      "tiny_components": 0,
+      "min_component_mm3": 32110.27
+    },
+    {
+      "part": "body_tool_2",
+      "tool": "tool_2",
+      "components": 4,
+      "tiny_components": 0,
+      "min_component_mm3": 111.88
+    },
+    {
+      "part": "body_tool_3",
+      "tool": "tool_3",
+      "components": 2,
+      "tiny_components": 0,
+      "min_component_mm3": 60.52
+    },
+    {
+      "part": "head_tool_1",
+      "tool": "tool_1",
+      "components": 1,
+      "tiny_components": 0,
+      "min_component_mm3": 13861.68
+    },
+    {
+      "part": "head_tool_2",
+      "tool": "tool_2",
+      "components": 5,
+      "tiny_components": 0,
+      "min_component_mm3": 6.98
+    },
+    {
+      "part": "head_tool_3",
+      "tool": "tool_3",
+      "components": 4,
+      "tiny_components": 0,
+      "min_component_mm3": 14.25
+    },
+    {
+      "part": "front_leg_tool_1",
+      "tool": "tool_1",
+      "components": 1,
+      "tiny_components": 0,
+      "min_component_mm3": 9764.0
+    },
+    {
+      "part": "front_leg_tool_2",
+      "tool": "tool_2",
+      "components": 2,
+      "tiny_components": 0,
+      "min_component_mm3": 62.99
+    },
+    {
+      "part": "rear_leg_tool_1",
+      "tool": "tool_1",
+      "components": 1,
+      "tiny_components": 0,
+      "min_component_mm3": 10628.7
+    },
+    {
+      "part": "rear_leg_tool_2",
+      "tool": "tool_2",
+      "components": 2,
+      "tiny_components": 0,
+      "min_component_mm3": 63.36
+    },
+    {
+      "part": "tail_tool_4",
+      "tool": "tool_4",
+      "components": 1,
+      "tiny_components": 0,
+      "min_component_mm3": 1414.49
+    }
+  ],
+  "max_part_overlap_mm3": 0.0015,
+  "watertight": {
+    "body_tool_1": true,
+    "body_tool_2": true,
+    "body_tool_3": true,
+    "head_tool_1": true,
+    "head_tool_2": true,
+    "head_tool_3": true,
+    "front_leg_tool_1": true,
+    "front_leg_tool_2": true,
+    "rear_leg_tool_1": true,
+    "rear_leg_tool_2": true,
+    "tail_tool_4": true
+  },
+  "fused_tool_contacts": [
+    [
+      "tool_1",
+      "tool_2"
+    ],
+    [
+      "tool_1",
+      "tool_3"
+    ],
+    [
+      "tool_1",
+      "tool_4"
+    ],
+    [
+      "tool_2",
+      "tool_3"
+    ]
+  ],
+  "layer_tools": [
+    "1234",
+    "1234",
+    "1234",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1..4",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "1...",
+    "123.",
+    "123.",
+    "123."
+  ],
+  "batch": {
+    "max_units_on_bed": 2,
+    "rows": [
+      {
+        "units": 1,
+        "fits_bed": true,
+        "batch_time_h": 1.68,
+        "time_per_unit_min": 100.7,
+        "material_per_batch_g": 38.7,
+        "purge_per_batch_g": 2.52,
+        "purge_per_unit_g": 2.52,
+        "waste_fraction": 0.065
+      },
+      {
+        "units": 2,
+        "fits_bed": true,
+        "batch_time_h": 3.14,
+        "time_per_unit_min": 94.3,
+        "material_per_batch_g": 74.9,
+        "purge_per_batch_g": 2.52,
+        "purge_per_unit_g": 1.26,
+        "waste_fraction": 0.034
+      },
+      {
+        "units": 4,
+        "fits_bed": false,
+        "batch_time_h": 6.07,
+        "time_per_unit_min": 91.1,
+        "material_per_batch_g": 147.3,
+        "purge_per_batch_g": 2.52,
+        "purge_per_unit_g": 0.63,
+        "waste_fraction": 0.017
+      },
+      {
+        "units": 8,
+        "fits_bed": false,
+        "batch_time_h": 11.93,
+        "time_per_unit_min": 89.5,
+        "material_per_batch_g": 292.0,
+        "purge_per_batch_g": 2.52,
+        "purge_per_unit_g": 0.315,
+        "waste_fraction": 0.009
+      },
+      {
+        "units": 16,
+        "fits_bed": false,
+        "batch_time_h": 23.64,
+        "time_per_unit_min": 88.7,
+        "material_per_batch_g": 581.6,
+        "purge_per_batch_g": 2.52,
+        "purge_per_unit_g": 0.158,
+        "waste_fraction": 0.004
+      },
+      {
+        "units": 32,
+        "fits_bed": false,
+        "batch_time_h": 47.07,
+        "time_per_unit_min": 88.3,
+        "material_per_batch_g": 1160.6,
+        "purge_per_batch_g": 2.52,
+        "purge_per_unit_g": 0.079,
+        "waste_fraction": 0.002
+      }
+    ],
+    "recommended_batch": 2,
+    "bed_mm": [
+      250,
+      250
+    ],
+    "spacing_mm": 6.0
+  },
+  "files": {
+    "stl": [
+      "stl/prototypes/CRW-005-articulated-cow.stl"
+    ],
+    "stl_parts": [
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__body_tool_1.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__body_tool_2.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__body_tool_3.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__head_tool_1.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__head_tool_2.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__head_tool_3.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__front_leg_tool_1.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__front_leg_tool_2.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__rear_leg_tool_1.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__rear_leg_tool_2.stl",
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow__tail_tool_4.stl"
+    ],
+    "3mf": [
+      "3mf/prototypes/CRW-005-articulated-cow.3mf",
+      "3mf/prototypes/variants/CRW-005-articulated-cow--jersey.3mf"
+    ],
+    "scad": [
+      "stl/prototypes/CRW-005-articulated-cow/CRW-005-articulated-cow.scad"
+    ]
+  },
+  "setup_issues": [],
+  "effective_tools": {
+    "tool_1": {
+      "material": "PLA",
+      "colour": "cow_white",
+      "colour_name": "Cow White",
+      "hex": "#F4F1E8",
+      "role": "primary"
+    },
+    "tool_2": {
+      "material": "PLA",
+      "colour": "cow_black",
+      "colour_name": "Cow Black",
+      "hex": "#1E1E1E",
+      "role": "secondary"
+    },
+    "tool_3": {
+      "material": "PLA",
+      "colour": "cow_pink",
+      "colour_name": "Cow Pink",
+      "hex": "#F2A7B5",
+      "role": "detail"
+    },
+    "tool_4": {
+      "material": "TPU",
+      "colour": "cow_black",
+      "colour_name": "Cow Black",
+      "hex": "#1E1E1E",
+      "role": "specialty"
+    }
+  },
+  "plate_offset": [
+    -63.83899999782443,
+    -47.125,
+    -0.0
+  ],
+  "name": "Articulated Cow - Walking Cowa",
+  "generated_in_s": 2.4
+}

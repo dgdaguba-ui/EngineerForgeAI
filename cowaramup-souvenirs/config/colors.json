@@ -1,0 +1,273 @@
+{
+  "_about": "Cowaramup standard colour system. Generic colour names only - no filament brands. Hex values are design/preview targets, not guaranteed filament matches. 'suggested_tool' is the toolhead role this colour normally occupies; any colour can be loaded in any tool via config/toolheads.json or a colour variant.",
+  "palette": {
+    "cow_white": {
+      "name": "Cow White",
+      "hex": "#F4F1E8",
+      "recommended_role": "primary body / core colour; knocked-out text shows this colour",
+      "suggested_tool": "tool_1",
+      "contrast_with": [
+        "cow_black",
+        "earth_brown",
+        "ocean_blue",
+        "margaret_river_red",
+        "australian_green"
+      ],
+      "avoid_next_to": [
+        "cow_cream",
+        "australian_gold"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": true
+      }
+    },
+    "cow_cream": {
+      "name": "Cow Cream",
+      "hex": "#EADBB8",
+      "recommended_role": "alternative body colour for premium / Jersey-style cows; horns",
+      "suggested_tool": "tool_1",
+      "contrast_with": [
+        "cow_black",
+        "earth_brown",
+        "cow_brown"
+      ],
+      "avoid_next_to": [
+        "cow_white",
+        "australian_gold"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "cow_black": {
+      "name": "Cow Black",
+      "hex": "#1E1E1E",
+      "recommended_role": "patches, eyes, nostrils, hooves, secondary text",
+      "suggested_tool": "tool_2",
+      "contrast_with": [
+        "cow_white",
+        "cow_pink",
+        "australian_gold",
+        "cow_cream"
+      ],
+      "avoid_next_to": [
+        "earth_brown"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": true
+      }
+    },
+    "cow_brown": {
+      "name": "Cow Brown",
+      "hex": "#8A5A3B",
+      "recommended_role": "alternative patch colour (brown-and-white cows), horns",
+      "suggested_tool": "tool_2",
+      "contrast_with": [
+        "cow_white",
+        "cow_cream",
+        "cow_pink"
+      ],
+      "avoid_next_to": [
+        "earth_brown",
+        "margaret_river_red"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "cow_pink": {
+      "name": "Cow Pink",
+      "hex": "#F2A7B5",
+      "recommended_role": "muzzle, inner ears, udder",
+      "suggested_tool": "tool_3",
+      "contrast_with": [
+        "cow_black",
+        "cow_brown",
+        "earth_brown"
+      ],
+      "avoid_next_to": [
+        "cow_white"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "earth_brown": {
+      "name": "Earth Brown",
+      "hex": "#5C4030",
+      "recommended_role": "horns, hooves, bases, banners (tool-4 accent)",
+      "suggested_tool": "tool_4",
+      "contrast_with": [
+        "cow_white",
+        "cow_cream",
+        "australian_gold",
+        "cow_pink"
+      ],
+      "avoid_next_to": [
+        "cow_black",
+        "cow_brown"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "australian_green": {
+      "name": "Australian Green",
+      "hex": "#00843D",
+      "recommended_role": "grass bases, Aussie accents, Christmas accents",
+      "suggested_tool": "tool_4",
+      "contrast_with": [
+        "australian_gold",
+        "cow_white"
+      ],
+      "avoid_next_to": [
+        "margaret_river_red",
+        "ocean_blue"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": true
+      }
+    },
+    "australian_gold": {
+      "name": "Australian Gold",
+      "hex": "#FFCD00",
+      "recommended_role": "Aussie accents, horns on premium variants, banners",
+      "suggested_tool": "tool_3",
+      "contrast_with": [
+        "australian_green",
+        "cow_black",
+        "earth_brown",
+        "ocean_blue"
+      ],
+      "avoid_next_to": [
+        "cow_white",
+        "cow_cream"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "ocean_blue": {
+      "name": "Ocean Blue",
+      "hex": "#0077B6",
+      "recommended_role": "surf / beach accents, coastline, water",
+      "suggested_tool": "tool_4",
+      "contrast_with": [
+        "cow_white",
+        "australian_gold",
+        "sand"
+      ],
+      "avoid_next_to": [
+        "cow_black",
+        "australian_green"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": true
+      }
+    },
+    "sand": {
+      "name": "Beach Sand",
+      "hex": "#E2C98F",
+      "recommended_role": "beach bases, surfboards",
+      "suggested_tool": "tool_4",
+      "contrast_with": [
+        "ocean_blue",
+        "cow_black",
+        "earth_brown"
+      ],
+      "avoid_next_to": [
+        "cow_white",
+        "cow_cream",
+        "australian_gold"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "margaret_river_red": {
+      "name": "Margaret River Red",
+      "hex": "#7B1E2B",
+      "recommended_role": "wine accents, Christmas accents",
+      "suggested_tool": "tool_3",
+      "contrast_with": [
+        "cow_white",
+        "cow_cream",
+        "australian_gold"
+      ],
+      "avoid_next_to": [
+        "cow_black",
+        "earth_brown",
+        "australian_green"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    },
+    "christmas_red": {
+      "name": "Christmas Red",
+      "hex": "#C8102E",
+      "recommended_role": "Santa hats, Christmas accents",
+      "suggested_tool": "tool_3",
+      "contrast_with": [
+        "cow_white",
+        "australian_green"
+      ],
+      "avoid_next_to": [
+        "cow_pink",
+        "margaret_river_red"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": true
+      }
+    },
+    "vine_green": {
+      "name": "Vine Green",
+      "hex": "#4F7D2A",
+      "recommended_role": "wine-country accents, vine leaves",
+      "suggested_tool": "tool_4",
+      "contrast_with": [
+        "cow_white",
+        "margaret_river_red",
+        "australian_gold"
+      ],
+      "avoid_next_to": [
+        "australian_green",
+        "cow_black"
+      ],
+      "materials": {
+        "PLA": true,
+        "PETG": true,
+        "TPU": false
+      }
+    }
+  },
+  "rules": {
+    "min_luminance_contrast_ratio": 2.0,
+    "min_delta_e": 35.0,
+    "note": "Adjacent colour regions must differ by luminance ratio >= min_luminance_contrast_ratio OR CIE76 colour difference dE >= min_delta_e (hue contrast, e.g. pink on white) so the product reads at 2-3 m. scripts/validate.py checks every exported variant."
+  }
+}

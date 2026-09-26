@@ -1,0 +1,82 @@
+{
+  "_about": "Cost model inputs (AUD). ALL values are editable assumptions, not quotes. Outputs are manufacturing estimates only and say nothing about market demand.",
+  "currency": "AUD",
+  "filament_price_per_kg": {
+    "PLA": 28.0,
+    "PETG": 30.0,
+    "TPU": 45.0,
+    "SPECIALTY": 60.0
+  },
+  "electricity": {
+    "price_per_kwh": 0.32,
+    "printer_avg_power_kw": 0.25,
+    "_assumption": "Average draw including heated bed and 4 idle-heated tools; measure with a plug-in meter."
+  },
+  "labour": {
+    "rate_per_hour": 30.0,
+    "plate_handling_min_per_batch": 6.0,
+    "post_processing_min_per_unit": {
+      "default": 0.5
+    }
+  },
+  "failed_print_allowance": 0.10,
+  "hardware": {
+    "split_ring_25mm": 0.18,
+    "keyring_chain_link": 0.10,
+    "neodymium_disc_12x3": 0.30,
+    "none": 0.0
+  },
+  "packaging": {
+    "impulse_backing_card": 0.25,
+    "small_gift_card_and_bag": 0.60,
+    "premium_box": 2.20,
+    "collectible_box": 1.60
+  },
+  "estimation": {
+    "_about": "Slicer-free mass/time estimators. Calibrate the *_calibration factors against real prints (see scripts/cost.py --calibrate).",
+    "shell_thickness_mm": 0.9,
+    "infill_fraction": 0.15,
+    "layer_overhead_s": 1.5,
+    "per_object_per_layer_overhead_s": 0.4,
+    "heatup_s": 300,
+    "mass_calibration": 1.0,
+    "time_calibration": 1.0
+  },
+  "scenarios": {
+    "LOW-COST": {
+      "filament_price_multiplier": 0.85,
+      "labour_rate_multiplier": 0.0,
+      "packaging_multiplier": 0.6,
+      "failed_print_allowance": 0.05,
+      "retail_markup_on_cost": 3.0,
+      "_note": "Owner-operator, labour not costed, bulk filament, minimal packaging."
+    },
+    "NORMAL": {
+      "filament_price_multiplier": 1.0,
+      "labour_rate_multiplier": 1.0,
+      "packaging_multiplier": 1.0,
+      "failed_print_allowance": 0.10,
+      "retail_markup_on_cost": 2.5,
+      "_note": "Labour costed at the configured rate; standard packaging."
+    },
+    "PREMIUM": {
+      "filament_price_multiplier": 1.4,
+      "labour_rate_multiplier": 1.2,
+      "packaging_multiplier": 1.8,
+      "failed_print_allowance": 0.15,
+      "retail_markup_on_cost": 2.5,
+      "_note": "Premium filament, extra QC time, gift packaging."
+    }
+  },
+  "price_bands": {
+    "IMPULSE": [5, 10],
+    "SMALL_GIFT": [10, 20],
+    "PREMIUM": [20, 50],
+    "COLLECTIBLE": [15, 35]
+  },
+  "batch": {
+    "candidate_sizes": [1, 4, 8, 16, 32],
+    "max_batch_hours": 14.0,
+    "_note": "Recommended batch = largest candidate that fits the bed and finishes within max_batch_hours (e.g. an overnight run)."
+  }
+}

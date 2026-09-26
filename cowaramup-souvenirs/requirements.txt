@@ -1,0 +1,14 @@
+# Geometry + pipeline (tested with these versions, Python 3.11)
+manifold3d>=3.5
+trimesh>=4.0
+shapely>=2.1        # needs coverage_simplify (GEOS >= 3.12)
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8     # text outlines (DejaVu Sans Bold) + charts
+pillow>=10
+lxml>=5
+rtree>=1.2          # trimesh ray casting (wall thickness)
+numba>=0.59         # optional: fast z-buffer preview renderer
+pytest>=8
+# Optional: cadquery (installed and evaluated - not used, see documentation/assumptions.md)
+# Optional system tool: openscad (renders the generated .scad colour assemblies)

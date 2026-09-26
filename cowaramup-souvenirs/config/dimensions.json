@@ -1,0 +1,81 @@
+{
+  "_about": "Parametric dimensions (mm). 'global' applies to every product; product blocks override. Size presets scale DESIGN dimensions only - functional values (clearances, hole sizes, magnet pockets, phone slot, inlay depth, min features) stay absolute.",
+  "sizes": {
+    "SMALL": 0.8,
+    "STANDARD": 1.0,
+    "LARGE": 1.25
+  },
+  "global": {
+    "body_length": 46.0,
+    "body_width": 24.0,
+    "body_height": 20.0,
+    "head_size": 17.0,
+    "horn_size": 4.0,
+    "ear_size": 6.0,
+    "leg_size": 6.0,
+    "tail_size": 12.0,
+    "text_depth": 0.6,
+    "inlay_depth": 0.6,
+    "keyring_hole": 5.0,
+    "keyring_ring_wall": 3.0,
+    "magnet_diameter": 12.0,
+    "magnet_depth": 3.0,
+    "magnet_fit_clearance": 0.15,
+    "wall_thickness": 1.2,
+    "phone_slot_width": 15.0,
+    "phone_slot_depth": 24.0,
+    "joint_clearance": 0.5,
+    "min_feature": 0.8,
+    "min_colour_island_area": 3.0,
+    "min_tpu_feature": 1.2,
+    "max_overhang_deg": 45.0
+  },
+  "CRW-001": {
+    "head_width": 35.0,
+    "thickness": 4.2,
+    "double_sided": true
+  },
+  "CRW-002": {
+    "head_width": 38.0,
+    "thickness": 5.0,
+    "muzzle_relief": 1.2,
+    "banner_width": 62.0,
+    "banner_height": 13.0,
+    "banner_text": "COWARAMUP",
+    "banner_text_height": 7.0,
+    "magnet_count": 2
+  },
+  "CRW-003": {
+    "body_length": 40.0,
+    "body_width": 24.0,
+    "body_height": 20.0,
+    "head_size": 17.0,
+    "plinth_length": 54.0,
+    "plinth_width": 34.0,
+    "plinth_height": 3.6,
+    "underside_text": "COWARAMUP WA",
+    "underside_text_height": 5.0,
+    "underside_text_depth": 0.6
+  },
+  "CRW-004": {
+    "width": 64.0,
+    "profile_length": 126.0,
+    "lean_angle_deg": 68.0,
+    "slot_floor_u": 60.0,
+    "slot_floor_v": 15.0,
+    "pad_width": 6.0,
+    "pad_thickness": 1.2,
+    "flank_text": "COWARAMUP",
+    "flank_text_height": 8.5
+  },
+  "CRW-005": {
+    "length": 118.0,
+    "thickness": 18.0,
+    "joint_post_r_max": 4.2,
+    "joint_post_taper": 1.6,
+    "joint_ring_wall": 2.8,
+    "leg_swing_deg": 25.0,
+    "head_swing_deg": 20.0,
+    "tail_thickness": 6.0
+  }
+}
