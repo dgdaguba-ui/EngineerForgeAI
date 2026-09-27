@@ -1,0 +1,2 @@
+# per-colour STLs are large; regenerate with generate.py
+*.stl
